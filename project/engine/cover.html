@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>KROZO render</title>
+<style>
+@font-face { font-family: Plex; font-weight: 400; src: url(fonts/plex-400.woff2) format("woff2"); }
+@font-face { font-family: Plex; font-weight: 500; src: url(fonts/plex-500.woff2) format("woff2"); }
+@font-face { font-family: Plex; font-weight: 700; src: url(fonts/plex-700.woff2) format("woff2"); }
+@font-face { font-family: PlexLatin; font-weight: 500; src: url(fonts/plex-latin-500.woff2) format("woff2"); }
+@font-face { font-family: PlexLatin; font-weight: 700; src: url(fonts/plex-latin-700.woff2) format("woff2"); }
+:root {
+  --bg: #080B12; --blue: #168BFF; --cyan: #59C7FF; --ink: #F4F7FB; --gray: #A7B1C2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; background: var(--bg); overflow: hidden; }
+body { font-family: Plex, PlexLatin, sans-serif; color: var(--ink); }
+#stage { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
+canvas#bg { position: absolute; inset: 0; }
+.layer { position: absolute; inset: 0; }
+/* brand bug */
+#bug { position: absolute; top: 96px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px;
+  align-items: center; font-family: PlexLatin; font-weight: 700; letter-spacing: 10px; font-size: 26px;
+  color: var(--gray); direction: ltr; }
+#bug i { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 12px var(--blue); }
+#bug span.t { font-weight: 500; letter-spacing: 6px; font-size: 20px; opacity: .8; }
+/* subtitles */
+#subs { position: absolute; left: 90px; right: 90px; top: 1290px; text-align: center; direction: rtl; }
+#subs .line { display: inline; font-size: 54px; line-height: 1.55; font-weight: 700;
+  color: var(--ink); text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9); }
+#subs .w { transition: none; color: rgba(244,247,251,.55); }
+#subs .w.on { color: var(--ink); }
+#subs .w.now { color: var(--cyan); }
+/* progress */
+#prog { position: absolute; left: 0; bottom: 0; height: 6px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+/* generic text elements used by scenes */
+.kicker { font-weight: 500; color: var(--cyan); font-size: 34px; letter-spacing: 1px; }
+.headline { font-weight: 700; font-size: 92px; line-height: 1.25; color: var(--ink); }
+.sub { font-weight: 400; font-size: 40px; color: var(--gray); line-height: 1.5; }
+.hl { color: var(--blue); }
+.label { position: absolute; font-weight: 500; font-size: 34px; color: var(--ink);
+  background: rgba(8,11,18,.78); border: 1.5px solid rgba(22,139,255,.55); border-radius: 14px; padding: 10px 22px; white-space: nowrap; }
+.label.c { color: var(--cyan); }
+.latin { font-family: PlexLatin; direction: ltr; unicode-bidi: isolate; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <canvas id="gl" width="1080" height="1920" style="position:absolute;inset:0;opacity:0"></canvas>
+  <div id="scenes" class="layer"></div>
+  <div id="bug"><span>KROZO</span><i></i><span class="t">BEYOND TECH</span></div>
+  <div id="subband" style="position:absolute;left:0;right:0;top:1180px;height:480px;background:linear-gradient(180deg,rgba(8,11,18,0),rgba(8,11,18,.62) 35%,rgba(8,11,18,.62) 65%,rgba(8,11,18,0))"></div>
+  <div id="subs"></div>
+  <div id="prog"></div>
+</div>
+<script src="engine.js"></script>
+<script src="brand.js"></script>
+<script src="world.js"></script>
+<script src="subs.js"></script>
+<script src="cover.js"></script>
+<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
+<script type="module" src="g3.js"></script>
+</body>
+</html>

@@ -12,7 +12,7 @@ const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--ena
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
 page.on('pageerror', e => { console.error('PAGE ERROR', e); process.exit(1); });
 page.on('console', m => { if (m.type() === 'error') console.error('CONSOLE', m.text()); });
-await page.goto(`http://127.0.0.1:${port}/index.html`);
+await page.goto(`http://127.0.0.1:${port}/${process.env.PAGE || 'index.html'}`);
 await page.evaluate(() => window.ready());
 await page.waitForTimeout(300);
 try {
