@@ -89,7 +89,19 @@ def scan(d=1.3):
     return bp * trem * np.sin(np.pi * t / d) ** 2 / 3
 
 
-V = lambda ts: ts if ts < 12.35 else ts + 0.8
+import json, os
+_K = json.load(open(os.path.join(os.path.dirname(os.path.abspath(OUT)), 'warp.json')))['knots']
+
+
+def V(ts):
+    """story time -> video time (pause-tightening warp)"""
+    for (s0, v0), (s1, v1) in zip(_K, _K[1:]):
+        if ts <= s1:
+            return v0 + (ts - s0) * (v1 - v0) / ((s1 - s0) or 1)
+    return _K[-1][1] + ts - _K[-1][0]
+
+
+P0 = V(12.31)   # start of the question pause (video time)
 
 
 def heartbeat():
@@ -131,8 +143,8 @@ ev = [
     (whoosh(0.9, 500, 4000), V(55.55), .16, 0),
     (shimmer(2.0), V(56.2), .2, 0),
     # dramatic pause after "كيف يعرف؟": two soft heartbeats + reverse swell into the answer
-    (heartbeat(), 12.52, .40, 0), (heartbeat(), 12.98, .30, 0),
-    (reverse_swell(1.05), 12.53, .22, 0),
+    (heartbeat(), P0 + .21, .40, 0), (heartbeat(), P0 + .67, .30, 0),
+    (reverse_swell(1.05), P0 + .22, .22, 0),
 ]
 for sig, t, g, pan in ev:
     place(sig, t, g, pan)

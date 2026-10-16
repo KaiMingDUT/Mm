@@ -1,7 +1,6 @@
 // KROZO — "كيف يعرف Google Maps إن فيه زحمة؟"
 // Story time (t) follows the narration; TL.remap adds a 0.8 s dramatic pause after "كيف يعرف؟".
 const VOICE_END = 56.11;
-const PAUSE_AT = 12.35, PAUSE_STORY = 0.46, PAUSE_VIDEO = 1.26;     // 0.46 s of story stretched to 1.26 s
 const fullCanvas = () => el('<canvas width="1080" height="1920" style="position:absolute;inset:0"></canvas>');
 const zoneMid = () => WORLD.at((WORLD.ZONE[0] + WORLD.ZONE[1]) / 2, 0);
 
@@ -317,7 +316,13 @@ outro.update = function (r, lt, t) {
 
 window.TL = {
   voiceEnd: VOICE_END,
-  remap: tv => tv < PAUSE_AT ? tv : tv < PAUSE_AT + PAUSE_VIDEO ? PAUSE_AT + (tv - PAUSE_AT) * PAUSE_STORY / PAUSE_VIDEO : tv - (PAUSE_VIDEO - PAUSE_STORY),
+  // video time -> story time through the pause-tightening warp (WARP knots: [story, video])
+  remap: tv => {
+    let i = 0; while (i < WARP.length - 2 && tv > WARP[i + 1][1]) i++;
+    const [s0, v0] = WARP[i], [s1, v1] = WARP[i + 1];
+    if (tv >= v1) return s1 + (tv - v1);
+    return s0 + (tv - v0) * (s1 - s0) / ((v1 - v0) || 1);
+  },
   bug: t => (t < 2.7 ? 0 : 1) * (1 - prog(t, 55.9, 56.2)),
   subs: SUBS.filter(s => !(s.s >= 11.3 && s.e <= 12.8)),
   scenes: [sceneHighway, scenePhone, sceneNoSources, sceneQuestion, sceneMap, outro],
