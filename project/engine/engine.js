@@ -66,8 +66,9 @@ function renderSubs(t) {
   });
 }
 
-window.seek = function (t) {
+window.seek = function (tv) {
   if (!built) buildAll();
+  const t = TL.remap ? TL.remap(tv) : tv;
   const active = TL.scenes.filter(sc => t >= sc.s && t < sc.e);
   const focus = active.length ? active[active.length - 1].focus?.(t - active[active.length - 1].s, t) : null;
   drawBackground(t, focus);
@@ -82,6 +83,7 @@ window.seek = function (t) {
   bugEl.style.opacity = TL.bug ? TL.bug(t) : 1;
   progEl.style.width = (clamp(t / TL.voiceEnd) * W) + 'px';
   progEl.style.opacity = t < TL.voiceEnd ? .9 : 0;
+  if (window.G3) G3.render(t);
   return true;
 };
-window.ready = () => document.fonts.ready.then(() => document.fonts.size);
+window.ready = () => document.fonts.ready.then(() => new Promise(r => { const k = () => window.G3ready ? r(1) : setTimeout(k, 50); k(); }));

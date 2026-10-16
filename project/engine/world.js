@@ -40,13 +40,13 @@ const WORLD = (() => {
 
   // Sim time: slow motion during the GPS / speed explanation
   const RATE_DT = 1 / 120, rateTable = [0];
-  const rate = t => 1 - 0.42 * (prog(t, 23.4, 23.9) - prog(t, 30.9, 31.5));
+  const rate = t => 1 - 0.45 * (prog(t, 21.0, 21.6) - prog(t, 28.4, 29.0));
   for (let t = 0; t < 70; t += RATE_DT) rateTable.push(rateTable[rateTable.length - 1] + rate(t) * RATE_DT);
   const simT = t => { const i = Math.max(0, t) / RATE_DT, j = Math.floor(i); return lerp(rateTable[j], rateTable[j + 1] ?? rateTable[j], i - j); };
 
-  const VFREE = 110;
+  const VFREE = 90;
   // jam strength over global time
-  const jam = t => 0.8 * ease.inOut(prog(t, 39.55, 41.3));
+  const jam = t => 0.8 * ease.inOut(prog(t, 37.6, 39.3));
   // density profile in u-space -> warp s(u); cars equally spaced in s.
   const bump = u => { const a = prog(u, ZONE[0] - 60, ZONE[0] + 40), b = 1 - prog(u, ZONE[1] - 40, ZONE[1] + 60); return Math.min(a, b); };
   const WN = 400;
@@ -70,7 +70,7 @@ const WORLD = (() => {
   // "you": a lane-1 car placed at u≈0.08L at t=17
   const you = cars[PER_LANE + 3];
   you.s0 = 0; // adjusted below so that it sits at 0.08L at t=17
-  const youBase = 0.08 * L - you.f * VFREE * simT(17);
+  const youBase = 0.08 * L - you.f * VFREE * simT(12.77);
   you.s0 = ((youBase % L) + L) % L;
 
   function carPos(c, t) {

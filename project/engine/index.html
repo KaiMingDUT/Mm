@@ -47,8 +47,10 @@ canvas#bg { position: absolute; inset: 0; }
 <body>
 <div id="stage">
   <canvas id="bg" width="1080" height="1920"></canvas>
+  <canvas id="gl" width="1080" height="1920" style="position:absolute;inset:0;opacity:0"></canvas>
   <div id="scenes" class="layer"></div>
   <div id="bug"><span>KROZO</span><i></i><span class="t">BEYOND TECH</span></div>
+  <div id="subband" style="position:absolute;left:0;right:0;top:1180px;height:480px;background:linear-gradient(180deg,rgba(8,11,18,0),rgba(8,11,18,.62) 35%,rgba(8,11,18,.62) 65%,rgba(8,11,18,0))"></div>
   <div id="subs"></div>
   <div id="prog"></div>
 </div>
@@ -57,5 +59,7 @@ canvas#bg { position: absolute; inset: 0; }
 <script src="world.js"></script>
 <script src="subs.js"></script>
 <script src="timeline.js"></script>
+<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
+<script type="module" src="g3.js"></script>
 </body>
 </html>
