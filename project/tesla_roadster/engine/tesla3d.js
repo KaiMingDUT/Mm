@@ -179,7 +179,7 @@ composer.addPass(new OutputPass());
 let state = null;
 const tmpQ = new THREE.Quaternion();
 const G3 = {
-  set(s) { state = s; },
+  set(s) { state = s; if (s) s.opacity = (s.opacity ?? 1) * (window.CUR_FADE ?? 1); },
   // car pose on the wall ramp: u = 0..1 along approach + loop
   rampPose(u) {
     const thMax = 1.396, Lap = 14;   // 1.396 rad -> pitch 170°, height ≈ 21 m (livestream telemetry)

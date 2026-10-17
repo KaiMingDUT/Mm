@@ -44,10 +44,21 @@ function buildAll() {
   for (const sc of TL.scenes) {
     sc.root = el('<div class="layer" style="opacity:0"></div>');
     sc.build(sc.root, sc);
+    sc.isClip = !!sc.p;
     scenesRoot.appendChild(sc.root);
+  }
+  // blended transitions: each scene overlaps the next; no dip to black between them
+  const L = TL.scenes;
+  for (let i = 0; i < L.length - 1; i++) {
+    const a = L[i], b = L[i + 1], ov = .26;
+    a.e = Math.max(a.e, b.s + ov);
+    if (b.is3d && !a.is3d) { a.fo = ov; b.fi = .04; }      // fade the top layer away to reveal 3D underneath
+    else if (a.is3d && !b.is3d && !b.isClip) { a.fo = ov; b.fi = ov; }
+    else { a.fo = .03; b.fi = .22; }                      // new shot dissolves in over the previous one
   }
   built = true;
 }
+const flashEl = document.getElementById('flash');
 
 let lastSub = null;
 function renderSubs(t) {
@@ -70,7 +81,8 @@ window.PENDING = [];
 window.seek = async function (tv) {
   if (!built) buildAll();
   PENDING.length = 0;
-  const t = TL.remap ? TL.remap(tv) : tv;
+  const ts = TL.remap ? TL.remap(tv) : tv;
+  const t = ts + (TL.lead ?? 0);           // picture leads the voice slightly (cut on the beat, not after it)
   const active = TL.scenes.filter(sc => t >= sc.s && t < sc.e);
   const focus = active.length ? active[active.length - 1].focus?.(t - active[active.length - 1].s, t) : null;
   drawBackground(t, focus);
@@ -78,10 +90,16 @@ window.seek = async function (tv) {
     const on = t >= sc.s && t < sc.e;
     if (!on) { sc.root.style.opacity = 0; sc.root.style.display = 'none'; continue; }
     sc.root.style.display = '';
-    sc.root.style.opacity = fadeIO(t, sc.s, sc.e, sc.fi ?? .3, sc.fo ?? .25);
+    const f = fadeIO(t, sc.s, sc.e, sc.fi ?? .3, sc.fo ?? .25);
+    sc.root.style.opacity = f;
+    window.CUR_FADE = f;
     sc.update(sc.root, t - sc.s, t, sc);
+    window.CUR_FADE = 1;
+    const k = sc.s > 0 ? ease.out(prog(t, sc.s, sc.s + .32)) : 1;   // punch-in on every cut
+    sc.root.style.transform = k < 1 ? `scale(${1.06 - .06 * k})` : '';
   }
-  renderSubs(t);
+  if (flashEl) { let fl = 0; for (const x of (TL.flashes || [])) if (t >= x) fl = Math.max(fl, 1 - prog(t, x, x + .28)); flashEl.style.opacity = fl * .5; }
+  renderSubs(ts + .04);
   bugEl.style.opacity = TL.bug ? TL.bug(t) : 1;
   progEl.style.width = (clamp(t / TL.voiceEnd) * W) + 'px';
   progEl.style.opacity = t < TL.voiceEnd ? .9 : 0;

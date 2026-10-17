@@ -141,6 +141,7 @@ const sName = {
 
 // ───────── 8. Question beat: "لكن لحظة… كيف…وما تطيح؟!" (24.7 – 29.45) ─────────
 const sQ1 = {
+  is3d: true,
   s: 24.7, e: 29.47, fi: .12, fo: .15,
   build(r) {
     r.appendChild(big(`<div class="k" style="font-size:52px;color:${C.gray}">لكن لحظة…</div>
@@ -157,6 +158,7 @@ const sQ1 = {
 
 // ───────── 9–10. Secret #1: suction (29.45 – 38.95) ─────────
 const sFans = {
+  is3d: true,
   s: 29.45, e: 38.95, fi: .12, fo: .15,
   build(r) {
     r.appendChild(el(`<div class="tt" style="position:absolute;left:70px;right:70px;top:250px;text-align:right">
@@ -221,6 +223,7 @@ const sVac = {
 
 // ───────── 12. "ضعف وزن السيارة… وزن سيارتين" (43.5 – 52.55) ─────────
 const s2G = {
+  is3d: true,
   s: 43.5, e: 52.58, fi: .12, fo: .15,
   build(r) {
     r.appendChild(el(`<div class="g" style="position:absolute;left:90px;right:90px;top:250px;padding:30px 36px;border-radius:28px;background:rgba(10,14,22,.9);border:1.5px solid #2A3446">
@@ -257,6 +260,7 @@ const sQ2 = {
 
 // ───────── 14–15. Secret #2: compressed-air thrust system (60.0 – 67.95) ─────────
 const sThrustA = {
+  is3d: true,
   s: 60.0, e: 66.5, fi: .12, fo: .1,
   build(r) {
     r.appendChild(el(`<div class="tt" style="position:absolute;left:70px;right:70px;top:250px;text-align:right">
@@ -283,6 +287,7 @@ const sPlume = {
 
 // ───────── 16. Store → release → air backwards → push forwards (68.0 – 78.4) ─────────
 const sThrustB = {
+  is3d: true,
   s: 68.0, e: 78.42, fi: .1, fo: .15,
   build(r) {
     r.appendChild(el(`<div class="pg" style="position:absolute;left:90px;right:90px;top:250px;padding:26px 32px;border-radius:24px;background:rgba(10,14,22,.9);border:1.5px solid #2A3446">
@@ -395,6 +400,8 @@ const outro = outroScene(102.95, 105.45);
 
 window.TL = {
   voiceEnd: VOICE_END,
+  lead: 0.15,
+  flashes: [2.85, 11.1, 29.45, 60.05, w(159), w(197) - .05],
   remap: tv => {
     let i = 0; while (i < WARP.length - 2 && tv > WARP[i + 1][1]) i++;
     const [s0, v0] = WARP[i], [s1, v1] = WARP[i + 1];
