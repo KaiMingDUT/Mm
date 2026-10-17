@@ -3,12 +3,12 @@
 set -e
 V=../p3_touch/voice_timed.wav
 ffmpeg -nostdin -v error -y -i $V -i m_eq.wav -i sfx.wav -filter_complex "
-[0:a]aresample=48000,asplit=3[v][sc1][sc2];
+[0:a]aresample=48000,apad=whole_dur=108.1,asplit=3[v][sc1][sc2];
 [1:a]volume=-17.1dB[m0];[m0][sc1]sidechaincompress=threshold=0.05:ratio=3:attack=20:release=450[m];
 [2:a]aresample=48000,volume=-5dB[s0];[s0][sc2]sidechaincompress=threshold=0.03:ratio=2.5:attack=10:release=300[s];
 [v][m][s]amix=inputs=3:normalize=0:duration=longest" pre_music.wav
 ffmpeg -nostdin -v error -y -i $V -i sfx.wav -filter_complex "
-[0:a]aresample=48000,asplit=2[v][sc2];
+[0:a]aresample=48000,apad=whole_dur=108.1,asplit=2[v][sc2];
 [1:a]aresample=48000,volume=-5dB[s0];[s0][sc2]sidechaincompress=threshold=0.03:ratio=2.5:attack=10:release=300[s];
 [v][s]amix=inputs=2:normalize=0:duration=longest" pre_nomusic.wav
 for k in music nomusic; do
