@@ -20,4 +20,4 @@ Audio (work dir = `../work`, not committed):
   cp ../warp.json ../words3.json work/ ; python3 ../../tools/voicewarp.py work
   python3 sfx_v3.py work/sfx.wav 108.1 ; python3 music_pulse.py work/music.wav
   EQ music → work/m_eq.wav (highpass 70, −8 dB@2.6k, −4 dB@1.2k, −4 dB@4.5k) ; cd work && VOICE=voice_timed.wav bash ../v3/mix.sh
-Render: PAGE='index.html?rs=0.6667' node ../../tools/render.mjs engine part1.mp4 30 0 27  (4 chunks: 0-27, 27-54, 54-81, 81-108.05; ~2 s/frame each)
+Render: ./render_queue.sh  (resumable: 16 frame-aligned segments, 4 workers, skips segments with a .done marker in ../work/seg; concat s0..s15)
