@@ -1,14 +1,14 @@
 // KROZO — Tesla Roadster: "كيف تمشي مقلوبة وما تطيح؟"  (story time = original recording; WARP tightens pauses)
 const VOICE_END = 102.95;
 const w = i => WT[i];                                   // start time of word i
-const CREDIT = 'لقطات: بث تسلا المباشر · 15 أكتوبر 2026';
+const CREDIT = 'لقطات: تسلا · عرض الرودستر 2026';
 
 // ───────── helpers ─────────
-function panel(r, { top = 250, h = 960 } = {}) {
+function panel(r, { top = 0, h = 1920 } = {}) {
   const p = el(`<div class="pn" style="position:absolute;left:0;right:0;top:${top}px;height:${h}px;overflow:hidden">
     <img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
-    <div style="position:absolute;inset:0;background:linear-gradient(180deg,#080B12 0%,rgba(8,11,18,0) 14%,rgba(8,11,18,0) 80%,#080B12 100%)"></div>
-    <div class="cr" style="position:absolute;left:28px;bottom:150px;font-size:22px;color:rgba(167,177,194,.85);background:rgba(8,11,18,.6);padding:4px 12px;border-radius:8px">${CREDIT}</div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,18,.85) 0%,rgba(8,11,18,0) 22%,rgba(8,11,18,0) 58%,rgba(8,11,18,.55) 72%,rgba(8,11,18,.9) 100%)"></div>
+    <div class="cr" style="position:absolute;left:28px;bottom:150px;font-size:22px;color:rgba(167,177,194,.9);background:rgba(8,11,18,.6);padding:4px 12px;border-radius:8px">${CREDIT}</div>
   </div>`);
   r.appendChild(p); return p;
 }
@@ -37,61 +37,57 @@ const V = (x, y, z) => G3.V(x, y, z);
 const sHook = {
   s: 0, e: 2.9, fi: .01, fo: .15,
   build(r) {
-    this.p = panel(r, { top: 380, h: 900 });
+    this.p = panel(r);
     r.appendChild(big(`<div class="k" style="font-size:44px;color:${C.gray};font-weight:500">إيلون ماسك</div>
       <div class="h" style="font-size:118px;font-weight:700;line-height:1.1;margin-top:6px;text-shadow:0 6px 40px rgba(0,0,0,.8)"><span class="hl">جنّ</span> رسميًا!</div>`, 'top:170px'));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[0, 2.9, 'jump', 0, 1]], .08);
+    playClips(this.p, t, [[0, 2.9, 't_flip', 0, 1]], .06);
     popIn(r.querySelector('.k'), t, .1);
     const k = popIn(r.querySelector('.h'), t, w(2) - .05, .3, 40);
     r.querySelector('.h').style.transform += ` scale(${1 + .06 * Math.max(0, 1 - prog(t, w(2), w(2) + .4))})`;
   },
 };
 
-// ───────── 2. 3D wall ramp + HUD (2.85 – 8.25) ─────────
+// ───────── 2. Real climb up the wall + live HUD (2.85 – 8.25) ─────────
 const sRamp = {
-  s: 2.85, e: 8.3, fi: .12, fo: .1,
+  s: 2.85, e: 8.3, fi: .1, fo: .1,
   build(r) {
-    r.appendChild(el(`<div class="hud" style="position:absolute;left:70px;right:70px;top:1050px;display:flex;justify-content:space-between;direction:rtl">
-      <div style="background:rgba(8,11,18,.8);border:1.5px solid #2A3446;border-radius:20px;padding:16px 26px;min-width:290px">
+    this.p = panel(r);
+    r.appendChild(el(`<div class="hud" style="position:absolute;left:70px;right:70px;top:1030px;display:flex;justify-content:space-between;direction:rtl">
+      <div style="background:rgba(8,11,18,.82);border:1.5px solid #2A3446;border-radius:20px;padding:16px 26px;min-width:290px">
         <div style="font-size:28px;color:${C.gray}">الارتفاع</div><div style="font-size:72px;font-weight:700"><span class="hv latin" style="font-family:PlexLatin">0</span> <span style="font-size:36px">م</span></div></div>
-      <div style="background:rgba(8,11,18,.8);border:1.5px solid #2A3446;border-radius:20px;padding:16px 26px;min-width:290px">
+      <div style="background:rgba(8,11,18,.82);border:1.5px solid #2A3446;border-radius:20px;padding:16px 26px;min-width:290px">
         <div style="font-size:28px;color:${C.gray}">الميلان</div><div style="font-size:72px;font-weight:700"><span class="av latin" style="font-family:PlexLatin">0</span><span style="font-size:44px">°</span></div></div>
     </div>`));
-    r.appendChild(el(`<div class="tel" style="position:absolute;left:70px;right:70px;text-align:center;top:1010px;font-size:24px;color:${C.gray}">أرقام من شاشة بث تسلا</div>`));
+    r.appendChild(el(`<div class="tel" style="position:absolute;left:70px;right:70px;text-align:center;top:990px;font-size:24px;color:${C.gray}">أرقام من شاشة بث تسلا</div>`));
   },
   update(r, lt, t) {
-    const u = ease.inOut(prog(t, 3.0, 8.2));
-    const pose = G3.rampPose(u);
-    const q = G3.Q(-pose.ang, 0, 0);
-    const orbit = lerp(-.55, -.25, sweep(3, 8.3, t));
-    const cam = V(Math.cos(orbit) * 58, 9, 4.5 + Math.sin(orbit) * 58);
-    G3.set({ opacity: 1, ramp: true, car: true, pose: { p: pose.p, q }, wheelSpin: t * 30, cam, look: V(0, 11, 4.5), fov: 44, bloom: .6 });
-    const deg = Math.round(pose.ang * 180 / Math.PI), hm = Math.min(21, pose.h * 21 / 21.04);
-    r.querySelector('.hv').textContent = hm.toFixed(hm < 10 ? 1 : 0);
-    r.querySelector('.av').textContent = Math.min(170, deg);
+    const rate = 1.22, c0 = 1.0;
+    playClips(this.p, t, [[2.85, 8.3, 't_climb', c0, rate]], .04);
+    const ct = c0 + (t - 2.85) * rate;
+    const u = ease.inOut(prog(ct, 1.7, 7.4));
+    r.querySelector('.hv').textContent = (21 * Math.sin(u * Math.PI / 2) ** 1.4).toFixed(u < .45 ? 1 : 0);
+    r.querySelector('.av').textContent = Math.round(170 * u);
     const hud = r.querySelector('.hud'); popIn(hud, t, 3.0);
-    if (t > w(10) - .05 && t < w(10) + .6) hud.firstElementChild.style.boxShadow = `0 0 0 3px ${C.blue}, 0 0 40px rgba(22,139,255,.5)`; else hud.firstElementChild.style.boxShadow = 'none';
+    hud.firstElementChild.style.boxShadow = (t > w(10) - .05 && t < w(10) + .6) ? `0 0 0 3px ${C.blue}, 0 0 40px rgba(22,139,255,.5)` : 'none';
     fade(r.querySelector('.tel'), t, 3.3, 8.3);
   },
 };
 
-// ───────── 3. Real: underside, upside down (8.25 – 9.4) ─────────
+// ───────── 3. Real: at the top, upside down (8.25 – 9.4) ─────────
 const sUnder = {
   s: 8.25, e: 9.42, fi: .06, fo: .1,
   build(r) { this.p = panel(r); },
-  update(r, lt, t) { playClips(this.p, t, [[8.25, 9.42, 'under', 0, .8]], .1); },
+  update(r, lt, t) { playClips(this.p, t, [[8.25, 9.42, 't_top', 0, 1.0]], .08); },
 };
 
-// ───────── 4. 3D glued upside down: "ما تطيح!" (9.4 – 11.1) ─────────
+// ───────── 4. Real: glued to the vertical wall — "ما تطيح!" (9.4 – 11.1) ─────────
 const sGlued = {
-  s: 9.38, e: 11.12, fi: .08, fo: .12,
-  build(r) { r.appendChild(big(`<div class="st" style="font-size:120px;font-weight:700">ما <span class="hl">تطيح!</span></div>`, 'top:1010px')); },
+  s: 9.38, e: 11.12, fi: .06, fo: .1,
+  build(r) { this.p = panel(r); r.appendChild(big(`<div class="st" style="font-size:120px;font-weight:700;text-shadow:0 6px 40px rgba(0,0,0,.8)">ما <span class="hl">تطيح!</span></div>`, 'top:250px')); },
   update(r, lt, t) {
-    const pose = G3.rampPose(1); const q = G3.Q(-pose.ang, 0, 0);
-    const a = lerp(.2, -.25, prog(t, 9.38, 11.1));
-    G3.set({ opacity: 1, ramp: true, pose: { p: pose.p, q }, cam: V(Math.cos(-.25 + a * .3) * 30, 16, 3 + Math.sin(-.25 + a * .3) * 30), look: V(0, 17.5, 3), fov: 40, bloom: .6 });
+    playClips(this.p, t, [[9.38, 11.12, 't_wall', 0, .6]], .1);
     popIn(r.querySelector('.st'), t, w(22) - .05, .3, 30);
   },
 };
@@ -101,7 +97,7 @@ const sFlight = {
   s: 11.1, e: 16.12, fi: .08, fo: .12,
   build(r) { this.p = panel(r); r.appendChild(big(`<div class="x" style="font-size:60px;font-weight:700">تتشقلب في الهوا… <span class="hl">وتنزل بهدوء</span></div>`, 'top:240px')); },
   update(r, lt, t) {
-    playClips(this.p, t, [[11.1, 12.9, 'flight', 0, .6], [12.9, 13.7, 'truck', 0, .45], [13.7, 16.12, 'flight', 4.28, .25]], .05);
+    playClips(this.p, t, [[11.1, 16.12, 't_fall', 0, 1.14]], .05);
     fade(r.querySelector('.x'), t, w(27), 16.1, .3, .2);
   },
 };
@@ -118,7 +114,7 @@ const sReal = {
     r.appendChild(big(`<div class="rv" style="font-size:72px;font-weight:700">${tag('حقيقي 100%')}</div>`, 'top:270px'));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[16.1, 19.0, 'truck', 0, 1], [19.0, 20.95, 'launch', 0, 1]], .06);
+    playClips(this.p, t, [[16.1, 18.4, 't_land', 0, 1], [18.4, 20.95, 't_jump', .6, 1.1]], .06);
     const rl = r.querySelector('.rl');
     popIn(rl, t, w(39) - .1); rl.style.opacity = Math.min(+rl.style.opacity, 1 - prog(t, w(41) - .2, w(41)));
     r.querySelector('.sl').style.transform = `scaleX(${sweep(w(40), w(40) + .3, t)})`;
@@ -133,11 +129,13 @@ const sName = {
     this.p = panel(r);
     r.appendChild(el(`<div class="nm" style="position:absolute;left:70px;right:70px;top:250px">
       <div style="font-family:PlexLatin;font-weight:700;font-size:92px;direction:ltr;text-align:left;line-height:1">Tesla <span style="color:${C.blue}">Roadster</span></div>
-      <div style="font-size:34px;color:${C.gray};margin-top:10px">الجيل الجديد · كُشف عنها 15 أكتوبر 2026</div></div>`));
+      <div style="font-size:34px;color:${C.gray};margin-top:10px">الجيل الجديد · كُشف عنها 15 أكتوبر 2026</div>
+      <div class="ms" style="margin-top:18px;opacity:0;font-size:38px">${tag('أعلن عنها إيلون ماسك')}</div></div>`));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[20.95, 22.5, 'redramp', 0, .4], [22.5, 23.35, 'doors', .4, 1], [23.35, 24.72, 'musk', .3, 1]], .05);
+    playClips(this.p, t, [[20.95, 24.72, 't_rear', 0, .5]], .06);
     popIn(r.querySelector('.nm'), t, w(47) - .1, .4, 30);
+    popIn(r.querySelector('.ms'), t, w(53) - .1);
   },
 };
 
@@ -251,7 +249,7 @@ const sQ2 = {
     r.appendChild(big(`<div class="h" style="font-size:112px;font-weight:700;line-height:1.15">وكيف <span class="hl">تقفز</span>؟</div>`, 'top:330px'));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[52.55, 56.7, 'redramp', 0, .23], [56.7, 60.02, 'jump', .2, .75]], .05);
+    playClips(this.p, t, [[52.55, 56.7, 't_climb', 3.8, .75], [56.7, 60.02, 't_land', 0, .42]], .05);
     const k = r.querySelector('.k'); popIn(k, t, w(120) - .05); k.style.opacity = Math.min(+k.style.opacity, 1 - prog(t, w(128) - .3, w(128)));
     popIn(r.querySelector('.h'), t, w(132) - .1, .35, 30);
   },
@@ -280,7 +278,7 @@ const sThrustA = {
 const sPlume = {
   s: 66.45, e: 68.05, fi: .06, fo: .1,
   build(r) { this.p = panel(r); r.appendChild(big(`<div class="h" style="font-size:66px;font-weight:700">مبدأ <span class="hl">الصواريخ</span></div>`, 'top:250px')); },
-  update(r, lt, t) { playClips(this.p, t, [[66.45, 68.05, 'plume', 0, .85]], .1); popIn(r.querySelector('.h'), t, w(151) - .1); },
+  update(r, lt, t) { playClips(this.p, t, [[66.45, 68.05, 't_jets', 0, 1]], .08); popIn(r.querySelector('.h'), t, w(151) - .1); },
 };
 
 // ───────── 16. Store → release → air backwards → push forwards (68.0 – 78.4) ─────────
@@ -345,7 +343,7 @@ const sAccel = {
       </div></div>`));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[82.4, 85.3, 'redramp', 0, .22], [85.3, 91.0, 'launch', 0, .34]], .05);
+    playClips(this.p, t, [[82.4, 91.0, 't_jump', 0, .38]], .05);
     const wq = r.querySelector('.wq'); popIn(wq, t, w(184) - .05); wq.style.opacity = Math.min(+wq.style.opacity, 1 - prog(t, w(185), w(185) + .2));
     const sp = r.querySelector('.sp'); popIn(sp, t, w(186) - .1);
     r.querySelector('.v').textContent = Math.round(96 * ease.out(prog(t, w(190), w(193) + .3)));
@@ -365,7 +363,7 @@ const sPrice = {
         <div style="font-size:26px;color:${C.gray};margin-top:6px">عربون حجز · مو السعر النهائي</div></div></div>`));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[91.0, 96.68, 'doors', 0, .6]], .05);
+    playClips(this.p, t, [[91.0, 96.68, 't_rear', 0, .33]], .05);
     popIn(r.querySelector('.pc'), t, w(204) - .1);
     const v = Math.round(250000 * ease.out(prog(t, w(209), w(211) + .4)) / 1000) * 1000;
     r.querySelector('.v').textContent = v.toLocaleString('en-US');
@@ -386,7 +384,7 @@ const sPoll = {
       <div class="cm" style="margin-top:22px;font-size:34px;color:${C.gray};text-align:center;opacity:0">اكتب رأيك في التعليقات</div></div>`));
   },
   update(r, lt, t) {
-    playClips(this.p, t, [[96.65, 102.98, 'smoke', 0, .3]], .05);
+    playClips(this.p, t, [[96.65, 102.98, 't_smoke', 0, .48]], .05);
     popIn(r.querySelector('.q'), t, w(213) - .05);
     popIn(r.querySelector('.o1'), t, w(224) - .1); popIn(r.querySelector('.o2'), t, w(225));
     popIn(r.querySelector('.cm'), t, w(227));

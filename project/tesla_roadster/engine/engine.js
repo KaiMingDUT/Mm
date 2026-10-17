@@ -92,7 +92,7 @@ window.seek = async function (tv) {
 window.ready = () => document.fonts.ready.then(() => new Promise(r => { const k = () => window.G3ready ? r(1) : setTimeout(k, 50); k(); }));
 
 // Real footage as pre-extracted 30 fps JPEG sequences (frame-accurate in headless render).
-const CLIPS = { jump: 87, ramp: 69, under: 23, flight: 147, truck: 87, launch: 57, side: 21, doors: 117, musk: 117, smoke: 57, plume: 42, redramp: 20 };
+const CLIPS = { t_flip: 90, t_climb: 234, t_top: 42, t_wall: 36, t_fall: 174, t_land: 72, t_jump: 102, t_rear: 60, t_drive: 87, t_jets: 54, t_smoke: 96, jump: 87, ramp: 69, under: 23, flight: 147, truck: 87, launch: 57, side: 21, doors: 117, musk: 117, smoke: 57, plume: 42, redramp: 20 };
 function setClip(img, name, ct) {
   const n = CLIPS[name];
   const i = Math.max(1, Math.min(n, Math.floor(ct * 30) + 1));
