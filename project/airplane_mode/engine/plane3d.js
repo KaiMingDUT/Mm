@@ -118,8 +118,8 @@ const [livC, lg] = cnv(4096, 1024), [emC, eg] = cnv(4096, 1024);
   }
   // wordmark on both sides (left side mirrored so it reads correctly)
   lg.font = '700 150px "PlexLatin", sans-serif'; lg.fillStyle = '#0b1a33'; lg.textBaseline = 'middle';
-  lg.save(); lg.translate(Wd * .43 + 560, Hd * .115); lg.rotate(Math.PI); lg.fillText('KROZO', 0, 0); lg.restore();
-  lg.save(); lg.translate(Wd * .43, Hd * .885); lg.fillText('KROZO', 0, 0); lg.restore();
+  lg.save(); lg.translate(Wd * .43 + 560, Hd * .115); lg.scale(-1, 1); lg.fillText('KROZO', 0, 0); lg.restore();
+  lg.save(); lg.translate(Wd * .43, Hd * .885); lg.scale(1, -1); lg.fillText('KROZO', 0, 0); lg.restore();
 }
 const livTex = tex(livC), emTex = tex(emC); livTex.flipY = emTex.flipY = false;
 const paint = new THREE.MeshPhysicalMaterial({ map: livTex, emissiveMap: emTex, emissive: 0xffffff, emissiveIntensity: 2.2, roughness: .28, metalness: .15, clearcoat: 1, clearcoatRoughness: .12 });
@@ -180,7 +180,7 @@ NAV.g = lightSpr(0x30d158); NAV.g.position.set(-7.2, .3, 17.2);
 NAV.s1 = lightSpr(0xffffff); NAV.s1.position.set(-7.6, .3, -17.3);
 NAV.s2 = lightSpr(0xffffff); NAV.s2.position.set(-7.6, .3, 17.3);
 NAV.tail = lightSpr(0xffffff); NAV.tail.position.set(-19.4, 1.4, 0);
-NAV.bcn = lightSpr(0xff453a); NAV.bcn.position.set(-2, 2.25, 0);
+NAV.bcn = lightSpr(0xff453a); NAV.bcn.position.set(-9, 2.2, 0);
 // logo light on the fin
 const finLight = new THREE.SpotLight(0x9fd4ff, 0, 30, .5, .6); finLight.position.set(-12, 9, 6); finLight.target.position.set(-17, 5, 0); jet.add(finLight, finLight.target);
 // hologram / x-ray material for the systems & hangar shots
