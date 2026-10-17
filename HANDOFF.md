@@ -32,6 +32,7 @@
 4. **Voice must be clean and clear.** Apply the voice chain below.
 5. **Music:** the client **disliked the hype/trap music** and said their voice wasn't clear over it. Current approved setting: **calm/ambient music about 24 dB under the voice** (music stem ≈ −37 LUFS vs voice ≈ −13 LUFS), with EQ carving the speech band and sidechain ducking. **Always also deliver a "NoMusic" version** (voice + SFX) so they can add licensed/trending audio inside Instagram.
 6. They like **3D scenes**, **attention-grabbing SFX**, **blended transitions** (no dip to black), and the **picture leading the voice slightly** (lead = 0.15 s).
+10. **Stay strictly on-brand.** When the client shares a reference video, copy its *visual ideas*, not its colours. Rebuild every element in the KROZO palette. v2 of the gloves video was too colourful.
 7. They like progress updates while long renders run ("كم باقي"). Use a Monitor and give honest ETAs.
 8. They want **100 % accurate facts.** Verify claims with web search, flag simplifications in the report, and never change their narration without asking.
 9. **Real footage:** when real footage is needed, ask for the official source. The Tesla video ended up using **Tesla's official "The Ramp – Roadster"** short that the client uploaded.
@@ -59,12 +60,12 @@ output/                             ← DELIVERABLES (what the client gets)
   README.md                         ← Google Maps video report
   KROZO_GoogleMaps_Traffic_Reel.mp4 (+ Cover .png/.jpg, .srt, contact_sheet.png)
   tesla_roadster/                   ← Tesla video: Reel.mp4, Reel_NoMusic.mp4, .srt, README.md, script_ar.md, contact_sheet.png
-  touchscreen_gloves/               ← Gloves video: Reel.mp4, Reel_NoMusic.mp4, .srt, README.md, contact_sheet.png
+  touchscreen_gloves/               ← Gloves video v3: Reel.mp4, Reel_NoMusic.mp4, .srt, README.md, contact_sheet.png, v1_old/
 project/                            ← SOURCES to rebuild/edit
   tools/                            ← shared pipeline scripts (see §4)
   google_maps/   engine/ source/ audio/ + warp/align data
   tesla_roadster/ engine/ source/ + music_*.py, sfx_*.py, warp/align data
-  touchscreen_gloves/ engine/ source/ + sfx_touch.py, warp/align data
+  touchscreen_gloves/ engine/ (v1) v2/ v3/ (current) source/ + sfx_touch.py, warp/align data
 ```
 
 - `project/*/source/` holds the **client's original voice recordings**. `tesla_roadster/source/` also holds the official Tesla short and the reference competitor video.
@@ -138,17 +139,27 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Fact-check table and sources: `output/tesla_roadster/README.md` and `script_ar.md`.
 - Copyright note: the footage belongs to Tesla. Short clips used with commentary are common but not guaranteed safe. The client was told this.
 
-### C. Touchscreen & gloves (DONE, delivered)
-- `output/touchscreen_gloves/KROZO_Touchscreen_Gloves_Reel.mp4` + `_NoMusic.mp4`. Length 108.05 s. All 3D, no third-party footage.
-- 45 pauses cut and 11 intentional pauses kept. It has a capacitance meter with a threshold line (finger passes, glove fails, conductive glove passes) and 57 SFX.
-- Science flag (in its README): "the problem is not thickness, it's insulation" is an acceptable simplification. Thickness/distance also reduces coupling.
+### C. Touchscreen & gloves (v3 DONE, delivered; v1 kept in `output/touchscreen_gloves/v1_old/`)
+- **v3 is the current deliverable:** `output/touchscreen_gloves/KROZO_Touchscreen_Gloves_Reel.mp4` + `_NoMusic.mp4`, 108.05 s.
+- **Why v3 exists:** the client sent a reference reel ("How does the touchscreen really work", getkeyframes.com) and asked for "scenes like these but with my visual identity and better".
+  - Reference style: a dark macro cross-section (glass / wires / RGB pixels) with golden fringe-field arcs, a row of "100" readings under the wires that dip under the finger, a pen that is ignored, Na⁺/Cl⁻ inside a fingertip, wool loops, a top-down diamond grid with readings, and top captions with the keyword boxed.
+  - v3 rebuilds all of that **in brand colours only** (blue/cyan arcs, cyan readings, blue selection box with cyan corner handles). It is mixed with the realistic v2 shots: snow night, hands, phone, split screen, veins, whip pan.
+- **v2** (`project/touchscreen_gloves/v2/`): a fast-cut realistic version. It was never delivered as a final because it was too colourful (red glove, purple UI), which is off-brand. v3 reuses its engine.
+- **Sources:** `project/touchscreen_gloves/v3/` (see `BUILD.md`). The audio work dir `project/touchscreen_gloves/work/` is git-ignored and gets regenerated.
+- **Brand decisions in v3:**
+  - No red, orange or purple anywhere.
+  - Fail = metallic gray ✕, success = cyan ✓.
+  - Glove = charcoal knit with a brand-blue cuff.
+  - Phone UI = navy wallpaper with blue, white and navy tiles.
+- **Science flag** (in the README): "the problem is not thickness, it's insulation" is an acceptable simplification. The cross-section is labelled on screen as a magnified illustration with illustrative values.
+- **Possible next step:** a cover for this video. Watch the client's feedback on the caption position (top, like the reference).
 
 ---
 
 ## 7. Known issues / bugs / caveats
 
 1. **No ASR.** Word timing comes from the alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
-2. **Touchscreen video:** in the conductive-glove segment the camera framing sometimes shows only the glowing fingertip dome near the top, and the glove body is cropped. It is cosmetic. Fix it by moving camera key `B` back or lowering `look.y` in `timeline.js` `camAt` for t ≈ 99–107.
+2. **Touchscreen v1** (archived) had a cropped conductive-glove framing. v3 replaces it.
 3. **Tesla 3D car** is a stylised wedge, not Tesla's design. It is labelled illustrative in the README.
 4. **Google Maps video** still uses the older, louder music mix (see 6A) and has no NoMusic version.
 5. Music is synthesized in numpy. The client did not like the hype style. If they want specific music, ask for a track or suggest adding Instagram library audio to the NoMusic version.

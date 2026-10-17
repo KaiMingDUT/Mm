@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>KROZO render</title>
+<style>
+@font-face { font-family: Plex; font-weight: 400; src: url(fonts/plex-400.woff2) format("woff2"); }
+@font-face { font-family: Plex; font-weight: 500; src: url(fonts/plex-500.woff2) format("woff2"); }
+@font-face { font-family: Plex; font-weight: 700; src: url(fonts/plex-700.woff2) format("woff2"); }
+@font-face { font-family: PlexLatin; font-weight: 500; src: url(fonts/plex-latin-500.woff2) format("woff2"); }
+@font-face { font-family: PlexLatin; font-weight: 700; src: url(fonts/plex-latin-700.woff2) format("woff2"); }
+:root {
+  --bg: #080B12; --blue: #168BFF; --cyan: #59C7FF; --ink: #F4F7FB; --gray: #A7B1C2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; background: var(--bg); overflow: hidden; }
+body { font-family: Plex, PlexLatin, sans-serif; color: var(--ink); }
+#stage { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
+canvas#bg { position: absolute; inset: 0; }
+.layer { position: absolute; inset: 0; }
+/* brand bug */
+#bug { position: absolute; top: 96px; left: 0; right: 0; display: flex; justify-content: center; gap: 14px;
+  align-items: center; font-family: PlexLatin; font-weight: 700; letter-spacing: 10px; font-size: 26px;
+  color: var(--gray); direction: ltr; }
+#bug i { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 12px var(--blue); }
+#bug span.t { font-weight: 500; letter-spacing: 6px; font-size: 20px; opacity: .8; }
+/* captions (top) */
+#subs { position: absolute; left: 60px; right: 60px; top: 300px; text-align: center; direction: rtl; }
+#subs .line { display: inline; font-size: 66px; line-height: 1.5; font-weight: 500; }
+#subs .w { position: relative; display: inline-block; margin: 0 6px; color: rgba(167,177,194,.9);
+  text-shadow: 0 3px 20px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.9); }
+#subs .w.now { color: var(--ink); font-weight: 700; }
+#subs .w i { display: none; }
+#subs .w.key { color: var(--ink); font-weight: 700; padding: 0 16px; background: rgba(22,139,255,.22); outline: 2.5px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+#subs .w.key i { display: block; position: absolute; width: 12px; height: 12px; background: var(--cyan); border-radius: 2px; box-shadow: 0 0 10px var(--cyan); }
+#subs .w.key i:nth-child(1) { left: -8px; top: -6px; } #subs .w.key i:nth-child(2) { right: -8px; top: -6px; }
+#subs .w.key i:nth-child(3) { left: -8px; bottom: -6px; } #subs .w.key i:nth-child(4) { right: -8px; bottom: -6px; }
+/* 3D overlays: readings, leader labels, notes */
+#ov { position: absolute; inset: 0; pointer-events: none; }
+#ov .num { position: absolute; transform: translate(-50%,-50%); font-family: PlexLatin; font-weight: 500; font-size: 34px; color: var(--gray); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,.9); }
+#ov .num.on { color: var(--cyan); font-weight: 700; font-size: 42px; text-shadow: 0 0 18px rgba(89,199,255,.8), 0 2px 10px rgba(0,0,0,.9); }
+#ov .num.g { font-size: 30px; background: rgba(8,11,18,.55); padding: 2px 10px; border-radius: 8px; }
+#ov .num.g.on { font-size: 36px; background: rgba(22,139,255,.25); }
+#ov svg.ld { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: visible; }
+#ov svg.ld line { stroke: rgba(244,247,251,.75); stroke-width: 2.5; }
+#ov svg.ld circle { fill: var(--cyan); }
+#ov .tag { position: absolute; transform: translate(-50%,-50%); font-weight: 700; font-size: 38px; color: var(--ink); white-space: nowrap;
+  background: rgba(8,11,18,.82); border: 2px solid rgba(167,177,194,.5); border-radius: 14px; padding: 8px 22px; }
+#ov .tag.hot { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 24px rgba(89,199,255,.35); }
+#ov .tag.warn { border-color: var(--gray); color: var(--ink); }
+#ov .ring { position: absolute; width: 300px; height: 300px; border: 4px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 30px rgba(89,199,255,.6), inset 0 0 30px rgba(89,199,255,.3); }
+#ov .note { position: absolute; left: 60px; bottom: 120px; font-size: 26px; font-weight: 500; color: rgba(167,177,194,.75); }
+/* callouts */
+.badge { display: inline-block; padding: 14px 36px; border-radius: 999px; font-weight: 700; font-size: 50px; background: rgba(8,11,18,.86); box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.badge.yes { color: var(--cyan); border: 2.5px solid var(--cyan); box-shadow: 0 0 34px rgba(89,199,255,.35), 0 10px 40px rgba(0,0,0,.45); }
+.badge.no { color: var(--gray); border: 2.5px solid rgba(167,177,194,.55); }
+.xmark { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 7px solid var(--gray); display: flex; align-items: center; justify-content: center; color: var(--ink); font-size: 66px; font-weight: 700; opacity: 0; background: rgba(8,11,18,.6); }
+.kick { font-size: 40px; font-weight: 700; color: var(--cyan); letter-spacing: 6px; }
+.chip { padding: 10px 26px; border-radius: 16px; background: rgba(8,11,18,.85); border: 2px solid rgba(167,177,194,.5); color: var(--ink); }
+.chip.na { border-color: var(--blue); color: #7fbfff; } .chip.cl { border-color: var(--cyan); color: var(--cyan); }
+.meter { position: absolute; left: 150px; right: 150px; top: 1440px; padding: 26px 34px; border-radius: 26px; background: rgba(8,11,18,.88); border: 2px solid #2A3446; }
+.meter .bar { position: relative; height: 26px; margin-top: 18px; border-radius: 13px; background: #1a2130; }
+.meter .f { position: absolute; right: 0; top: 0; bottom: 0; border-radius: 13px; background: var(--gray); width: 0; }
+.meter .th { position: absolute; right: 62%; top: -10px; bottom: -10px; width: 5px; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+/* progress */
+#prog { position: absolute; left: 0; bottom: 0; height: 6px; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+/* generic text elements used by scenes */
+.kicker { font-weight: 500; color: var(--cyan); font-size: 34px; letter-spacing: 1px; }
+.headline { font-weight: 700; font-size: 92px; line-height: 1.25; color: var(--ink); }
+.sub { font-weight: 400; font-size: 40px; color: var(--gray); line-height: 1.5; }
+.hl { color: var(--blue); }
+.label { position: absolute; font-weight: 500; font-size: 34px; color: var(--ink);
+  background: rgba(8,11,18,.78); border: 1.5px solid rgba(22,139,255,.55); border-radius: 14px; padding: 10px 22px; white-space: nowrap; }
+.label.c { color: var(--cyan); }
+.latin { font-family: PlexLatin; direction: ltr; unicode-bidi: isolate; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <canvas id="gl" width="1080" height="1920" style="position:absolute;inset:0;opacity:0"></canvas>
+  <div id="ov"></div>
+  <div id="scenes" class="layer"></div>
+  <div id="flash" style="position:absolute;inset:0;opacity:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(244,247,251,.9),rgba(89,199,255,.55) 35%,rgba(22,139,255,0) 75%)"></div>
+  <div id="subband" style="position:absolute;left:0;right:0;top:0;height:620px;background:linear-gradient(180deg,rgba(8,11,18,.72),rgba(8,11,18,.45) 55%,rgba(8,11,18,0))"></div>
+  <div id="bug"><span>KROZO</span><i></i><span class="t">BEYOND TECH</span></div>
+  <div id="subs"></div>
+  <div id="prog"></div>
+</div>
+<script src="engine.js"></script>
+<script src="brand.js"></script>
+
+<script src="subs.js"></script>
+<script src="warp.js"></script>
+<script src="timeline.js"></script>
+<script type="importmap">{"imports":{"three":"./lib/three.module.js","three/addons/":"./lib/jsm/"}}</script>
+<script type="module" src="real3d.js"></script>
+</body>
+</html>
