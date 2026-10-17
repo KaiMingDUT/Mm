@@ -22,7 +22,7 @@ def midi(m):
 def env_adsr(n, a, d, s, r):
     e = np.ones(n) * s
     a, d, r = int(a * SR), int(d * SR), int(r * SR)
-    a = max(a, 1)
+    a = max(1, min(a, n // 2)); r = min(r, n // 2)
     e[:a] = np.linspace(0, 1, a)
     if d:
         e[a:a + d] = np.linspace(1, s, len(e[a:a + d]))
