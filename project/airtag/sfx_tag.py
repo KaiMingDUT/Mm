@@ -342,43 +342,92 @@ def loud_voice(d=1.0):
     s *= (.4 + .6 * np.abs(np.sin(2 * np.pi * 5.1 * t))) * np.clip(t / .05, 0, 1) * np.clip((d - t) / .15, 0, 1)
     return lp(s, 3500) / 1.5
 
+# ── extra library (AirTag v2) ──
+def pa_chime():       # airport public-address "ding-dong"
+    out = np.zeros(int(1.6 * SR))
+    for k, f in enumerate((784, 622)):
+        t = tt(1.1); s = sum(np.sin(2 * np.pi * f * m * t) * a for m, a in ((1, 1), (2, .35), (3, .12))) * np.exp(-t * 3.2)
+        o = int(k * .42 * SR); out[o:o + len(s)] += s
+    return out / np.max(np.abs(out))
+def step():           # soft footstep on hard floor
+    t = tt(.16); n = rng.standard_normal(len(t))
+    s = lp(n, 900) * np.exp(-t * 38) + np.sin(2 * np.pi * 70 * t) * np.exp(-t * 30) * .6
+    return s / np.max(np.abs(s))
+def zipper(d=.5):
+    t = tt(d); n = rng.standard_normal(len(t)); teeth = (np.sin(2 * np.pi * (60 + 140 * t / d) * t) > .6).astype(float)
+    s = hp(n, 1500) * (.3 + teeth) * np.clip(t / .03, 0, 1) * np.clip((d - t) / .05, 0, 1)
+    return s / np.max(np.abs(s))
+def flyover(d=3.0):    # jet passing: filtered noise swelling with a falling whine (doppler)
+    t = tt(d); n = rng.standard_normal(len(t)); env = np.exp(-((t - d * .45) / (d * .28)) ** 2)
+    whine = np.sin(2 * np.pi * np.cumsum(1900 - 700 * t / d) / SR) * .12
+    s = (lp(n, 1200) * .8 + whine) * env
+    return s / np.max(np.abs(s))
+def drop(d=1.8, f0=120, f1=32):   # cinematic sub drop
+    t = tt(d); f = f1 + (f0 - f1) * np.exp(-t * 3.5)
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 1.6) * np.clip(t / .01, 0, 1)
+    return s / np.max(np.abs(s))
+def clock(d=2.0, bpm=150):
+    out = np.zeros(int(d * SR)); per = 60 / bpm
+    for k in range(int(d / per)):
+        t = tt(.05); f = 2400 if k % 2 else 1800; s = np.sin(2 * np.pi * f * t) * np.exp(-t * 120)
+        o = int(k * per * SR); out[o:o + len(s)] += s[:len(out) - o]
+    return out
+def chatter(d=1.2):   # data / encryption chatter
+    out = np.zeros(int(d * SR)); k = 0
+    while k * .045 < d - .05:
+        t = tt(.03); f = rng.choice([1200, 1500, 1800, 2400, 3000]); s = np.sign(np.sin(2 * np.pi * f * t)) * np.exp(-t * 60) * .5
+        o = int(k * .045 * SR); out[o:o + len(s)] += s; k += 1
+    return lp(out, 6000)
+def bt_chirp():       # signature "Bluetooth beacon" chirp
+    t = tt(.28); f = 1400 + 1400 * t / .28
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9) * np.clip(t / .005, 0, 1)
+    return s / np.max(np.abs(s))
+def lock_click():
+    return click() * .7 + np.concatenate([np.zeros(int(.06 * SR)), click()])[:len(click())] * 0 + click() * .3
+
 # ── events ──
 VE = 103.0
 SH = [4, 11, 17, 26, 30, 41, 47, 52, 57, 61, 67, 82, 89, 92, 98, 106, 112, 119, 131, 142, 144, 148, 152, 162, 170, 173]
 CUTS = [w(i) - .05 for i in SH]
-ev = [(whoosh(.4, 700, 5200), V(c) - .22, .14, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS)]
-hb = lambda x: [(heartbeat(), V(x), .42, 0), (heartbeat(), V(x + .33), .3, 0)]
+ev = [(whoosh(.4, 700, 5200), V(c) - .22, .13, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS)]
+hb = lambda x, g=.42: [(heartbeat(), V(x), g, 0), (heartbeat(), V(x + .33), g * .72, 0)]
 ev += [
-    (impact(1.4, 46), V(0) + .02, .22, 0),
-    *[(ping(1568, .7), V(.2 + k * 1.1), .07, -.2) for k in range(3)],
-    (shimmer(1.2), V(2.0), .1, .2),
+    # hook: lost bag beaconing in the airport, you walk by
+    (pa_chime(), V(.1), .12, -.2), (impact(1.4, 46), V(0) + .02, .2, 0),
+    *[(bt_chirp(), V(.3 + k * 1.1), .06, -.3) for k in range(4)],
+    *[(step(), V(.2 + k * .55), .09, .15) for k in range(7)],
+    (shimmer(1.2), V(2.2), .1, .2), (riser(.8), V(w(8)) - .8, .08, 0),
     (pop(), V(w(8)), .22, 0), (chime(1760), V(w(8)) + .04, .16, 0),
+    (drop(1.2, 90, 40), V(w(16)) + .25, .2, 0),                                   # beat after "أصلًا!"
     (blip(330, .25, 220), V(w(13)), .14, 0),
-    *[(ping(1320, .6), V(w(17)) + k * 1.0, .06, 0) for k in range(5)], (riser(1.0), V(w(22)), .08, 0),
+    *[(bt_chirp(), V(w(17)) + k * 1.0, .05, 0) for k in range(5)], (riser(1.0), V(w(22)), .08, 0), (whoosh(.8, 300, 3000), V(w(24)), .1, 0),
     (dive(1.0), V(w(26)), .22, 0), *hb(w(29) + .55),
     (scan(1.3), V(w(37)), .14, 0), (ticks(V(w(40)) - V(w(37)) + .3, 16, 1400, 2400), V(w(37)), .08, 0), (stamp(), V(w(40)) + .2, .18, 0),
-    *hb(w(40) + .65), (reverse_swell(1.2), V(w(46)) - 1.2, .16, 0), (impact(1.5, 44), V(w(46)), .3, 0), (shimmer(1.6), V(w(46)) + .02, .16, 0),
-    (whoosh(1.2, 300, 2400), V(w(47)) + .3, .16, 0),
-    (blip(1600, .1), V(w(53)), .14, 0),
-    (thud(.4), V(w(59)) + .2, .22, 0), (click(), V(w(60)) + .4, .2, 0),
-    (scan(1.2), V(w(62)), .12, 0), *[(ping(1568, .7), V(w(63)) + k * .9, .08, 0) for k in range(3)],
-    (whoosh(1.0, 300, 2600), V(w(67)), .2, 0),
-    (glitch(.35), V(w(74)), .18, 0), (thud(.3), V(w(74)), .16, 0),
-    (glitch(.35), V(w(76)) + .1, .18, 0), (thud(.3), V(w(76)) + .1, .16, 0),
-    (glitch(.35), V(w(80)), .18, 0), (thud(.3), V(w(80)), .16, 0),
+    *hb(w(40) + .6, .48), (drop(2.0), V(w(40)) + .45, .2, 0),                         # long question beat
+    (reverse_swell(1.4), V(w(41)) - .9, .14, 0), (drop(1.6, 80, 30), V(w(41)) + .3, .16, 0),   # "السر…"
+    (impact(1.6, 42), V(w(46)), .32, 0), (shimmer(1.8), V(w(46)) + .02, .18, 0), (blast(1.2), V(w(46)) + .02, .05, 0),
+    (whoosh(1.2, 300, 2400), V(w(47)) + .3, .16, 0), (riser(1.0), V(w(51)) + .1, .08, 0),
+    (blip(1600, .1), V(w(53)), .14, 0), (ticks(.6, 6, 2400, 2600), V(w(53)) + .1, .06, 0),
+    (thud(.4), V(w(59)) + .2, .22, 0), (zipper(.55), V(w(60)) + .3, .14, .2), (click(), V(w(60)) + .9, .2, 0),
+    (scan(1.2), V(w(62)), .12, 0), *[(bt_chirp(), V(w(63)) + k * .9, .07, 0) for k in range(3)],
+    (whoosh(1.0, 300, 2600), V(w(67)), .2, 0), (deflate(1.0), V(w(67)) + .3, .06, 0),
+    (glitch(.35), V(w(74)), .2, 0), (thud(.3), V(w(74)), .18, 0),
+    (glitch(.35), V(w(76)) + .1, .2, 0), (thud(.3), V(w(76)) + .1, .18, 0),
+    (glitch(.35), V(w(80)), .2, 0), (thud(.3), V(w(80)), .18, 0), (drop(1.2, 100, 40), V(w(81)) + .4, .16, 0),
     (whoosh(.9, 2000, 400), V(w(83)), .18, 0), (click(), V(w(85)), .2, 0), *hb(w(88) + .6),
-    (dive(1.0), V(w(89)) + .2, .22, 0),
-    *[(ping(1760, .8), V(w(93)) + k * 1.0, .12, 0) for k in range(6)],
-    *[(blip(1200 + 200 * k, .12), V(w(99)) + .8 + k * .45, .1, (k - 2.5) * .25) for k in range(4)],
-    (impact(1.0, 55), V(w(109)), .14, 0),
-    (motor(V(w(118)) - V(w(112)) + .4, 120, 260), V(w(112)), .05, 0), (whoosh(2.4, 200, 1400), V(w(113)), .16, 0),
-    (blip(330, .25, 220), V(w(123)), .14, 0), (static(.8), V(w(126)), .05, 0),
-    (riser(2.4), V(w(142)) - 2.4, .12, 0), *hb(w(141) + .7),
-    (impact(1.3, 50), V(w(142)), .28, 0), (chime(1976), V(w(142)) + .03, .2, 0), (ping(2093, .9), V(w(142)) + .1, .14, 0),
-    (reverse_swell(.9), V(w(146)) - .9, .14, 0), (shimmer(1.8), V(w(146)), .16, 0),
-    *[(ping(1046 + 262 * k, .8), V(w(149)) + k * .15, .08, (k - 1.5) * .3) for k in range(4)],
+    (dive(1.0), V(w(89)) + .2, .22, 0), (reverse_swell(.8), V(w(91)) + .1, .12, 0),
+    *[(bt_chirp(), V(w(93)) + k * 1.0, .14, 0) for k in range(6)],
+    *[(blip(1200 + 200 * k, .12), V(w(99)) + .8 + k * .45, .1, (k - 2.5) * .25) for k in range(4)], (chime(1568), V(w(105)) + .3, .1, 0),
+    (pa_chime(), V(w(106)), .16, 0), *[(step(), V(w(107)) + k * .5, .08, .3) for k in range(8)],
+    (flyover(3.2), V(w(113)), .2, 0), (motor(V(w(118)) - V(w(112)) + .4, 120, 260), V(w(112)), .04, 0),
+    (blip(330, .25, 220), V(w(123)), .14, 0), (static(.8), V(w(126)), .05, 0), (drop(1.4, 90, 35), V(w(130)) + .3, .16, 0),
+    *[(step(), V(w(131)) + k * .55, .09, -.2 + k * .04) for k in range(int((V(w(142)) - V(w(131))) / .55))],
+    (clock(V(w(142)) - V(w(140)), 150), V(w(140)), .06, 0), (riser(2.4), V(w(142)) - 2.4, .12, 0), *hb(w(141) + .3, .5),
+    (impact(1.4, 48), V(w(142)), .3, 0), (bt_chirp(), V(w(142)) + .02, .2, 0), (chime(1976), V(w(142)) + .05, .2, 0), (ping(2093, .9), V(w(142)) + .15, .14, 0),
+    (reverse_swell(1.2), V(w(146)) - 1.2, .16, 0), (shimmer(2.2), V(w(146)), .18, 0), (drop(2.2, 110, 30), V(w(147)) + .4, .16, 0),
+    *[(ping(1046 + 262 * k, .8), V(w(149)) + k * .15, .08, (k - 1.5) * .3) for k in range(4)], (chatter(.6), V(w(150)), .05, 0),
     (stamp(), V(w(155)), .22, 0), (thud(.5), V(w(156)), .22, 0), (blip(1800, .12), V(w(156)) + .1, .12, 0),
-    (ticks(1.0, 14, 1800, 2800), V(w(165)) - .1, .1, 0), (glitch(.35), V(w(165)) + .7, .12, 0), (click(), V(w(166)), .18, 0),
+    (chatter(1.3), V(w(165)) - .2, .1, 0), (glitch(.35), V(w(165)) + .7, .12, 0), (click(), V(w(166)), .2, 0), (thud(.25), V(w(166)) + .03, .14, 0),
     (whoosh(1.2, 500, 4000), V(w(170)), .2, 0), (shimmer(1.2), V(w(172)), .12, 0),
     (pop(), V(w(178)) + .1, .22, 0), (chime(1568), V(w(179)), .2, 0), (ping(1760, 1.0), V(w(179)) + .2, .12, 0),
     (whoosh(1.2, 300, 3000), V(VE) - .2, .2, 0), (impact(1.6, 44), V(VE + .35), .22, 0), (shimmer(2.0), V(VE + .4), .18, 0),

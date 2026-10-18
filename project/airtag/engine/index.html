@@ -24,17 +24,13 @@ canvas#bg { position: absolute; inset: 0; }
   color: var(--gray); direction: ltr; }
 #bug i { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 12px var(--blue); }
 #bug span.t { font-weight: 500; letter-spacing: 6px; font-size: 20px; opacity: .8; }
-/* captions (top) */
-#subs { position: absolute; left: 60px; right: 60px; top: 300px; text-align: center; direction: rtl; }
-#subs .line { display: inline; font-size: 66px; line-height: 1.5; font-weight: 500; }
-#subs .w { position: relative; display: inline-block; margin: 0 6px; color: rgba(167,177,194,.9);
-  text-shadow: 0 3px 20px rgba(0,0,0,.9), 0 0 2px rgba(0,0,0,.9); }
-#subs .w.now { color: var(--ink); font-weight: 700; }
-#subs .w i { display: none; }
-#subs .w.key { color: var(--ink); font-weight: 700; padding: 0 16px; background: rgba(22,139,255,.22); outline: 2.5px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
-#subs .w.key i { display: block; position: absolute; width: 12px; height: 12px; background: var(--cyan); border-radius: 2px; box-shadow: 0 0 10px var(--cyan); }
-#subs .w.key i:nth-child(1) { left: -8px; top: -6px; } #subs .w.key i:nth-child(2) { right: -8px; top: -6px; }
-#subs .w.key i:nth-child(3) { left: -8px; bottom: -6px; } #subs .w.key i:nth-child(4) { right: -8px; bottom: -6px; }
+/* subtitles (classic KROZO style) */
+#subs { position: absolute; left: 90px; right: 90px; top: 1290px; text-align: center; direction: rtl; }
+#subs .line { display: inline; font-size: 58px; line-height: 1.55; font-weight: 700;
+  color: var(--ink); text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9); }
+#subs .w { color: rgba(244,247,251,.5); }
+#subs .w.on { color: var(--ink); }
+#subs .w.now { color: var(--cyan); }
 /* 3D overlays: readings, leader labels, notes */
 #ov { position: absolute; inset: 0; pointer-events: none; }
 #ov .num { position: absolute; transform: translate(-50%,-50%); font-family: PlexLatin; font-weight: 500; font-size: 34px; color: var(--gray); letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,.9); }
@@ -51,7 +47,7 @@ canvas#bg { position: absolute; inset: 0; }
 #ov .ring { position: absolute; width: 300px; height: 300px; border: 4px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 30px rgba(89,199,255,.6), inset 0 0 30px rgba(89,199,255,.3); }
 #ov .note { position: absolute; left: 60px; bottom: 120px; font-size: 26px; font-weight: 500; color: rgba(167,177,194,.75); }
 /* AirTag overlays */
-#ov .km { position: absolute; left: 0; right: 0; top: 1470px; text-align: center; font-size: 76px; font-weight: 700; color: var(--ink); text-shadow: 0 0 30px rgba(22,139,255,.6), 0 4px 18px rgba(0,0,0,.9); }
+#ov .km { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-size: 76px; font-weight: 700; color: var(--ink); text-shadow: 0 0 30px rgba(22,139,255,.6), 0 4px 18px rgba(0,0,0,.9); }
 #ov .km .latin { color: var(--cyan); }
 #ov .dim { position: absolute; height: 0; border-top: 3px solid var(--cyan); text-align: center; }
 #ov .dim::before, #ov .dim::after { content: ''; position: absolute; top: -14px; width: 3px; height: 26px; background: var(--cyan); }
@@ -59,9 +55,9 @@ canvas#bg { position: absolute; inset: 0; }
 #ov .dim span { position: relative; top: 14px; font-size: 44px; font-weight: 700; color: var(--ink); }
 #ov .ticks { position: absolute; left: 190px; right: 190px; top: 1640px; display: flex; justify-content: space-between; }
 #ov .ticks i { width: 22px; height: 22px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 14px var(--cyan); }
-#ov .coord { position: absolute; left: 0; right: 0; top: 1460px; text-align: center; font-size: 46px; font-weight: 700; color: var(--cyan); text-shadow: 0 0 24px rgba(89,199,255,.6), 0 2px 12px rgba(0,0,0,.9); }
+#ov .coord { position: absolute; left: 0; right: 0; top: 320px; text-align: center; font-size: 46px; font-weight: 700; color: var(--cyan); text-shadow: 0 0 24px rgba(89,199,255,.6), 0 2px 12px rgba(0,0,0,.9); }
 #ov .coord small { display: block; font-size: 32px; color: var(--gray); font-weight: 500; margin-top: 8px; }
-#ov .card { position: absolute; left: 110px; right: 110px; top: 1300px; padding: 30px 36px; border-radius: 28px; background: rgba(8,11,18,.9); border: 2px solid var(--blue); box-shadow: 0 0 40px rgba(22,139,255,.35); }
+#ov .card { position: absolute; left: 110px; right: 110px; top: 260px; padding: 30px 36px; border-radius: 28px; background: rgba(8,11,18,.9); border: 2px solid var(--blue); box-shadow: 0 0 40px rgba(22,139,255,.35); }
 #ov .card .ct { font-size: 40px; font-weight: 700; color: var(--ink); }
 #ov .card .cx { font-size: 38px; font-weight: 500; color: var(--cyan); margin-top: 14px; letter-spacing: 2px; text-align: left; }
 #ov .card .cs { font-size: 30px; color: var(--gray); margin-top: 14px; min-height: 40px; }
@@ -97,7 +93,7 @@ canvas#bg { position: absolute; inset: 0; }
   <div id="ov"></div>
   <div id="scenes" class="layer"></div>
   <div id="flash" style="position:absolute;inset:0;opacity:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(244,247,251,.9),rgba(89,199,255,.55) 35%,rgba(22,139,255,0) 75%)"></div>
-  <div id="subband" style="position:absolute;left:0;right:0;top:0;height:620px;background:linear-gradient(180deg,rgba(8,11,18,.72),rgba(8,11,18,.45) 55%,rgba(8,11,18,0))"></div>
+  <div id="subband" style="position:absolute;left:0;right:0;top:1180px;height:480px;background:linear-gradient(180deg,rgba(8,11,18,0),rgba(8,11,18,.62) 35%,rgba(8,11,18,.62) 65%,rgba(8,11,18,0))"></div>
   <div id="bug"><span>KROZO</span><i></i><span class="t">BEYOND TECH</span></div>
   <div id="subs"></div>
   <div id="prog"></div>
