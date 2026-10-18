@@ -171,6 +171,28 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 
 ---
 
+### F. AirTag (DONE, delivered)
+- `output/airtag/KROZO_AirTag_Reel.mp4` + `_NoMusic.mp4`, ≈98.8 s, with the README (scene table + fact-check). Sources live in `project/airtag/`.
+- **Engine:** `engine/tag3d.js` has these stages:
+  - studio: a product env built from soft boxes on a dark background (`ENV.product`), so the glossy AirTag doesn't blow out to white
+  - exploded tag parts
+  - dotted globe: land from `world-atlas` land-50m via `topojson-client` (in `engine/lib`), rasterised to a mask; plus arcs, the network shell and a small jet
+  - holographic airport plan: suitcase, walking hologram people, devices, rings and beams
+  - GPS satellites
+  - Overlays use the same `POST3D` + `ov` pattern as gloves v3. Captions are on top with the keyword box.
+- **Gotchas found:**
+  - In a 9:16 frame a 30° vertical fov is only ~17° wide. Use fov 50–60 for wide stage shots.
+  - Reset the phone rig scale every frame.
+  - Shiny products need a dark env map, not RoomEnvironment.
+  - Close-range SpotLight intensity explodes (inverse-square), so keep the sweep light at ~0.05.
+- **Content notes:**
+  - The script ends without a "follow me" line, so the video closes with the KROZO logo outro only.
+  - London ↔ Riyadh is illustrative; the distance is computed (4,940 km).
+  - No Apple logos. The network is labelled "Find My".
+- **Tools:**
+  - `project/tools/probe.mjs` evaluates a JS expression in the page after `seek(t)`. Use it for debugging.
+  - Render with `project/airtag/render_queue.sh` (resumable, frame-aligned segments).
+
 ## 7. Known issues / bugs / caveats
 
 1. **No ASR.** Word timing comes from the alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
