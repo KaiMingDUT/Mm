@@ -84,12 +84,12 @@ const A5 = shot(w(26) - .05, w(30) - .05, (lt, t) => {
 const a6k = t => sm(w(37), w(40) + .3, t);
 const A6 = shot(w(30) - .05, w(41) - .05, (lt, t) => {
   const r = R(); r.stage('globe', t);
-  faceEarth(38, 20 + lt * 1.2);
+  faceEarth(36, 22 + lt * .8);
   r.arcMesh.visible = true; r.arcM.uniforms.p.value = a6k(t);
   const L = onEarth(r.LON.lat, r.LON.lon, 1.006), Rr = onEarth(r.RUH.lat, r.RUH.lon, 1.006);
   r.glow(L, .12, 0x9fe1ff); r.glow(Rr, .12, 0x59c7ff);
   r.emit(L, t, { R: .12, per: 1, life: 1.4, a: .8 }); r.emit(Rr, t, { R: .12, per: 1, life: 1.4, a: .8, ph: .5 });
-  r.lookCam(v3(0, .35 - lt * .01, 3.7 - lt * .08), v3(0, .45, 0), 30);
+  r.lookCam(v3(0, .25 - lt * .01, 4.6 - lt * .08), v3(.05, .32, 0), 30);
 }, {
   ov: (lt, t) => {
     const r = R(), L = onEarth(r.LON.lat, r.LON.lon, 1.006), Rr = onEarth(r.RUH.lat, r.RUH.lon, 1.006), k = a6k(t);
