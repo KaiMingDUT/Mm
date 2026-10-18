@@ -154,6 +154,12 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - **Science flag** (in the README): "the problem is not thickness, it's insulation" is an acceptable simplification. The cross-section is labelled on screen as a magnified illustration with illustrative values.
 - **Possible next step:** a cover for this video. Watch the client's feedback on the caption position (top, like the reference).
 
+### D. Airplane mode (DONE, delivered)
+- `output/airplane_mode/KROZO_Airplane_Mode_Reel.mp4` + `_NoMusic.mp4` (113.4 s, ~6 Mbps so it fits GitHub's 100 MB limit), cover `.png/.jpg`, `.srt`, README with fact-check (FAA AC 91.21-1C, AC 20-164A, FCC ground-network rule).
+- Made in the style of a client-supplied reference (stylised 3D + HUD chips) but in KROZO identity. Sources in `project/airplane_mode/` (see its `BUILD.md`). New engine `plane3d.js`: KROZO-livery jet, cabin, cockpit, ground towers, hangar, hologram busts, phone with live canvas UI (control centre + airplane toggle), ring/beam pools, glitch/rewind grade. Shots in `timeline.js` (story time), 3D-anchored labels via `shot.after` + `LAB`.
+- Gotcha: the livery canvas uses flipY=false, and the text needs `scale(-1,1)` (upper +z band) / `scale(1,-1)` (lower band). Check both sides with a still before you render.
+- Gotcha: never put `pkill`/`pgrep` patterns in the same command line as `render.mjs`, or they match your own shell (exit 144).
+
 ---
 
 ## 7. Known issues / bugs / caveats
