@@ -1,0 +1,16 @@
+# heavy / regenerable (see BUILD.md)
+engine/lib/
+engine/fonts/
+engine/assets/*.hdr
+engine/test.html
+engine/timeline_test.js
+voice16.wav
+voice_clean.wav
+audio/pre_*.wav
+audio/m_eq.wav
+render/
+voice_timed.wav
+audio/*.wav
+nuclei.json
+voice16c.wav
+engine/assets/Map-COL.jpg.bak
