@@ -9,6 +9,12 @@ KEEP = {  # pause start -> new length: intentional beats
     21.70: 0.35,   # after "ما يقدر يشوفها…"
     32.99: 0.40,   # after "خريطة ثلاثية الأبعاد لوجهك." (reveal beat)
 }
+import wave, numpy as np
+_w = wave.open(P + '/voice_clean.wav'); _sr = _w.getframerate()
+_x = np.frombuffer(_w.readframes(_w.getnframes()), np.int16).reshape(-1, _w.getnchannels())[:, 0].astype(float) / 32768
+def safe_to_cut(a, b, new):   # never cut a 'pause' that still has sound in the part we would remove
+    seg = _x[int((a + new / 2) * _sr):int((b - new / 2) * _sr)]
+    return len(seg) == 0 or 20 * np.log10(np.max(np.abs(seg)) + 1e-9) < -45
 plan = []
 for a, b in ps:
     L = b - a
@@ -19,6 +25,7 @@ for a, b in ps:
         if k: new = k[0]
         elif L > 0.4: new = 0.25
         else: continue
+        if new < L and not safe_to_cut(a, b, new): print(f'  keep {a:.2f} intact (sound inside)'); continue
     plan.append((a, b, new))
 knots = [[0.0, 0.0]]; ts = tv = 0.0
 for a, b, new in plan:
