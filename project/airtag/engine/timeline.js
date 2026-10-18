@@ -313,11 +313,11 @@ window.SHOTS = S;
 // ═════════ DOM callouts (minimal — captions on top carry the words) ═════════
 const T = (s, e, build, update) => ({ s, e, fi: .08, fo: .12, build, update });
 const L = [];
-const low = (html, top = 1480) => big(html, `top:${top}px`);
+const low = (html, top = 330) => big(html, `top:${top}px`);
 const badge = (txt, kind) => `<span class="badge ${kind}">${txt}</span>`;
 L.push(T(w(11) - .05, w(17) - .05, r => { r.appendChild(low(`<div class="a">${badge('ولا إشعار', 'no')}</div>`)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(13))));
 L.push(T(w(67) - .05, w(82) - .05, r => {
-  r.appendChild(low(`<div style="display:flex;justify-content:center;gap:18px"><span class="x1">${badge('<span class="latin">GPS</span> ✕', 'no')}</span><span class="x2">${badge('شريحة ✕', 'no')}</span><span class="x3">${badge('إنترنت ✕', 'no')}</span></div>`, 1520));
+  r.appendChild(low(`<div style="display:flex;justify-content:center;gap:18px"><span class="x1">${badge('<span class="latin">GPS</span> ✕', 'no')}</span><span class="x2">${badge('شريحة ✕', 'no')}</span><span class="x3">${badge('إنترنت ✕', 'no')}</span></div>`, 330));
 }, (r, lt, t) => { popIn(r.querySelector('.x1'), t, w(74)); popIn(r.querySelector('.x2'), t, w(76) + .1); popIn(r.querySelector('.x3'), t, w(80)); }));
 L.push(T(w(92) - .05, w(98) - .05, r => { r.appendChild(low(`<div class="a">${badge('إشارة بلوتوث', 'yes')}</div>`)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(95))));
 L.push(T(w(142) - .05, w(144) - .05, r => { r.appendChild(low(`<div class="a">${badge('✓ التقط الإشارة', 'yes')}</div>`)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(142) + .05)));
