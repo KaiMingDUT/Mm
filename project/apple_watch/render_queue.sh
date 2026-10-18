@@ -2,7 +2,7 @@
 # Resumable render: 16 segments, 4 workers; a segment counts only once its .done marker exists.
 cd "$(dirname "$0")"
 W=../work_watch/seg; mkdir -p $W
-N=16; F=2754   # 91.8 s × 30 fps
+N=16; F=2880   # 96.0 s × 30 fps
 seg() { python3 -c "print(f'{round($F*$1/$N)/30:.6f}')"; }
 run() {
   i=$1; a=$(seg $i); b=$(seg $((i+1)))

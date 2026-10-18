@@ -1,7 +1,8 @@
-import json, sys
+import json, sys, wave
+import numpy as np
 P = sys.argv[1]
 ps = [tuple(map(float, l.split())) for l in open(P + '/pauses_m.txt') if l.strip()]
-KEEP = {  # pause start -> new length: intentional beats
+KEEP = {  # pause start -> new total pause length: intentional beats
     6.96: 0.30,    # after "بدون ما يشوف قلبك أصلًا!"
     11.40: 0.75,   # after "إيش يصير داخل جسمك؟" (question beat + heartbeat)
     19.84: 0.30,   # after "ارتفعت!"
@@ -14,17 +15,39 @@ KEEP = {  # pause start -> new length: intentional beats
     77.76: 0.28,   # after "نمط متكرر … في الضوء."
 }
 END = 96.75
+_w = wave.open(P + '/voice_clean.wav'); _sr = _w.getframerate()
+_x = np.frombuffer(_w.readframes(_w.getnframes()), np.int16).reshape(-1, _w.getnchannels())[:, 0].astype(float) / 32768
+
+
+def quiet_run(a, b, th=-50):
+    """longest stretch inside [a, b] whose 20 ms RMS stays under th dBFS (true silence, not a word tail or a breath)"""
+    n = int(.02 * _sr); seg = _x[int(a * _sr):int(b * _sr)]; seg = seg[:len(seg) // n * n]
+    if not len(seg): return None
+    q = 20 * np.log10(np.sqrt((seg.reshape(-1, n) ** 2).mean(1)) + 1e-9) < th
+    best, cur = (0, 0), None
+    for i, v in enumerate(list(q) + [False]):
+        if v and cur is None: cur = i
+        if not v and cur is not None:
+            if i - cur > best[1] - best[0]: best = (cur, i)
+            cur = None
+    return (a + best[0] * .02, a + best[1] * .02) if best[1] > best[0] else None
+
+
+# Only the silent part of a pause is shortened: drawn-out word endings and breaths are never cut (face_id v3 lesson).
 plan = []
 for a, b in ps:
     L = b - a
-    if a == 0: new = 0.10
-    elif a > END: continue
-    else:
-        k = [v for t, v in KEEP.items() if abs(t - a) < 0.08]
-        if k: new = k[0] if k[0] > L else min(L, k[0])
-        elif L > 0.28: new = 0.18
-        else: continue
-    plan.append((a, b, new))
+    if a > END: continue
+    k = [v for t, v in KEEP.items() if abs(t - a) < 0.08]
+    target = k[0] if k else (0.10 if a == 0 else 0.18)
+    if not k and L <= 0.28 and a > 0: continue
+    q = quiet_run(a, b)
+    if not q: print(f'  keep {a:.2f} intact (no silent stretch)'); continue
+    qa, qb = q; qL = qb - qa
+    newq = max(0.08, target - (L - qL))
+    if target > L: newq = qL + (target - L)          # an intentional beat longer than the pause: add silence
+    if abs(newq - qL) < .03 or (newq < qL and qL < .12) or (newq > qL and target <= L): continue
+    plan.append((qa, qb, newq))
 knots = [[0.0, 0.0]]; ts = tv = 0.0
 for a, b, new in plan:
     tva = tv + (a - ts)
