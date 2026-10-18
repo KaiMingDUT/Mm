@@ -8,11 +8,13 @@ TEMPO = 1.0   # client: keep the original voice speed (v2 used 0.93)
 ps = [tuple(map(float, l.split())) for l in open(P + '/pauses_m.txt') if l.strip()]
 W = json.load(open(P + '/words3.json'))
 _w = wave.open(P + '/voice16.wav'); SR = _w.getframerate(); X = np.frombuffer(_w.readframes(_w.getnframes()), np.int16).astype(float)
-BEATS = {  # word index -> pause after it (s, before tempo)
-    10: .35, 16: .55, 25: .5, 26: .3, 29: .7, 40: 1.0, 41: .55, 46: .6, 51: .75,
-    56: .3, 60: .35, 66: .6, 74: .45, 77: .45, 81: .7, 82: .3, 88: .9, 91: .75,
-    97: .45, 105: .65, 111: .4, 118: .55, 126: .4, 130: .7, 139: .35, 141: 1.25, 143: .7,
-    147: .9, 151: .45, 161: .5, 162: .35, 169: .4, 172: .55,
+BEATS = {  # word index -> pause after it (s). v3: only the essential beats (client: too many pauses)
+    29: .45,    # "كيف يصير هذا؟"
+    40: .8,     # "آلاف الكيلومترات؟" (question beat + heartbeat)
+    46: .45,    # "اسمه AirTag…" (reveal)
+    88: .6,     # "مكان أغراضك؟"
+    141: .9,    # "ممكن جواله … يلتقط الإشارة!" (suspense)
+    147: .55,   # "الفكرة العبقرية…"
 }
 plan = []
 used = set()
@@ -28,7 +30,7 @@ for i, L in BEATS.items():
         plan.append((best, best + .06, L))
 for a, b in ps:
     if a == 0 or a in used or a > 102.8: continue
-    if b - a > .32: plan.append((a, b, .26))
+    if b - a > .28: plan.append((a, b, .18))   # same as the first version
 plan.sort()
 plan = [(0.0, ps[0][1], .10)] + plan if ps[0][0] == 0 else plan
 knots = [[0.0, 0.0]]; ts = tv = 0.0
