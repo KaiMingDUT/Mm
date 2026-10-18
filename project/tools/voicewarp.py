@@ -13,7 +13,10 @@ for (s0, v0), (s1, v1) in zip(K2, K2[1:]):
     if abs(ds - dv) < 1e-4:
         out.append(seg(s0, s1)); continue
     if dv < ds:   # shorten a pause: keep its head and tail, crossfade in the middle
-        h = seg(s0, s0 + dv / 2 + xf / sr); t = seg(s1 - dv / 2 - xf / sr, s1)
+        # exact length: nh + nt - xf == round(dv*sr), so the output never drifts from the warp map
+        n = int(round(dv * sr)); nh = (n + xf) // 2; nt = n + xf - nh
+        a0, b1 = int(round(s0 * sr)), int(round(s1 * sr))
+        h = x[a0:a0 + nh]; t = x[b1 - nt:b1]
         r = np.linspace(1, 0, xf)[:, None]
         mid = h[-xf:] * r + t[:xf] * (1 - r)
         out.append(np.concatenate([h[:-xf], mid, t[xf:]]))
