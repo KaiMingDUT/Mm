@@ -161,9 +161,9 @@ shot(w(87), w(94), (lt, t) => {               // "لأن الصورة مسطّح
 }, { after(lt, t) { label('مسطّحة', v3(0, .13, 0), prog(t, w(89), w(89) + .3), { dy: -120 }); } });
 shot(w(94), w(107), (lt, t) => {              // "لكن ما توريه أي جزء أقرب، وأي جزء أبعد…" — side profiles, depth colour
   const r = R(); const k = ease.inOut(prog(lt, 0, 2));
-  r.lookCam(v3(.46, .05, .12), v3(0, .01, .12), 50, v3(0, 0, 1));
-  r.split([() => { r.head.visible = false; photoOn(t); holdPhone(t); r.autoHeat(); r.print.visible = false; r.printHeat.visible = true; r.heatU.flatC.value = .45; r.photoDots.visible = true; r.dotsU[1].heat.value = 1; r.dotsU[1].flatC.value = .45; r.dotsU[1].size.value = 1.3; },
-           () => { r.photo.visible = false; faceOn(t); holdPhone(t); r.autoHeat(); r.heatU.flatC.value = -1; r.headMesh.material = r.heatM; r.faceDots.visible = true; r.dotsU[0].heat.value = 1; r.dotsU[0].size.value = 1.3; }]);
+  r.lookCam(v3(.12 - .04 * k, .02, .66), v3(0, 0, 0), 30);
+  r.split([() => { r.head.visible = false; photoOn(t); holdPhone(t); r.autoHeat(); r.print.visible = false; r.printHeat.visible = true; r.heatU.flatC.value = .45; r.photoDots.visible = true; r.dotsU[1].heat.value = 1; r.dotsU[1].flatC.value = .45; r.dotsU[1].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = 0; },
+           () => { r.photo.visible = false; faceOn(t); holdPhone(t); r.autoHeat(); r.heatU.flatC.value = -1; r.headMesh.material = r.heatM; r.faceDots.visible = true; r.dotsU[0].heat.value = 1; r.dotsU[0].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = .6; }]);
 });
 // ═════ ending ═════
 shot(w(107), VOICE_END + .5, (lt, t) => {     // "وعشان كذا ما يقدر يتعامل." — the photo is rejected again
