@@ -305,6 +305,7 @@ window.G3 = {
     sh.update(t - sh.s, t, sh);
     const lt = t - sh.s;
     if (sh.after) sh.after(lt, t, sh);
+    for (const k of (window.KICKS || [])) if (t >= k && t < k + .22) { const q = 1 - (t - k) / .22; grade.uniforms.zb.value = Math.max(grade.uniforms.zb.value, .6 * q); cam.position.y += Math.sin((t - k) * 60) * .002 * q; cam.updateMatrixWorld(); }
     if (!sh.noPunch && sh.s > 0) grade.uniforms.zb.value = Math.max(grade.uniforms.zb.value, .9 * Math.max(0, 1 - lt / .16));
     composer.render();
   },

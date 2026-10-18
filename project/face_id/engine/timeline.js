@@ -1,7 +1,7 @@
 // KROZO — "ليه صورتك ما تفتح الآيفون… بس وجهك يفتحه؟"  (story time = original recording)
 const w = i => WT[i];
 const e = i => WE[i];
-const VOICE_END = WE[111] + .05;
+const VOICE_END = WE[91] + .05;
 const sm = (a, b, t) => ease.inOut(prog(t, a, b));
 const R = () => window.R3;
 const v3 = (x, y, z) => R().V(x, y, z);
@@ -41,8 +41,14 @@ const S = [];
 const shot = (s, end, update, o = {}) => { const x = Object.assign({ s, e: end, update }, o); S.push(x); return x; };
 
 // ═════ HOOK: the photo fails ═════
-shot(0, w(5), (lt, t) => {                   // "ليه لو حطيت صورتك قدام الآيفون"
-  const r = R(); const k = ease.out(prog(t, w(2), w(4) + .3));
+shot(0, .78, (lt, t) => {                     // cold open: a flash of the answer (depth map) before the question
+  const r = R(); faceOn(t, { ry: .9 - lt * 1.6 }); holdPhone(t); r.phoneRig.visible = false;
+  r.autoHeat(); r.headMesh.material = r.heatM; r.headWire.visible = true; r.wireM.opacity = .2;
+  r.lookCam(v3(0, .03, .5 - lt * .1), v3(0, .01, 0), 30);
+  r.grade.zb.value = .5 * prog(lt, .55, .78);
+}, { noPunch: true });
+shot(.78, w(5), (lt, t) => {                   // "ليه لو حطيت صورتك قدام الآيفون"
+  const r = R(); const k = ease.out(prog(t, .8, w(4) + .3));
   photoOn(t, { x: .25 * (1 - k), ry: -.4 * (1 - k) }); holdPhone(t); r.setUI({ mode: 'lock', fid: 'idle' });
   r.lookCam(v3(.1 - .01 * lt, .07, .56 - .02 * lt), v3(-.01, .01, .1), 32);
 }, { noPunch: true });
@@ -115,64 +121,37 @@ shot(w(48), w(56), (lt, t) => {               // "ومن هالنقاط، الآ
   const a = -.6 + 1.3 * ease.inOut(prog(lt, 0, w(56) - w(48)));
   r.lookCam(v3(Math.sin(a) * .5, .05, Math.cos(a) * .5), v3(0, .01, 0), 30);
 });
-shot(w(56), w(61), (lt, t) => {               // "يعرف وين عيونك، وين أنفك،"
-  const r = R(); faceOn(t, { ry: .35 }); holdPhone(t); r.phoneRig.visible = false;
-  r.faceDots.visible = true; r.headMesh.visible = false; r.dotsU[0].size.value = 1.5;
-  const L = r.LM, onNose = t > w(59);
-  r.dotsU[0].hi.value.copy(hw(onNose ? L.nose : L.eyeR)); r.dotsU[0].hiR.value = .018;
-  r.lookCam(v3(.05, .03, .42 - lt * .02), v3(0, .02, 0), 30);
-}, { after(lt, t) { const r = R(), L = r.LM; label('عيونك', hw(L.eyeR), prog(t, w(57), w(57) + .25), { dx: -170, dy: -140 }); label('أنفك', hw(L.nose), prog(t, w(59), w(59) + .25), { dx: 170, dy: 120 }); } });
-shot(w(61), w(69), (lt, t) => {               // "وكم كل جزء منها يبعد عن الكاميرا بالضبط." — depth readout
-  const r = R(); faceOn(t, { ry: 0 }); holdPhone(t); r.setUI({ mode: 'lock', fid: 'scan', k: .3 });
-  r.faceDots.visible = true; r.headMesh.visible = false; r.autoHeat(); r.dotsU[0].heat.value = sm(w(63), w(65), t); r.dotsU[0].size.value = 1.5;
-  r.lookCam(v3(.56, .06, .14), v3(0, .01, .14), 48, v3(0, 0, 1));
-}, {
-  after(lt, t) {
-    const r = R(), L = r.LM, s = r.SRC.value, mm = p => Math.round(s.distanceTo(hw(p)) * 1000);
-    label(`<span class="latin">${mm(L.nose)} mm</span>`, hw(L.nose), prog(t, w(65), w(65) + .25), { dx: 120, dy: -160, fs: 34, c: '#F4F7FB' });
-    label(`<span class="latin">${mm(L.eyeR)} mm</span>`, hw(L.eyeR), prog(t, w(65) + .25, w(65) + .5), { dx: 160, dy: -320, fs: 34 });
-    label(`<span class="latin">${mm(L.earR)} mm</span>`, hw(L.earR), prog(t, w(66), w(66) + .25), { dx: -40, dy: -230, fs: 34, c: '#168BFF' });
-  },
-});
-// ═════ building the 3D map ═════
-shot(w(69), w(76), (lt, t) => {               // "ويجمع كل هالمعلومات مع بعض… ويبني عنده" — dots knit into a mesh
+shot(w(56), w(63), (lt, t) => {               // "ويجمع كل هالمعلومات مع بعض… ويبني عنده" — dots knit into a mesh
   const r = R(); faceOn(t, { ry: -.3 + lt * .12 }); r.faceDots.visible = true; r.headMesh.visible = false;
-  r.autoHeat(); r.dotsU[0].heat.value = 1; r.dotsU[0].a.value = 1 - .6 * sm(w(72), w(75), t);
-  r.headWire.visible = true; r.wireM.opacity = .45 * sm(w(70), w(74), t);
+  r.autoHeat(); r.dotsU[0].heat.value = 1; r.dotsU[0].a.value = 1 - .6 * sm(w(59), w(62), t);
+  r.headWire.visible = true; r.wireM.opacity = .45 * sm(w(57), w(61), t);
   r.lookCam(v3(.12, .04, .46 - lt * .015), v3(0, .01, 0), 30);
 });
-shot(w(76), e(79) + .4, (lt, t) => {          // "خريطة ثلاثية الأبعاد لوجهك." — the depth map
-  const r = R(); faceOn(t, { ry: -.6 + 1.2 * ease.inOut(prog(lt, 0, e(79) + .4 - w(76))) }); holdPhone(t); r.phoneRig.visible = false;
-  r.autoHeat(); r.headMesh.material = r.heatM; r.heatU.k.value = sm(w(76), w(77), t); r.headWire.visible = true; r.wireM.opacity = .15;
+shot(w(63), e(66) + .4, (lt, t) => {          // "خريطة ثلاثية الأبعاد لوجهك." — the depth map
+  const r = R(); faceOn(t, { ry: -.6 + 1.2 * ease.inOut(prog(lt, 0, e(66) + .4 - w(63))) }); holdPhone(t); r.phoneRig.visible = false;
+  r.autoHeat(); r.headMesh.material = r.heatM; r.heatU.k.value = sm(w(63), w(64), t); r.headWire.visible = true; r.wireM.opacity = .15;
   r.lookCam(v3(0, .03, .55), v3(0, .01, 0), 30);
-  r.grade.flash.value = .35 * Math.max(0, 1 - Math.abs(t - w(78)) / .2) * (t > w(78) - .05 ? 1 : 0);
+  r.grade.flash.value = .35 * Math.max(0, 1 - Math.abs(t - w(65)) / .2) * (t > w(65) - .05 ? 1 : 0);
 });
 // ═════ photo vs face ═════
-shot(e(79) + .4, w(87), (lt, t) => {          // "وهنا يبين الفرق بين الصورة ووجهك الحقيقي…"
+shot(e(66) + .4, w(74), (lt, t) => {          // "وهنا يبين الفرق بين الصورة ووجهك الحقيقي…"
   const r = R(); r.lookCam(v3(0, .015, .6), v3(0, 0, 0), 30);
   r.split([() => { r.head.visible = false; photoOn(t); holdPhone(t); r.phoneRig.visible = false; r.photoDots.visible = true; r.dotsU[1].size.value = 1.4; },
            () => { r.photo.visible = false; faceOn(t, { ry: -.15 }); holdPhone(t); r.phoneRig.visible = false; r.faceDots.visible = true; r.dotsU[0].size.value = 1.4; }]);
 });
-shot(w(87), w(94), (lt, t) => {               // "لأن الصورة مسطّحة، تورّيه شكل وجهك بس،" — orbit the photo to its edge
+shot(w(74), w(81), (lt, t) => {               // "لأن الصورة مسطّحة، تورّيه شكل وجهك بس،" — orbit the photo to its edge
   const r = R(); photoOn(t); holdPhone(t); r.photoDots.visible = true; r.dotsU[1].size.value = 1.5;
-  const a = 1.45 * ease.inOut(prog(t, w(88), w(90) + .3));
+  const a = 1.45 * ease.inOut(prog(t, w(75), w(77) + .3));
   r.lookCam(v3(Math.sin(a) * .5, .04, Math.cos(a) * .5), v3(0, 0, .02), 30);
-  r.autoHeat(); r.dotsU[1].heat.value = sm(w(90), w(91), t); r.dotsU[1].flatC.value = .45;
-}, { after(lt, t) { label('مسطّحة', v3(0, .13, 0), prog(t, w(89), w(89) + .3), { dy: -120 }); } });
-shot(w(94), w(107), (lt, t) => {              // "لكن ما توريه أي جزء أقرب، وأي جزء أبعد…" — side profiles, depth colour
+  r.autoHeat(); r.dotsU[1].heat.value = sm(w(77), w(78), t); r.dotsU[1].flatC.value = .45;
+}, { after(lt, t) { label('مسطّحة', v3(0, .13, 0), prog(t, w(76), w(76) + .3), { dy: -120 }); } });
+shot(w(81), VOICE_END + .9, (lt, t) => {      // "لكن ما توريه أي جزء أقرب، وأي جزء أبعد." — depth colour: face gradient | photo flat, then ✕ | ✓
   const r = R(); const k = ease.inOut(prog(lt, 0, 2));
   r.lookCam(v3(.12 - .04 * k, .02, .66), v3(0, 0, 0), 30);
   r.split([() => { r.head.visible = false; photoOn(t); holdPhone(t); r.autoHeat(); r.print.visible = false; r.printHeat.visible = true; r.heatU.flatC.value = .45; r.photoDots.visible = true; r.dotsU[1].heat.value = 1; r.dotsU[1].flatC.value = .45; r.dotsU[1].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = 0; },
            () => { r.photo.visible = false; faceOn(t); holdPhone(t); r.autoHeat(); r.heatU.flatC.value = -1; r.headMesh.material = r.heatM; r.faceDots.visible = true; r.dotsU[0].heat.value = 1; r.dotsU[0].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = .6; }]);
 });
 // ═════ ending ═════
-shot(w(107), VOICE_END + .5, (lt, t) => {     // "وعشان كذا ما يقدر يتعامل." — the photo is rejected again
-  const r = R(); photoOn(t); holdPhone(t);
-  const sk = Math.sin(lt * 50) * Math.max(0, 1 - lt / .5);
-  r.setUI({ mode: 'lock', fid: 'fail', shake: +sk.toFixed(2) });
-  screenCam(t, .6 + .4 * ease.inOut(prog(lt, 0, 1.5)));
-  r.grade.flashCol.value.set(1, .3, .25); r.grade.flash.value = .2 * Math.max(0, 1 - lt / .3);
-});
 window.SHOTS = S;
 
 // ───────── DOM text layers ─────────
@@ -193,11 +172,9 @@ function splitCaps(s, end, left, right) {
     build(root) { root.appendChild(el(`<div style="position:absolute;left:0;right:0;top:1120px;display:flex;justify-content:space-around;font-weight:700;font-size:46px;color:${C.ink};${SH}"><span style="width:50%;text-align:center">${right}</span><span style="width:50%;text-align:center">${left}</span></div>`)); },
     update() {} });
 }
-chip(.2, w(5), 'PHOTO · FACE ID', C.cyan);
+chip(.8, w(5), 'PHOTO · FACE ID', C.cyan);
 chip(w(5), w(8), 'FACE NOT RECOGNIZED', K.red);
 chip(w(8), w(13), 'REAL FACE · FACE ID', K.green);
-headline(w(7) - .05, w(8), `<span style="font-size:150px;color:${K.red}">✕</span>`, { top: 240 });
-headline(w(12) - .05, w(13), `<span style="font-size:150px;color:${K.green}">✓</span>`, { top: 240 });
 splitCaps(w(13), e(20) + .55, 'صورة', 'وجه حقيقي');
 headline(w(16) - .05, w(18), `نفس الوجه <span style="color:${C.cyan}">=</span>`, { fs: 96, top: 300 });
 headline(w(19), e(20) + .55, `<span style="font-size:200px;color:${C.cyan}">؟</span>`, { top: 240 });
@@ -207,23 +184,29 @@ chip(w(31), w(44), 'TRUEDEPTH CAMERA', C.cyan);
 headline(w(39) - .05, w(44), '', { top: 290, upd(n, lt, t) { const k = ease.out(prog(t, w(39), w(43))); n.innerHTML = `<span class="latin" style="font-size:150px;color:${C.cyan}">+${(Math.round(k * 30000)).toLocaleString('en-US')}</span><br><span style="font-size:52px;color:${C.gray}">نقطة أشعة تحت حمراء</span>`; } });
 chip(w(44), w(48), 'INFRARED · INVISIBLE', C.cyan);
 splitCaps(w(44), w(48), 'عينك', 'كاميرا IR');
-chip(w(48), w(69), 'DEPTH SENSING', C.blue);
-chip(w(69), e(79) + .4, '3D DEPTH MAP', C.cyan);
-headline(w(77) - .05, e(79) + .4, `خريطة <span style="color:${C.cyan}">ثلاثية الأبعاد</span>`, { fs: 84, top: 300 });
-chip(e(79) + .4, w(107), 'PHOTO vs FACE', C.cyan);
-splitCaps(e(79) + .4, w(87), 'صورة', 'وجه حقيقي');
-headline(w(89), w(94), `<span style="color:${C.gray}">الصورة</span> مسطّحة`, { fs: 88, top: 300 });
-splitCaps(w(94), w(107), 'صورة: كلها نفس البُعد', 'وجه: أقرب وأبعد');
-headline(w(101) - .05, w(107), `<span style="color:#F4F7FB">أقرب</span> <span style="color:${C.gray}">↔</span> <span style="color:${C.blue}">أبعد</span>`, { fs: 84, top: 300 });
-chip(w(107), VOICE_END + .4, 'FACE NOT RECOGNIZED', K.red);
-headline(w(110) - .05, VOICE_END + .4, `<span style="font-size:150px;color:${K.red}">✕</span>`, { top: 240 });
-L.push(outroScene(VOICE_END + .5, VOICE_END + 3.2));
+chip(w(48), w(56), 'DEPTH SENSING', C.blue);
+chip(w(56), e(66) + .4, '3D DEPTH MAP', C.cyan);
+headline(w(64) - .05, e(66) + .4, `خريطة <span style="color:${C.cyan}">ثلاثية الأبعاد</span>`, { fs: 84, top: 300 });
+chip(e(66) + .4, VOICE_END + .9, 'PHOTO vs FACE', C.cyan);
+splitCaps(e(66) + .4, w(74), 'صورة', 'وجه حقيقي');
+headline(w(76), w(81), `<span style="color:${C.gray}">الصورة</span> مسطّحة`, { fs: 88, top: 300 });
+splitCaps(w(81), e(91) + .1, 'صورة: كلها نفس البُعد', 'وجه: أقرب وأبعد');
+headline(w(88) - .05, e(91) + .1, `<span style="color:#F4F7FB">أقرب</span> <span style="color:${C.gray}">↔</span> <span style="color:${C.blue}">أبعد</span>`, { fs: 84, top: 300 });
+// payoff: photo ✕ | face ✓ over the split
+L.push({ s: e(91) + .1, e: VOICE_END + .9, fi: .05, fo: .2,
+  build(root) { root.appendChild(el(`<div style="position:absolute;left:0;right:0;top:520px;display:flex;justify-content:space-around;${SH}"><span class="ok" style="width:50%;text-align:center;font-size:230px;font-weight:700;color:${K.green}">✓</span><span class="no" style="width:50%;text-align:center;font-size:230px;font-weight:700;color:${K.red}">✕</span></div>`)); },
+  update(root, lt) { const a = ease.back(prog(lt, 0, .3)), b = ease.back(prog(lt, .15, .45));
+    root.querySelector('.no').style.transform = `scale(${a})`; root.querySelector('.ok').style.transform = `scale(${b})`; } });
+// hook title (first seconds): the question in big type
+headline(.8, w(5), `صورتك <span style="color:${K.red}">✕</span>&nbsp;&nbsp;وجهك <span style="color:${K.green}">✓</span><br><span style="font-size:60px;color:${C.gray}">ليه؟!</span>`, { fs: 92, top: 300 });
+L.push(outroScene(VOICE_END + .9, VOICE_END + 2.9));
 L.sort((a, b) => a.s - b.s);
 
+window.KICKS = [w(7), w(12), w(16), w(39), w(65), w(76), e(91) + .1];
 window.TL = {
   voiceEnd: VOICE_END,
   lead: 0.15,
-  flashes: [w(78)],
+  flashes: [w(65), e(91) + .1],
   remap: tv => {
     let i = 0; while (i < WARP.length - 2 && tv > WARP[i + 1][1]) i++;
     const [s0, v0] = WARP[i], [s1, v1] = WARP[i + 1];
@@ -233,4 +216,5 @@ window.TL = {
   bug: t => (t < .6 ? 0 : 1) * (1 - prog(t, VOICE_END + .3, VOICE_END + .6)),
   subs: SUBS,
   scenes: L,
+  kicks: [w(7), w(12), w(16), w(39), w(65), w(76), e(91) + .1],
 };
