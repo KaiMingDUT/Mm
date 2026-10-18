@@ -6,7 +6,9 @@ P=[tuple(map(float,l.split())) for l in open(S+'/pauses_m.txt') if l.strip()]
 big=[p for p in P if p[1]-p[0]>=0.25]
 # speech chunks between big pauses
 ch=[];prev=big[0][1]
-for a,b in big[1:]: ch.append((prev,a));prev=b
+for a,b in big[1:]:
+    if a-prev<0.15 and ch is not None: prev=b; continue   # breath/click between two pauses: not speech
+    ch.append((prev,a));prev=b
 if prev<END-0.2: ch.append((prev,END))
 pass
 chn=[[x for x in nu if a-.05<=x<=b+.05] for a,b in ch]
@@ -21,7 +23,8 @@ M=len(words);K=len(ch);INF=1e18
 R=float(sys.argv[3]) if len(sys.argv)>3 else 0.845
 def cost(i,j,k):
     s=sum(w['syl'] for w in words[i:j]);n=len(chn[k])
-    return (R*s-n)**2/(0.25*n+2)+words[j-1]['pen']
+    inner=sum(1.4 for w in words[i:j-1] if w['w'][-1] in '،.!؟…:')   # punctuation should end a chunk
+    return (R*s-n)**2/(0.25*n+2)+words[j-1]['pen']+inner
 dp=[[INF]*(M+1) for _ in range(K+1)];bk=[[0]*(M+1) for _ in range(K+1)]
 dp[0][0]=0
 for k in range(K):
