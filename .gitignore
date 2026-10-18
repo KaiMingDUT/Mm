@@ -6,3 +6,6 @@ project/*/engine/lib/
 project/*/engine/fonts/
 project/airtag/audio/
 project/airtag/*.wav
+project/apple_watch/audio/
+project/apple_watch/*.wav
+project/work_watch/
