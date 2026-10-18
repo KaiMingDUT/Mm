@@ -110,7 +110,7 @@ const XS = (() => {
     const t = o.t, c = o.cam || { x: 540, y: 1100, s: 1 };
     g.save(); g.clearRect(0, 0, W, H);
     g.fillStyle = '#080B12'; g.fillRect(0, 0, W, H);
-    g.translate(540, 1100); g.scale(c.s, c.s); g.translate(-c.x, -c.y);
+    g.translate(540, 900); g.scale(c.s, c.s); g.translate(-c.x, -c.y);
     g.drawImage(base, 0, 0);
     const sw = o.pulse ?? 0, vr = VR * (1 + .42 * sw), top = VY - vr;
     // capillary loops
@@ -156,6 +156,6 @@ const XS = (() => {
     return pdHit;
   }
   // map a point in section space to the screen for a camera
-  const pt = (x, y, c = { x: 540, y: 1100, s: 1 }) => [540 + (x - c.x) * c.s, 1100 + (y - c.y) * c.s];
+  const pt = (x, y, c = { x: 540, y: 1100, s: 1 }) => [540 + (x - c.x) * c.s, 900 + (y - c.y) * c.s];
   return { draw, pt, SK, EP, VY, VR, FT, LED, PD, dome };
 })();

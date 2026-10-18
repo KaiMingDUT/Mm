@@ -241,7 +241,7 @@ const X5 = X(w(104) - .05, w(116) - .05, (lt, t) => ({ cam: camL({ x: 540, y: 11
   (lt, t) => meter(.35 + .55 * (1 - pulse(t)), sm(w(107), w(107) + .3, t)) + `<div class="note">التمدد مبالغ فيه للتوضيح</div>`);
 // X6: "لما تتغيّر كمية الدم… تتغيّر كمية الضوء اللي ترجع" — manual swell: more blood → less light back
 const sw6 = t => sm(w(135), w(137), t) * (1 - sm(w(147) + .1, w(148) + .2, t));
-const X6 = X(w(129) - .05, w(150) - .05, (lt, t) => ({ cam: camL({ x: 540, y: 1240, s: 1.45 }, { x: 540, y: 1080, s: 1.02 }, sm(w(142), w(143) + .2, t)), rays: { g: 1 }, pulse: sw6(t), absorbK: .25 }),
+const X6 = X(w(129) - .05, w(150) - .05, (lt, t) => ({ cam: camL({ x: 540, y: 1150, s: 1.3 }, { x: 540, y: 1080, s: 1.02 }, sm(w(142), w(143) + .2, t)), rays: { g: 1 }, pulse: sw6(t), absorbK: .25 }),
   (lt, t, c) => {
     const s = sw6(t), more = s > .5;
     return xTag(more ? 'دم أكثر' : 'دم أقل', 300, XS.VY, c, 60, 260, sm(w(136), w(136) + .3, t) * (1 - sm(w(142), w(142) + .2, t)) + sm(w(148), w(148) + .3, t) * 0, 'hot') +
@@ -265,9 +265,9 @@ const W1 = {
       let lo = t - 3.4, hi = t; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (phase(m) < p + .13) lo = m; else hi = m; } if (phase(hi) >= p + .13 && hi <= t) pk.push([hi, p]); }
     const cnt = Math.max(0, Math.floor(phase(t) - phase(w(170)))), c2 = sm(w(176), w(180), t);
     const x = tt => 80 + (1 - (t - tt) / 3.4) * 920;
-    let marks = ''; for (const [tt, p] of pk) { if (tt < w(170)) continue; const n = Math.floor(p + .13 - phase(w(170))) + 1; if (n < 1) continue; marks += `<div class="pk" style="left:${x(tt)}px;top:${1040 - 330 * .9 * .85 - 70}px">${n}</div>`; }
+    let marks = ''; for (const [tt, p] of pk) { if (tt < w(170)) continue; const n = Math.floor(p + .13 - phase(w(170))) + 1; if (n < 1) continue; marks += `<div class="pk" style="left:${x(tt)}px;top:${1090 - 330 * .9 * .85 - 70}px">${n}</div>`; }
     const sec = Math.min(60, prog(t, w(176), w(180)) * 60);
-    root.firstChild.innerHTML = `<svg width="1080" height="1920" style="position:absolute;inset:0"><line x1="60" y1="1060" x2="1020" y2="1060" stroke="rgba(167,177,194,.25)" stroke-width="2"/>${ppgSVG(t, 80, 1000, 700, 360, 3.4)}</svg>${marks}
+    root.firstChild.innerHTML = `<svg width="1080" height="1920" style="position:absolute;inset:0"><line x1="60" y1="1110" x2="1020" y2="1110" stroke="rgba(167,177,194,.25)" stroke-width="2"/>${ppgSVG(t, 80, 1000, 750, 360, 3.4)}</svg>${marks}
       <div class="cnt" style="opacity:${1 - c2}"><b class="latin">${Math.max(0, cnt)}</b><small>نبضة</small></div>
       <div class="rate" style="opacity:${c2}"><div class="timer"><div style="width:${sec / 60 * 100}%"></div></div><div class="tl"><span class="latin">${Math.round(sec)}</span> ثانية</div><b class="latin">${Math.round(lerp(0, 72, ease.out(c2)))}</b><small>نبضة في الدقيقة</small></div>
       <div class="note">رسم توضيحي</div>`;
@@ -290,9 +290,9 @@ for (const x of [X1, X2, X3, X4, X5, X6, X7, W1, X8]) L.push(x);
 
 // DOM callouts
 const badge = (txt, kind) => `<span class="badge ${kind}">${txt}</span>`;
-const low = (html, top = 1500) => big(html, `top:${top}px`);
+const low = (html, top = 1580) => big(html, `top:${top}px`);
 L.push(T(w(126) - .05, w(129) + .2, r => { r.appendChild(low(`<div class="a">${badge('بالضوء ✓', 'yes')}</div>`)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(128))));
-L.push(T(w(48) - .05, w(60) - .05, r => { r.appendChild(low(`<div class="a" style="font-size:150px;font-weight:700;color:#59C7FF;text-shadow:0 0 40px rgba(89,199,255,.6)">؟</div>`, 1380)); }, (r, lt, t) => { popIn(r.querySelector('.a'), t, w(59) + .3, .35); }));
+L.push(T(w(48) - .05, w(60) - .05, r => { r.appendChild(low(`<div class="a" style="font-size:150px;font-weight:700;color:#59C7FF;text-shadow:0 0 40px rgba(89,199,255,.6)">؟</div>`, 330)); }, (r, lt, t) => { popIn(r.querySelector('.a'), t, w(59) + .3, .35); }));
 const outro = outroScene(VOICE_END + .05, VOICE_END + 2.55);
 L.push(outro);
 
