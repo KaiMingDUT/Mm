@@ -1,7 +1,7 @@
 // KROZO — "ليه صورتك ما تفتح الآيفون… بس وجهك يفتحه؟"  (story time = original recording)
 const w = i => WT[i];
 const e = i => WE[i];
-const VOICE_END = WE[91] + .05;
+const VOICE_END = WE[99] + .05;
 const sm = (a, b, t) => ease.inOut(prog(t, a, b));
 const R = () => window.R3;
 const v3 = (x, y, z) => R().V(x, y, z);
@@ -33,7 +33,7 @@ const PHONE = () => v3(0, .035, .3);
 const holdPhone = (t, tilt = 0) => R().phoneAt(PHONE().add(v3(noise(t, .7) * .002, noise(t + 3, .6) * .002, 0)), -.05 + tilt, Math.PI, 0);
 const hw = p => R().head.localToWorld(p.clone());
 function faceOn(t, o = {}) { const r = R(); r.head.visible = true; r.head.rotation.y = o.ry ?? 0; r.head.position.set(o.x ?? 0, 0, 0); r.head.updateMatrixWorld(true); }
-function photoOn(t, o = {}) { const r = R(); r.photo.visible = true; r.photo.position.set(o.x ?? 0, (o.y ?? 0) + noise(t, .9) * .002, o.z ?? 0); r.photo.rotation.set(noise(t + 1, .8) * .02, (o.ry ?? 0) + noise(t + 2, .7) * .03, noise(t, .5) * .01); r.photo.updateMatrixWorld(true); }
+function photoOn(t, o = {}) { const r = R(), j = o.still ? 0 : 1; r.photo.visible = true; r.photo.position.set(o.x ?? 0, (o.y ?? 0) + noise(t, .9) * .002 * j, o.z ?? 0); r.photo.rotation.set(noise(t + 1, .8) * .02 * j, (o.ry ?? 0) + noise(t + 2, .7) * .03 * j, noise(t, .5) * .01 * j); r.photo.updateMatrixWorld(true); }
 // camera that looks at the phone screen from behind the face/photo (over the shoulder)
 function screenCam(t, k = 0, fov = 34) { const r = R(), p = r.phonePt(.5, .56); r.lookCam(lerpV(v3(.12, .09, .02), v3(.05, .06, .09), k), p, fov); }
 
@@ -73,14 +73,14 @@ shot(w(8), w(13), (lt, t) => {               // "بس لو حطيت وجهك… 
 shot(w(13), w(18), (lt, t) => {              // "مع إن الاثنين نفس الوجه…" — split: photo | face
   const r = R(); const k = lt / (w(18) - w(13));
   r.lookCam(v3(0, .015, .62 - .05 * k), v3(0, 0, 0), 30);
-  r.split([() => { r.head.visible = false; photoOn(t); }, () => { r.photo.visible = false; faceOn(t, { ry: -.15 * k }); }]);
+  r.split([() => { r.head.visible = false; photoOn(t, { still: 1 }); }, () => { r.photo.visible = false; faceOn(t, { ry: -.12 }); }]);
 });
 shot(w(18), e(20) + .55, (lt, t) => {        // "طيب وش الفرق؟" — slow push + heartbeat
   const r = R(); const k = lt / (e(20) + .55 - w(18));
   r.lookCam(v3(0, .02, .55 - .1 * k), v3(0, .01, 0), 30);
-  r.split([() => { r.head.visible = false; photoOn(t); }, () => { r.photo.visible = false; faceOn(t, { ry: -.15 }); }]);
-  const hb = [e(20) + .05, e(20) + .38]; let p = 0; for (const h of hb) if (t > h) p = Math.max(p, 1 - prog(t, h, h + .25));
-  r.grade.vig.value = .5 + .35 * p; r.grade.zb.value = .25 * p;
+  r.split([() => { r.head.visible = false; photoOn(t, { still: 1 }); }, () => { r.photo.visible = false; faceOn(t, { ry: -.12 }); }]);
+  const hb = [e(20) + .05, e(20) + .38]; let p = 0; for (const h of hb) if (t > h) p = Math.max(p, 1 - prog(t, h, h + .3));
+  r.grade.vig.value = .5 + .15 * p;
 });
 // ═════ not just the picture ═════
 shot(e(20) + .55, w(31), (lt, t) => {        // "الفرق إن Face ID ما يكتفي إنه يشوف ملامح وجهك."
@@ -145,13 +145,24 @@ shot(w(74), w(81), (lt, t) => {               // "لأن الصورة مسطّح
   r.lookCam(v3(Math.sin(a) * .5, .04, Math.cos(a) * .5), v3(0, 0, .02), 30);
   r.autoHeat(); r.dotsU[1].heat.value = sm(w(77), w(78), t); r.dotsU[1].flatC.value = .45;
 }, { after(lt, t) { label('مسطّحة', v3(0, .13, 0), prog(t, w(76), w(76) + .3), { dy: -120 }); } });
-shot(w(81), VOICE_END + .9, (lt, t) => {      // "لكن ما توريه أي جزء أقرب، وأي جزء أبعد." — depth colour: face gradient | photo flat, then ✕ | ✓
+shot(w(81), w(92) - .05, (lt, t) => {      // "لكن ما توريه أي جزء أقرب، وأي جزء أبعد." — depth colour: face gradient | photo flat, then ✕ | ✓
   const r = R(); const k = ease.inOut(prog(lt, 0, 2));
   r.lookCam(v3(.12 - .04 * k, .02, .66), v3(0, 0, 0), 30);
   r.split([() => { r.head.visible = false; photoOn(t); holdPhone(t); r.autoHeat(); r.print.visible = false; r.printHeat.visible = true; r.heatU.flatC.value = .45; r.photoDots.visible = true; r.dotsU[1].heat.value = 1; r.dotsU[1].flatC.value = .45; r.dotsU[1].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = 0; },
            () => { r.photo.visible = false; faceOn(t); holdPhone(t); r.autoHeat(); r.heatU.flatC.value = -1; r.headMesh.material = r.heatM; r.faceDots.visible = true; r.dotsU[0].heat.value = 1; r.dotsU[0].size.value = 1.3; r.phoneRig.visible = false; r.heatU.bands.value = .6; }]);
 });
 // ═════ ending ═════
+shot(w(92) - .05, w(98) - .05, (lt, t) => {   // "وعشان كذا ما يقدر يتعامل معها" — the photo, rejected once more
+  const r = R(); photoOn(t); holdPhone(t);
+  const f = t > w(95), sk = f ? Math.sin((t - w(95)) * 50) * Math.max(0, 1 - (t - w(95)) / .45) : 0;
+  r.setUI({ mode: 'lock', fid: f ? 'fail' : 'scan', k: +(lt * 1.6 % 1).toFixed(2), shake: +sk.toFixed(2) });
+  screenCam(t, .3 + .5 * ease.inOut(prog(lt, 0, 1.6)));
+  r.grade.flashCol.value.set(1, .3, .25); r.grade.flash.value = f ? .2 * Math.max(0, 1 - (t - w(95)) / .3) : 0;
+});
+shot(w(98) - .05, VOICE_END + .9, (lt, t) => {   // "كوجه حقيقي." — photo ✕ | real face ✓
+  const r = R(); r.lookCam(v3(0, .015, .62 - .03 * lt), v3(0, 0, 0), 30);
+  r.split([() => { r.head.visible = false; photoOn(t, { still: 1 }); }, () => { r.photo.visible = false; faceOn(t, { ry: -.12 }); holdPhone(t); r.phoneRig.visible = false; r.autoHeat(); r.headMesh.material = r.heatM; r.heatU.k.value = sm(w(98), w(99), t); r.headWire.visible = true; r.wireM.opacity = .15; }]);
+});
 window.SHOTS = S;
 
 // ───────── DOM text layers ─────────
@@ -187,13 +198,16 @@ splitCaps(w(44), w(48), 'عينك', 'كاميرا IR');
 chip(w(48), w(56), 'DEPTH SENSING', C.blue);
 chip(w(56), e(66) + .4, '3D DEPTH MAP', C.cyan);
 headline(w(64) - .05, e(66) + .4, `خريطة <span style="color:${C.cyan}">ثلاثية الأبعاد</span>`, { fs: 84, top: 300 });
-chip(e(66) + .4, VOICE_END + .9, 'PHOTO vs FACE', C.cyan);
+chip(e(66) + .4, w(92) - .05, 'PHOTO vs FACE', C.cyan);
+chip(w(92) - .05, w(98) - .05, 'FACE NOT RECOGNIZED', K.red);
+chip(w(98) - .05, VOICE_END + .9, 'PHOTO ✕ · FACE ✓', C.cyan);
+splitCaps(w(98) - .05, VOICE_END + .9, 'صورة', 'وجه حقيقي');
 splitCaps(e(66) + .4, w(74), 'صورة', 'وجه حقيقي');
 headline(w(76), w(81), `<span style="color:${C.gray}">الصورة</span> مسطّحة`, { fs: 88, top: 300 });
-splitCaps(w(81), e(91) + .1, 'صورة: كلها نفس البُعد', 'وجه: أقرب وأبعد');
-headline(w(88) - .05, e(91) + .1, `<span style="color:#F4F7FB">أقرب</span> <span style="color:${C.gray}">↔</span> <span style="color:${C.blue}">أبعد</span>`, { fs: 84, top: 300 });
+splitCaps(w(81), w(92) - .05, 'صورة: كلها نفس البُعد', 'وجه: أقرب وأبعد');
+headline(w(88) - .05, w(92) - .05, `<span style="color:#F4F7FB">أقرب</span> <span style="color:${C.gray}">↔</span> <span style="color:${C.blue}">أبعد</span>`, { fs: 84, top: 300 });
 // payoff: photo ✕ | face ✓ over the split
-L.push({ s: e(91) + .1, e: VOICE_END + .9, fi: .05, fo: .2,
+L.push({ s: w(98), e: VOICE_END + .9, fi: .05, fo: .2,
   build(root) { root.appendChild(el(`<div style="position:absolute;left:0;right:0;top:520px;display:flex;justify-content:space-around;${SH}"><span class="ok" style="width:50%;text-align:center;font-size:230px;font-weight:700;color:${K.green}">✓</span><span class="no" style="width:50%;text-align:center;font-size:230px;font-weight:700;color:${K.red}">✕</span></div>`)); },
   update(root, lt) { const a = ease.back(prog(lt, 0, .3)), b = ease.back(prog(lt, .15, .45));
     root.querySelector('.no').style.transform = `scale(${a})`; root.querySelector('.ok').style.transform = `scale(${b})`; } });
@@ -202,11 +216,11 @@ headline(.8, w(5), `صورتك <span style="color:${K.red}">✕</span>&nbsp;&nbs
 L.push(outroScene(VOICE_END + .9, VOICE_END + 2.9));
 L.sort((a, b) => a.s - b.s);
 
-window.KICKS = [w(7), w(12), w(16), w(39), w(65), w(76), e(91) + .1];
+window.KICKS = [w(7), w(12), w(39), w(65), w(76), w(95), w(98)];
 window.TL = {
   voiceEnd: VOICE_END,
   lead: 0.15,
-  flashes: [w(65), e(91) + .1],
+  flashes: [w(65), w(98)],
   remap: tv => {
     let i = 0; while (i < WARP.length - 2 && tv > WARP[i + 1][1]) i++;
     const [s0, v0] = WARP[i], [s1, v1] = WARP[i + 1];
@@ -216,5 +230,5 @@ window.TL = {
   bug: t => (t < .6 ? 0 : 1) * (1 - prog(t, VOICE_END + .3, VOICE_END + .6)),
   subs: SUBS,
   scenes: L,
-  kicks: [w(7), w(12), w(16), w(39), w(65), w(76), e(91) + .1],
+  kicks: [w(7), w(12), w(39), w(65), w(76), w(95), w(98)],
 };

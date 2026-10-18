@@ -194,6 +194,17 @@ All steps are scripts. Paths below assume a working dir `P` per video.
   - `project/tools/probe.mjs` evaluates a JS expression in the page after `seek(t)`. Use it for debugging.
   - Render with `project/airtag/render_queue.sh` (resumable, frame-aligned segments).
 
+### G. Apple Watch green light (sources done; see output/apple_watch/)
+- `output/apple_watch/KROZO_Apple_Watch_Reel.mp4` + `_NoMusic.mp4`, ≈96 s, `.srt`, README (scenes + fact-check: Apple Support HT204666 / 120277). Sources: `project/apple_watch/` (see `BUILD.md`).
+- The client asked for something better than a reference reel (getkeyframes-style: skin cross-section with green light rays, swelling vessel, runner, waveform).
+- **Engine:**
+  - `watch3d.js`: a generic watch with a live canvas face (heart-rate screen) and a sensor dome (2 LEDs + 4 photodiodes); a holo forearm whose shader takes a green glow spot (`gp/gr/ga`); a holo runner with knees/elbows and an extruded heart; studio and track stages.
+  - `xsec.js`: a **2D canvas** wrist cross-section (watch cutaway, skin layers, capillaries, a vessel that swells with `pulse`, photon paths LED→tissue→photodiode with absorption that grows with swelling, red/blue/green modes). 2D renders ≈0.35 s/frame against ≈2.5 s for 3D.
+  - Blending between 2D sections and 3D shots is done in `timeline.js` (`xs: true` scenes are skipped by engine.js's blend pass).
+  - A heartbeat model (`BPMK` → integrated phase) drives the screen BPM, the vessel pulse, the waveform, and the heartbeat/beep SFX (ported in `sfx_watch.py`).
+- **Colour rule:** green only for the LED light (the subject); blood is muted wine red; everything else is brand. Tell the client if they object.
+- **Warp lesson (extends face_id v3):** on a compressed voice almost every pause has a breath or drawn-out tail above −45 dBFS, so `safe_to_cut` would keep all pauses. `project/apple_watch/warp.py` instead shortens only the longest stretch under −50 dB RMS inside each pause (`quiet_run`), and keeps the tails and breaths whole.
+
 ## 7. Known issues / bugs / caveats
 
 1. **No ASR.** Word timing comes from the alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
