@@ -163,10 +163,11 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Gotcha: never put `pkill`/`pgrep` patterns in the same command line as `render.mjs`, or they match your own shell (exit 144).
 
 ### E. Face ID (DONE, delivered)
-- `output/face_id/KROZO_Face_ID_Reel.mp4` + `_NoMusic.mp4` (42.7 s, clean take, edited to the final script), `.srt`, README (fact-check + credits), contact sheet. Sources: `project/face_id/` (see `BUILD.md`).
+- `output/face_id/KROZO_Face_ID_Reel.mp4` + `_NoMusic.mp4` (52.6 s, full clean take: **no content cuts**), `.srt`, README (fact-check + credits), contact sheet. Sources: `project/face_id/` (see `BUILD.md`).
 - Noisy room recording → **RNNoise** (`arnndn`, model `project/tools/rnnoise/sh.rnnn`) in `project/face_id/voice_chain.txt`; gaps went from −40 to −75 dB. Use this for any noisy voice.
 - Fast speaker with few pauses: align with short pauses as chunk breaks (`align.py . END 0.845 0.11`).
 - Engine `face3d.js`: scanned head (Lee Perry-Smith, CC BY 3.0, from the three.js repo), the photo is rendered from the head at load, 30k IR dots with a reveal from the projector, a depth heat shader (`autoHeat()` calibrates nose↔ear), a wire mesh, split-screen, and a phone with a Face ID screen (scan/fail/ok/home).
+- **Lesson (Face ID v4):** never cut spoken content from a client recording on your own. A shorter pasted script does not mean 'cut these lines' (the client's v2 cut removed lines they wanted). Ask first.
 - **Lesson (Face ID v3):** never trim a 'pause' that still has sound in it. Drawn-out word endings sit below the −45 dB silence threshold. `project/face_id/warp.py` now checks the peak level of the part it would remove (`safe_to_cut`, −45 dBFS) and leaves the pause intact otherwise. Port this to other warp.py files. Also skip `agate` on voices that are already clean, because it clips word onsets.
 - Render with `render/queue.sh` (resumable 3 s segments). The container restarts often, so never use long single chunks.
 
