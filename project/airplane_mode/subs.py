@@ -21,10 +21,15 @@ for li in sorted(lines):
         if len(cur)==1 and groups and len(groups[-1])<5: groups[-1]+=cur
         else: groups.append(cur)
     for g in groups: subs.append({'s':round(g[0]['s']-0.06,3),'e':round(g[-1]['e']+0.2,3),'words':[{'w':x['w'],'s':round(x['s'],3),'e':round(x['e'],3)} for x in g]})
+m=[]
+for g in subs:
+    if m and m[-1]['e']-m[-1]['s']<0.5 and len(m[-1]['words'])+len(g['words'])<=6: m[-1]['words']+=g['words']; m[-1]['e']=g['e']
+    else: m.append(g)
+subs=m
 for a,b in zip(subs,subs[1:]):
     a['e']=min(a['e'],b['s']-0.02)
     if b['s']-a['e']<0.45: a['e']=b['s']-0.02
-open('engine/subs.js','w').write('const SUBS='+json.dumps(subs,ensure_ascii=False)+';\nconst WT='+json.dumps([round(w['s'],3) for w in W])+';\n')
+open('engine/subs.js','w').write('const SUBS='+json.dumps(subs,ensure_ascii=False)+';\nconst WT='+json.dumps([round(w['s'],3) for w in W])+';\nconst WE='+json.dumps([round(w['e'],3) for w in W])+';\n')
 open('engine/warp.js','w').write('const WARP='+json.dumps(K)+';\n')
 def ts(x):
     ms=int(round(x*1000));return f"{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}"

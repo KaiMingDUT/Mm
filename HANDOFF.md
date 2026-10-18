@@ -154,6 +154,21 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - **Science flag** (in the README): "the problem is not thickness, it's insulation" is an acceptable simplification. The cross-section is labelled on screen as a magnified illustration with illustrative values.
 - **Possible next step:** a cover for this video. Watch the client's feedback on the caption position (top, like the reference).
 
+### D. Airplane mode (DONE, delivered)
+- `output/airplane_mode/KROZO_Airplane_Mode_Reel.mp4` + `_NoMusic.mp4` (100.4 s from the corrected recording, ~6 Mbps so it fits GitHub's 100 MB limit), cover `.png/.jpg`, `.srt`, README with fact-check (FAA AC 91.21-1C, AC 20-164A, FCC ground-network rule).
+- Made in the style of a client-supplied reference (stylised 3D + HUD chips) but in KROZO identity. Sources in `project/airplane_mode/` (see its `BUILD.md`). New engine `plane3d.js`: KROZO-livery jet, cabin, cockpit, ground towers, hangar, hologram busts, phone with live canvas UI (control centre + airplane toggle), ring/beam pools, glitch/rewind grade. Shots in `timeline.js` (story time), 3D-anchored labels via `shot.after` + `LAB`.
+- Gotcha: the livery canvas uses flipY=false, and the text needs `scale(-1,1)` (upper +z band) / `scale(1,-1)` (lower band). Check both sides with a still before you render.
+- **Sync bug found and fixed (Oct 18):** `tools/voicewarp.py` added 8 ms (the crossfade length) at every shortened pause, so the voice drifted later than the picture/subs: ≈0.35 s by the end with ~43 cuts. It is now exact (verified by envelope cross-correlation: ±0.01 s). **Older videos (Google Maps, Tesla, Touchscreen) were built with the buggy version** and drift the same way (cuts × 8 ms). To fix them: re-run voicewarp + mix and remux with `-c:v copy` (no re-render).
+- Forced alignment with eSpeak-NG + DTW was tried and failed (synthetic Arabic without diacritics doesn't match the speaker); keep the nuclei alignment.
+- Gotcha: never put `pkill`/`pgrep` patterns in the same command line as `render.mjs`, or they match your own shell (exit 144).
+
+### E. Face ID (DONE, delivered)
+- `output/face_id/KROZO_Face_ID_Reel.mp4` + `_NoMusic.mp4` (53.3 s), `.srt`, README (fact-check + credits), contact sheet. Sources: `project/face_id/` (see `BUILD.md`).
+- Noisy room recording → **RNNoise** (`arnndn`, model `project/tools/rnnoise/sh.rnnn`) in `project/face_id/voice_chain.txt`; gaps went from −40 to −75 dB. Use this for any noisy voice.
+- Fast speaker with few pauses: align with short pauses as chunk breaks (`align.py . END 0.845 0.11`).
+- Engine `face3d.js`: scanned head (Lee Perry-Smith, CC BY 3.0, from the three.js repo), the photo is rendered from the head at load, 30k IR dots with a reveal from the projector, a depth heat shader (`autoHeat()` calibrates nose↔ear), a wire mesh, split-screen, and a phone with a Face ID screen (scan/fail/ok/home).
+- Render with `render/queue.sh` (resumable 3 s segments). The container restarts often, so never use long single chunks.
+
 ---
 
 ## 7. Known issues / bugs / caveats

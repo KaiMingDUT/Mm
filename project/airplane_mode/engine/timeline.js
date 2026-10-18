@@ -1,7 +1,8 @@
 // KROZO — "ليش يطلبون منك وضع الطيران؟"
 // SHOTS drive the 3D world (plane3d.js); TL.scenes are the DOM text layers on top. All times are story time (original recording).
-const VOICE_END = 123.15;
+const VOICE_END = WE[212] + .05;
 const w = i => WT[i];
+const e = i => WE[i];
 const sm = (a, b, t) => ease.inOut(prog(t, a, b));
 const R = () => window.R3;
 const v3 = (x, y, z) => R().V(x, y, z);
@@ -57,12 +58,12 @@ shot(w(5), w(9), (lt, t) => {   // the phone on a tray, transmitting
   r.lookCam(p.clone().add(v3(-.08 + .02 * k, .32 - .08 * k, .3 - .06 * k)), p.clone().add(v3(.01, 0, 0)), 34);
   cabinPhones(t, 30, { a: .25 });
 });
-shot(w(9), 5.15, (lt, t) => {   // "إسقاط طائرة!" — the dive (imagined)
+shot(w(9), (w(11) - .05), (lt, t) => {   // "إسقاط طائرة!" — the dive (imagined)
   exterior(t, 80); const r = R(); const k = ease.inOut(prog(lt, 0, .9));
   jetDive(k, t); r.lookCam(v3(40, 4, 30).add(shake(t, .8 * k, 14)), v3(4, -6 * k, 0), 32);
   r.grade.glitch.value = .25 * k; r.grade.ca.value = .002 + .006 * k; r.grade.tint.value.set(1, 1 - .08 * k, 1 - .12 * k);
 });
-shot(5.15, w(17) - .05, (lt, t) => {   // "لا، لا…" — rewind back to level flight
+shot((w(11) - .05), w(17) - .05, (lt, t) => {   // "لا، لا…" — rewind back to level flight
   exterior(t, 80); const r = R(); const k = 1 - ease.inOut(prog(lt, .05, 1.0));
   jetDive(k, t); r.lookCam(v3(40, 4, 30), v3(4, -6 * k, 0), 32);
   r.grade.rew.value = 1 - prog(lt, 1.0, 1.3); r.grade.sat.value = .7 + .35 * prog(lt, 1, 1.3);
@@ -73,7 +74,7 @@ shot(w(17) - .05, w(24), (lt, t) => {   // "لكن… إشارات جوالك" �
   r.lookCam(v3(-14.6 + 2.2 * k, .42, 0), v3(2, -.05, 0), 52);
   cabinPhones(t, Math.floor(prog(t, w(22) - .3, w(23) + .5) * 160), { a: .45 });
 });
-shot(w(24), 13.3, (lt, t) => {   // "مستحيل تسبب مشاكل على متن الطائرة" — exterior, interference ripples leak from the windows
+shot(w(24), (w(30) - .08), (lt, t) => {   // "مستحيل تسبب مشاكل على متن الطائرة" — exterior, interference ripples leak from the windows
   exterior(t); const r = R();
   r.lookCam(v3(-30 + lt * 3, 9, 34), v3(2, 0, 0), 30);
   const n = Math.floor(sm(w(25), w(27), t) * 18);
@@ -82,13 +83,13 @@ shot(w(24), 13.3, (lt, t) => {   // "مستحيل تسبب مشاكل على م�
 });
 
 // ═════ QUESTION ═════
-shot(13.3, w(37), (lt, t) => {   // "كيف جهاز صغير مثل جوالك" — phone hero, tiny on the hangar floor
+shot((w(30) - .08), w(37), (lt, t) => {   // "كيف جهاز صغير مثل جوالك" — phone hero, tiny on the hangar floor
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, .5 + lt * .25, 0); r.setUI({ lock: true, bars: 3 });
   r.phoneLight.intensity = .2; r.cam.near = .01;
   r.lookCam(v3(.05, .1, .42 - lt * .02), v3(0, .075, 0), 30);
   r.jet.visible = true; r.gear.visible = true; r.jet.position.set(-14, 4.9, -36); r.jet.rotation.y = .5;
 });
-shot(w(37), 18.7, (lt, t) => {   // "…أنظمة طائرة ضخمة؟" — pull back to reveal the giant jet
+shot(w(37), (w(42) - .1), (lt, t) => {   // "…أنظمة طائرة ضخمة؟" — pull back to reveal the giant jet
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, .5 + (lt + 2.8) * .25, 0); r.setUI({ lock: true, bars: 3 });
   r.phoneLight.intensity = .2; r.cam.near = .01;
   r.jet.visible = true; r.gear.visible = true; r.jet.position.set(-14, 4.9, -36); r.jet.rotation.y = .5;
@@ -102,26 +103,26 @@ shot(w(37), 18.7, (lt, t) => {   // "…أنظمة طائرة ضخمة؟" — pu
     label('طائرة', v3(-14, 9, -36), prog(lt, 1.8, 2.2), { dy: -110 });
   },
 });
-shot(18.7, w(47), (lt, t) => {   // "وليش أصلًا يطلبون منك تفعيل" — the overhead sign lights up
+shot((w(42) - .1), w(47), (lt, t) => {   // "وليش أصلًا يطلبون منك تفعيل" — the overhead sign lights up
   const r = R(); r.stage('cabin', t);
   const on = t > w(44) ? 1 : 0;
   r.CAB.sign.material.color.setRGB(.44 + .56 * on, .49 + .51 * on, .56 + .44 * on);
   r.lookCam(v3(-.6 - lt * .15, .25, .05), v3(4, 1.5, 0), 38);
   cabinPhones(t, 160, { a: .3 });
 });
-shot(w(47), 24.0, (lt, t) => {   // "وضع الطيران؟" — phone, control centre, airplane tile pulsing (question beat)
+shot(w(47), (w(49) - .05), (lt, t) => {   // "وضع الطيران؟" — phone, control centre, airplane tile pulsing (question beat)
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, -.25, 0);
   r.setUI({ lock: false, cc: 1, plane: 0, bars: 4 }); r.phoneLight.intensity = .3; r.cam.near = .01;
   const tile = r.phonePt(.2, .2, .002), k = ease.out(prog(lt, 0, 1.4));
   r.lookCam(lerpV(v3(.06, .1, .4), v3(.02, .12, .2), k), lerpV(v3(0, .075, 0), tile, k * .6), 30);
   for (let i = 0; i < 2; i++) { const ph = (lt * 1.2 + i * .5) % 1; r.ring(tile, .012 + ph * .03, 0xFF9F0A, (1 - ph) * .9, { face: 'cam', w: .1 }); }
 });
-shot(24.0, w(52), (lt, t) => {   // "خلّني أشرح لك…" — dive into the screen
+shot((w(49) - .05), w(52), (lt, t) => {   // "خلّني أشرح لك…" — dive into the screen
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, -.25, 0);
   r.setUI({ lock: false, cc: 1, plane: 0, bars: 4 }); r.cam.near = .002;
-  const tile = r.phonePt(.2, .2, .0), k = ease.inOut(prog(lt, 0, w(52) - 24.0));
+  const tile = r.phonePt(.2, .2, .0), k = ease.inOut(prog(lt, 0, w(52) - (w(49) - .05)));
   r.lookCam(lerpV(v3(.02, .12, .2), tile.clone().add(v3(0, 0, .01)), k), tile, 30 - 10 * k);
-  r.grade.zb.value = .8 * k; r.grade.flash.value = Math.pow(prog(lt, .6, w(52) - 24.0), 2) * .9;
+  r.grade.zb.value = .8 * k; r.grade.flash.value = Math.pow(prog(lt, .6, w(52) - (w(49) - .05)), 2) * .9;
 }, { noPunch: true });
 
 // ═════ ANALOGY: two voices ═════
@@ -151,14 +152,14 @@ shot(w(60), w(69), (lt, t) => {   // "…شخص ثاني يتكلم جنب أذ�
   softRings(r, H, t, .8 - .4 * k);
   if (H.X.visible) loudRings(r, H, t, sm(w(64), w(66), t));
 }, { after(lt, t) { const r = R(); label('شخص ثاني… جنب أذنك', v3(-.38, 1.25, .74), prog(t, w(65), w(65) + .3), { dy: -70, c: '#FFFFFF' }); } });
-shot(w(69), 40.1, (lt, t) => {   // "صعوبة في سماع الشخص الأول، صح؟" — at the ear: the loud voice buries the soft one
+shot(w(69), (w(77) - .1), (lt, t) => {   // "صعوبة في سماع الشخص الأول، صح؟" — at the ear: the loud voice buries the soft one
   const r = R(), H = holoScene(t); H.X.visible = true;
   r.lookCam(v3(.75 - lt * .02, 1.1, 1.05 - lt * .03), H.ear, 36);
   softRings(r, H, t, .35); loudRings(r, H, t, 1);
   r.ring(H.ear, .12 + .02 * Math.sin(t * 20), 0xffffff, .5, { face: 'cam', w: .2 });
 });
 // "الفكرة هنا مشابهة، لكن بدل الأصوات، احنا نتكلم عن إشارات لاسلكية" — the listener becomes the airplane, voices become radio
-shot(40.1, 46.6, (lt, t) => {
+shot((w(77) - .1), (w(88) - .1), (lt, t) => {
   const r = R(), H = holoScene(t), m = sm(w(80), w(82) + .3, t);
   H.L.visible = m < .5; H.F.visible = m < .5; H.X.visible = m < .5;
   r.bustM.uniforms.k.value = m < .5 ? 1 - m * 2 : 0;
@@ -180,7 +181,7 @@ shot(40.1, 46.6, (lt, t) => {
 });
 
 // ═════ AIRCRAFT SYSTEMS ═════
-shot(46.6, w(91) + .1, (lt, t) => {   // "الطائرة فيها أنظمة إلكترونية" — real jet → x-ray
+shot((w(88) - .1), w(91) + .1, (lt, t) => {   // "الطائرة فيها أنظمة إلكترونية" — real jet → x-ray
   exterior(t, 50); const r = R(); const k = sm(w(90), w(91), t);
   r.lookCam(v3(26 - lt * 2, 7, 30), v3(3, 0, 0), 32);
   if (k > .5) { r.jetHolo(true); r.avionics.visible = true; r.holoM.uniforms.k.value = (k - .5) * 2; r.holoM.uniforms.scan.value = 20 - lt * 12; r.sky.glow.value = .4; }
@@ -205,14 +206,14 @@ shot(w(97), w(98), (lt, t) => {   // "للتواصل" — ATC voice link
   r.beam(top, gj(), 1.2, r.COL.cyan, 1, { t: t * 3, n: 10, grow: sm(w(97), w(97) + .5, t) });
   r.emit(top, t, { R: 60, per: .5, life: 1.4, a: .7 });
 }, { after(lt, t) { const r = R(); label('التواصل', r.towers[0].position.clone().add(v3(0, 42, 0)), prog(lt, .1, .4), { dy: 110 }); } });
-shot(w(98), 56.6, (lt, t) => {   // "والملاحة" — navigation beacons
+shot(w(98), (w(99) - .1), (lt, t) => {   // "والملاحة" — navigation beacons
   const r = R(); groundScene(t);
   r.lookCam(v3(420 - lt * 40, 140, 420), v3(0, 160, 0), 52);
   for (const tw of r.towers.slice(1, 6)) { const p = tw.position.clone().add(v3(0, 1, 0)); r.emit(p, t, { R: 160, per: .6, life: 2, a: .6, face: 'up', w: .02, col: r.COL.blue, ph: tw.position.x }); r.beam(p.clone().add(v3(0, 38, 0)), gj(), .9, r.COL.blue, .7, { t: t * 2 }); }
 }, { after(lt, t) { label('الملاحة', gj(), prog(lt, .1, .4), { dy: -130 }); } });
 
 // ═════ INTERFERENCE ═════
-shot(56.6, w(102), (lt, t) => {   // "وفي ظروف معينة" — calm cabin
+shot((w(99) - .1), w(102), (lt, t) => {   // "وفي ظروف معينة" — calm cabin
   const r = R(); r.stage('cabin', t);
   r.lookCam(v3(6 - lt * .3, .9, 1.3), v3(-6, -.2, -.6), 44);
 });
@@ -230,30 +231,30 @@ shot(w(107), w(113) - .1, (lt, t) => {   // "…تتداخل مع بعض هذه 
   for (const a of r.antennas) { a.material.emissive.setRGB(.2 * k, .5 * k, 1 * k); r.ring(a.position.clone(), .9 + .3 * Math.sin(t * 30), 0xffffff, k * .6, { wave: 1, w: .2 }); }
   r.grade.glitch.value = .12 * k;
 });
-shot(w(113) - .1, 70.0, (lt, t) => {   // "وتؤثر في عملها" — cockpit: displays + headset buzz
+shot(w(113) - .1, (w(116) - .1), (lt, t) => {   // "وتؤثر في عملها" — cockpit: displays + headset buzz
   const r = R(); r.stage('cockpit', t); r.updClouds(t, 60);
-  const g = sm(w(113), w(114), t) * (1 - sm(69.3, 69.9, t) * .7); r.navGlitch = g; r.drawAvionics(t);
+  const g = sm(w(113), w(114), t) * (1 - sm((e(115) + .1), (w(116) - .1), t) * .7); r.navGlitch = g; r.drawAvionics(t);
   const k = ease.inOut(prog(lt, 0, 2.5));
   r.lookCam(lerpV(v3(-.95, .5, .0), v3(.42, .52, .36), k).add(shake(t, .006 * g, 20)), lerpV(v3(1.2, -.1, 0), v3(-.02, .4, .62), k), 56 - 14 * k);
   r.grade.glitch.value = .35 * g;
 }, { after(lt, t) { const r = R(); label('سماعة الطيّار', v3(-.02, .52, .62), prog(lt, 1.6, 1.9), { dy: -140, dx: -60 }); } });
 
 // ═════ QUESTION 2 ═════
-shot(70.0, w(126), (lt, t) => {   // "هل… جوالك بيشوّش… بمجرد" — power on
+shot((w(116) - .1), w(126), (lt, t) => {   // "هل… جوالك بيشوّش… بمجرد" — power on
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, -.35 + lt * .05, 0); r.cam.near = .01;
   const pw = sm(w(122), w(122) + .35, t); r.setUI({ lock: true, bars: pw > .5 ? 4 : 0, power: pw }); r.phoneLight.intensity = .3 * pw;
   r.lookCam(v3(.08, .12, .44 - lt * .02), v3(0, .078, 0), 30);
   if (pw > .3) r.emit(r.phonePt(.5, .5), t, { R: .35, per: .45, life: 1.2, a: .9 * pw });
 });
-shot(w(126), 76.6, (lt, t) => {   // "ما تشغّله؟" — tight, the question hangs
+shot(w(126), (w(128) - .05), (lt, t) => {   // "ما تشغّله؟" — tight, the question hangs
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, -.2, 0); r.cam.near = .005;
   r.setUI({ lock: true, bars: 4 }); r.phoneLight.intensity = .3;
   r.lookCam(v3(.03, .11, .26 - lt * .03), v3(0, .085, 0), 30);
-  const hb = [76.0, 76.3]; let pulse = 0; for (const h of hb) if (t > h) pulse = Math.max(pulse, 1 - prog(t, h, h + .25));
+  const hb = [(e(127) + .05), (e(127) + .38)]; let pulse = 0; for (const h of hb) if (t > h) pulse = Math.max(pulse, 1 - prog(t, h, h + .25));
   r.emit(r.phonePt(.5, .5), t, { R: .25, per: .8, life: 1.4, a: .5 + pulse });
   r.grade.vig.value = .5 + .3 * pulse;
 });
-shot(76.6, w(130), (lt, t) => {   // "مو بالضرورة!" — calm exterior
+shot((w(128) - .05), w(130), (lt, t) => {   // "مو بالضرورة!" — calm exterior
   exterior(t); const r = R();
   r.lookCam(v3(-48, -6 + lt, -26), v3(2, 0, 0), 28);
 });
@@ -278,14 +279,14 @@ shot(w(139), w(143), (lt, t) => {   // "واختبارات وقواعد تحدد
   r.jetHolo(prog(t, w(140), w(141)) > 0 && k < 1 ? false : false);
   for (const a of r.antennas) a.material.emissive.setRGB(0, .4 * (Math.abs(a.position.x - (22 - 44 * k)) < 3), .9 * (Math.abs(a.position.x - (22 - 44 * k)) < 3));
 });
-shot(w(143), 88.9, (lt, t) => {   // "استخدام الأجهزة الإلكترونية أثناء الرحلة"
+shot(w(143), (w(148) - .1), (lt, t) => {   // "استخدام الأجهزة الإلكترونية أثناء الرحلة"
   const r = R(); r.stage('cabin', t); trayPhone(20, -.52, -.25); r.setUI({ lock: true, bars: 3 }); r.cam.near = .01;
   r.CAB.sign.material.color.setRGB(1, 1, 1);
   r.lookCam(v3(2.5 + lt * .05, .3, -.15), v3(4.6, 1.1, 0), 46);
 });
 
 // ═════ AIRPLANE MODE ═════
-shot(88.9, w(153), (lt, t) => {   // "وهنا يجي دور وضع الطيران!" — hero
+shot((w(148) - .1), w(153), (lt, t) => {   // "وهنا يجي دور وضع الطيران!" — hero
   const r = R(); r.stage('studio', t); r.phoneAt(v3(0, .0735, 0), 0, -.8 + ease.out(prog(lt, 0, 1.5)) * .6, 0); r.cam.near = .01;
   const cc = sm(w(150), w(151), t); r.setUI({ lock: cc < .05, cc, plane: 0, bars: 4 }); r.phoneLight.intensity = .3;
   r.lookCam(v3(.1, .14, .5 - lt * .04), v3(0, .075, 0), 30);
@@ -300,7 +301,7 @@ shot(w(153), w(159), (lt, t) => {   // "لما تفعّله، جوالك يوق�
   else { const q = prog(t, w(154) + .1, w(154) + .6); r.ring(tile, .01 + q * .05, 0xFF9F0A, 1 - q, { w: .15 }); r.ring(r.phonePt(.5, .5), .35 * (1 - ease.out(prog(t, w(154) + .1, w(154) + .7))), r.COL.cyan, 1 - q, { w: .05 }); }
   r.grade.flash.value = .5 * (1 - prog(t, w(154) + .1, w(154) + .35)) * on;
 });
-shot(w(159), 101.7, (lt, t) => {   // "…يتوقف عن إرسال واستقبال إشارات شبكة الجوال" — the links to the towers go dark
+shot(w(159), (w(169) - .1), (lt, t) => {   // "…يتوقف عن إرسال واستقبال إشارات شبكة الجوال" — the links to the towers go dark
   const r = R(); groundScene(t);
   r.lookCam(v3(330 - lt * 15, 110 + lt * 4, 300), v3(0, 210, 0), 50);
   const cut = sm(w(166), w(167) + .3, t);
@@ -313,7 +314,7 @@ shot(w(159), 101.7, (lt, t) => {   // "…يتوقف عن إرسال واستق�
 });
 
 // ═════ SUMMARY ═════
-shot(101.7, w(178), (lt, t) => {   // "فالخلاصة: وضع الطيران مو لأن جوالك راح يطيح الطائرة"
+shot((w(169) - .1), w(178), (lt, t) => {   // "فالخلاصة: وضع الطيران مو لأن جوالك راح يطيح الطائرة"
   exterior(t); const r = R();
   r.lookCam(v3(40 - lt * 1.5, -3, 32), v3(2, 0, 0), 30);
 });
@@ -321,7 +322,7 @@ shot(w(178), w(188), (lt, t) => {   // "…بل لأنه يساعد على ال�
   const r = R(); r.stage('cockpit', t); r.updClouds(t, 60); r.drawAvionics(t);
   r.lookCam(v3(-1.0 + lt * .06, .55, 0), v3(1.3, .1, 0), 54);
 });
-shot(w(188), 115.3, (lt, t) => {   // "وتقليل احتمال التداخل مع أنظمة الطائرة" — a protective bubble around the jet
+shot(w(188), (w(195) - .1), (lt, t) => {   // "وتقليل احتمال التداخل مع أنظمة الطائرة" — a protective bubble around the jet
   exterior(t, 60); const r = R();
   r.lookCam(v3(-36 + lt * 2, 14, 38), v3(0, 0, 0), 34);
   const k = sm(w(189), w(190) + .5, t);
@@ -330,7 +331,7 @@ shot(w(188), 115.3, (lt, t) => {   // "وتقليل احتمال التداخل 
 });
 
 // ═════ ENDING ═════
-shot(115.3, w(200), (lt, t) => {   // "وعشان كذا، التزم دائمًا بتعليمات"
+shot((w(195) - .1), w(200), (lt, t) => {   // "وعشان كذا، التزم دائمًا بتعليمات"
   const r = R(); r.stage('cabin', t);
   const blink = (t > w(197) && (t - w(197)) % .8 < .5) ? 1 : .55;
   for (const s of [r.CAB.sign, ...r.CAB.signs]) s.material.color.setRGB(blink, blink, blink);
@@ -378,55 +379,55 @@ const strike = txt => `<span class="st" style="position:relative;display:inline-
 const bigNum = (n, txt) => `<span class="latin" style="font-size:150px;color:${C.cyan}">${n}</span><br><span style="font-size:52px;color:${C.gray}">${txt}</span>`;
 
 // hook
-chip(0.2, w(5), 'AIRPLANE MODE · OFF', K.orange);
+chip(.2, w(5), 'AIRPLANE MODE · OFF', K.orange);
 chip(w(5), w(9), 'PHONE · TRANSMITTING', C.cyan);
-headline(w(9) + .05, 5.15, `إسقاط <span style="color:${C.cyan}">طائرة؟!</span>`, { fs: 120 });
-headline(5.2, w(17) + .4, `<span style="font-size:150px">✕</span><br>مو هذا اللي تتخيله`, { fs: 84, top: 300 });
-chip(w(17), 13.3, 'SIGNALS ON BOARD', C.cyan);
-headline(w(25) - .05, 13.3, `${strike('مستحيل')}<br><span style="font-size:60px;color:${C.gray}">ممكن تسبب مشاكل</span>`, { fs: 96, strike: w(25) + .1 });
+headline(w(9) + .05, (w(11) - .05), `إسقاط <span style="color:${C.cyan}">طائرة؟!</span>`, { fs: 120 });
+headline(w(11), w(17) + .4, `<span style="font-size:150px">✕</span><br>مو هذا اللي تتخيله`, { fs: 84, top: 300 });
+chip(w(17), (w(30) - .08), 'SIGNALS ON BOARD', C.cyan);
+headline(w(25) - .05, (w(30) - .08), `${strike('مستحيل')}<br><span style="font-size:60px;color:${C.gray}">ممكن تسبب مشاكل</span>`, { fs: 96, strike: w(25) + .1 });
 // question
-chip(13.3, 18.7, 'SCALE CHECK', C.blue);
+chip((w(30) - .08), (w(42) - .1), 'SCALE CHECK', C.blue);
 headline(w(33), w(37), `صغير`, { fs: 120, top: 380 });
-headline(w(41) - .05, 18.7, `ضخمة؟`, { fs: 130, top: 330, col: C.cyan });
-chip(18.7, 24.0, 'CABIN ANNOUNCEMENT', K.orange);
-headline(w(47), 24.0, `<span style="font-size:190px;color:${K.orange}">؟</span>`, { top: 280 });
+headline(w(41) - .05, (w(42) - .1), `ضخمة؟`, { fs: 130, top: 330, col: C.cyan });
+chip((w(42) - .1), (w(49) - .05), 'CABIN ANNOUNCEMENT', K.orange);
+headline(w(47), (w(49) - .05), `<span style="font-size:190px;color:${K.orange}">؟</span>`, { top: 280 });
 // analogy
 chip(w(52), w(80), 'SOUND · ANALOGY', C.cyan);
-chip(w(80), 46.6, 'RADIO WAVES', C.cyan);
-headline(w(76) - .05, 40.1, `صح؟`, { fs: 130, top: 330 });
+chip(w(80), (w(88) - .1), 'RADIO WAVES', C.cyan);
+headline(w(76) - .05, (w(77) - .1), `صح؟`, { fs: 130, top: 330 });
 headline(w(82) - .1, w(84), `صوت <span style="color:${C.cyan}">←</span> موجات لاسلكية`, { fs: 78, top: 330 });
 // systems
-chip(46.6, w(97), 'AVIONICS', C.blue);
-chip(w(97), 56.6, 'COMMUNICATION · NAVIGATION', C.cyan);
+chip((w(88) - .1), w(97), 'AVIONICS', C.blue);
+chip(w(97), (w(99) - .1), 'COMMUNICATION · NAVIGATION', C.cyan);
 // interference
-chip(56.6, w(107), 'PASSENGER DEVICES', C.cyan);
+chip((w(99) - .1), w(107), 'PASSENGER DEVICES', C.cyan);
 headline(w(103), w(107), '', { top: 320, upd(n, lt, t) { const k = sm(w(103), w(106) + .4, t); n.innerHTML = bigNum(Math.round(k * PAXN()), 'جهاز يرسل إشارات'); } });
-chip(w(107), 70.0, 'INTERFERENCE', K.red);
+chip(w(107), (w(116) - .1), 'INTERFERENCE', K.red);
 // question 2
-chip(70.0, 76.6, 'POWER ON', C.cyan);
-headline(w(126) + .1, 76.6, `<span style="font-size:190px;color:${C.cyan}">؟</span>`, { top: 960 });
-headline(76.6, w(130), `مو بالضرورة!`, { fs: 110, top: 330 });
+chip((w(116) - .1), (w(128) - .05), 'POWER ON', C.cyan);
+headline(w(126) + .1, (w(128) - .05), `<span style="font-size:190px;color:${C.cyan}">؟</span>`, { top: 960 });
+headline((w(128) - .05), w(130), `مو بالضرورة!`, { fs: 110, top: 330 });
 chip(w(130), w(135), 'MOST DEVICES · OK', K.green);
 // safety: three pillars appear one by one
 L.push({
-  s: w(135), e: 88.9, fi: .15, fo: .3,
+  s: w(135), e: (w(148) - .1), fi: .15, fo: .3,
   build(root) {
     const items = [['🛡', 'احتياطات', w(139)], ['⚙', 'اختبارات', w(140)], ['📋', 'قواعد', w(141)]];
     root.appendChild(el(`<div style="position:absolute;left:60px;right:60px;top:300px;display:flex;flex-direction:column;gap:22px;align-items:center">${items.map(([ic, tx, at], i) => `<div class="p" data-at="${at}" style="display:flex;align-items:center;gap:24px;min-width:600px;padding:22px 40px;border-radius:26px;background:rgba(8,11,18,.78);border:2px solid ${C.blue};box-shadow:0 0 40px rgba(22,139,255,.35)"><span style="font-size:56px">${ic}</span><span style="font-weight:700;font-size:64px">${tx}</span><span style="margin-inline-start:auto;font-size:56px;color:${K.green}">✓</span></div>`).join('')}</div>`));
   },
   update(root, lt, t) { root.querySelectorAll('.p').forEach(p => { const k = ease.back(prog(t, +p.dataset.at - .15, +p.dataset.at + .2)); p.style.opacity = clamp(k); p.style.transform = `translateX(${(1 - k) * 120}px)`; }); },
 });
-chip(w(143), 88.9, 'CABIN RULES', C.blue);
+chip(w(143), (w(148) - .1), 'CABIN RULES', C.blue);
 // airplane mode
-chip(88.9, 101.7, 'AIRPLANE MODE', K.orange);
+chip((w(148) - .1), (w(169) - .1), 'AIRPLANE MODE', K.orange);
 headline(w(151), w(153), `<span style="font-size:140px">✈</span><br>وضع الطيران`, { fs: 96, top: 270, col: C.ink });
 headline(w(155), w(159), `الاتصال الخلوي <span style="color:${K.red}">✕</span>`, { fs: 78, top: 330 });
-headline(w(162), 101.7, `<span class="latin">↑</span> إرسال &nbsp; <span class="latin">↓</span> استقبال<br><span style="font-size:64px;color:${C.gray}" class="off">…متوقف</span>`, { fs: 84, top: 300, upd(n, lt, t) { n.querySelector('.off').style.opacity = prog(t, w(166), w(167)); } });
+headline(w(162), (w(169) - .1), `<span class="latin">↑</span> إرسال &nbsp; <span class="latin">↓</span> استقبال<br><span style="font-size:64px;color:${C.gray}" class="off">…متوقف</span>`, { fs: 84, top: 300, upd(n, lt, t) { n.querySelector('.off').style.opacity = prog(t, w(166), w(167)); } });
 // summary
-chip(101.7, 123.2, 'SUMMARY', C.cyan);
+chip((w(169) - .1), (VOICE_END + .05), 'SUMMARY', C.cyan);
 headline(w(171), w(178), `${strike('يطيح الطائرة')}`, { fs: 100, top: 330, strike: w(176) });
 headline(w(183), w(188), `<span style="color:${K.green}">✓</span> الالتزام بالقواعد`, { fs: 84, top: 330 });
-headline(w(189), 115.3, `<span style="color:${K.green}">✓</span> تقليل احتمال التداخل`, { fs: 80, top: 330 });
+headline(w(189), (w(195) - .1), `<span style="color:${K.green}">✓</span> تقليل احتمال التداخل`, { fs: 80, top: 330 });
 headline(w(197), w(202), `التزم بتعليمات<br><span style="color:${C.cyan}">طاقم الطائرة</span>`, { fs: 92, top: 300 });
 L.push(outroScene(VOICE_END + .35, VOICE_END + 3.2));
 L.sort((a, b) => a.s - b.s);
@@ -451,13 +452,13 @@ function wavePanel(s, e, title, mode) {
   });
 }
 wavePanel(w(55), w(80), 'WHAT YOU HEAR', t => ({ soft: sm(w(55), w(56), t), loud: t > w(63) ? sm(w(64), w(66), t) : 0, buzz: 0 }));
-wavePanel(w(113) + .4, 70.0, 'PILOT HEADSET · AUDIO', t => ({ soft: .7, loud: 0, buzz: sm(w(113), w(114), t) * (1 - sm(69.3, 69.9, t) * .7) }));
+wavePanel(w(113) + .4, (w(116) - .1), 'PILOT HEADSET · AUDIO', t => ({ soft: .7, loud: 0, buzz: sm(w(113), w(114), t) * (1 - sm((e(115) + .1), (w(116) - .1), t) * .7) }));
 L.sort((a, b) => a.s - b.s);
 
 window.TL = {
   voiceEnd: VOICE_END,
   lead: 0.15,
-  flashes: [w(9), 24.0 + .6, w(154) + .1],
+  flashes: [w(9), (w(49) - .05) + .6, w(154) + .1],
   remap: tv => {
     let i = 0; while (i < WARP.length - 2 && tv > WARP[i + 1][1]) i++;
     const [s0, v0] = WARP[i], [s1, v1] = WARP[i + 1];
