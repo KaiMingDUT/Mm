@@ -8,6 +8,7 @@
 - The cross-section shows the full mechanism: LED → light zigzags into the tissue → some is absorbed by the blood, the rest returns to the photodiodes; the vessel swells with each beat and a "light back" meter drops at the same moment.
 - "Why green, not red or blue?" is answered visually: three colours, three fates (red goes deep, blue stops in the top layer, green is absorbed by the blood).
 - The counting step is spelled out: peaks numbered 1, 2, 3… then a 60-second bar, then **72 beats per minute**.
+- Classic bottom captions (spoken word in cyan, earlier words white, upcoming words dim), like the other KROZO reels.
 - Heartbeat SFX synced to the on-screen pulse, footsteps on the run, monitor beeps on each waveform peak.
 
 ## Colour rule
