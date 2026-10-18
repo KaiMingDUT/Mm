@@ -62,37 +62,19 @@ function buildAll() {
 }
 const flashEl = document.getElementById('flash');
 
-// captions (reference-style, on top): ≤3 words per chunk, words appear as they are spoken,
-// the spoken word is bright, earlier words dim, keywords get the KROZO selection box.
-let CHUNKS = null, lastSub = null;
-function buildChunks() {
-  CHUNKS = []; let gi = 0;
-  for (const g of TL.subs) {
-    const ws = g.words.map(w => Object.assign({ gi: gi++ }, w)), n = ws.length;
-    const sizes = n <= 3 ? [n] : n === 4 ? [2, 2] : n === 5 ? [3, 2] : [3, n - 3];
-    let k = 0;
-    for (const z of sizes) { const part = ws.slice(k, k + z); k += z; CHUNKS.push({ s: part[0].s - .06, e: 0, words: part }); }
-    CHUNKS[CHUNKS.length - 1].gEnd = g.e;
-  }
-  CHUNKS.forEach((c, i) => { const nx = CHUNKS[i + 1]; c.e = c.gEnd ? Math.min(c.gEnd + .25, nx ? nx.s : 1e9) : nx.s; });
-}
+let lastSub = null;
 function renderSubs(t) {
-  if (!CHUNKS) buildChunks();
-  const cur = CHUNKS.find(s => t >= s.s && t < s.e);
+  const cur = TL.subs.find(s => t >= s.s && t < s.e);
   if (!cur) { subsEl.innerHTML = ''; lastSub = null; return; }
   if (lastSub !== cur) {
-    subsEl.innerHTML = '<span class="line">' + cur.words.map((w, i) => `<span class="w${TL.keys && TL.keys.has(w.gi) ? ' key' : ''}" data-i="${i}">${w.w.replace(/[،,.!؟?…]+$/, '')}<i></i><i></i><i></i><i></i></span>`).join(' ') + '</span>';
+    subsEl.innerHTML = '<span class="line">' + cur.words.map((w, i) => `<span class="w" data-i="${i}">${w.w}</span>`).join(' ') + '</span>';
     lastSub = cur;
   }
-  const a = clamp(1 - prog(t, cur.e - .08, cur.e));
+  const a = clamp(Math.min(prog(t, cur.s, cur.s + .12), 1 - prog(t, cur.e - .1, cur.e)));
   subsEl.style.opacity = a;
+  subsEl.style.transform = `translateY(${(1 - ease.out(prog(t, cur.s, cur.s + .2))) * 14}px)`;
   const spans = subsEl.querySelectorAll('.w');
-  cur.words.forEach((w, i) => {
-    const k = ease.out(prog(t, w.s - .03, w.s + .12)), sp = spans[i];
-    sp.style.opacity = k; sp.style.transform = `translateY(${(1 - k) * 18}px)`;
-    const now = t >= w.s - .03 && (i === cur.words.length - 1 || t < cur.words[i + 1].s - .03);
-    sp.classList.toggle('now', now);
-  });
+  cur.words.forEach((w, i) => { spans[i].className = 'w' + (t >= w.s ? ' on' : '') + (t >= w.s && t < w.e + .05 ? ' now' : ''); });
 }
 
 window.PENDING = [];
