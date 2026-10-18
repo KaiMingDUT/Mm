@@ -229,7 +229,7 @@ const A19 = shot(w(119) - .05, w(131) - .05, (lt, t) => {
   r.ring(L, .06 + .01 * Math.sin(t * 4), 0x59c7ff, .9, { face: L.clone().normalize(), w: .08, fill: 1 });
   r.emit(Rr, t, { R: .05, per: .9, life: 1.2, face: Rr.clone().normalize(), a: .8 });
   r.arcMesh.visible = true; r.arcM.uniforms.p.value = 1;
-  r.lookCam(v3(0, .5 + .1 * (1 - z), 1.35 + 2.0 * z), v3(0, .45 * z + .1 * (1 - z), 0), 30);
+  r.lookCam(v3(0, .35 + .15 * z, 2.3 + 1.0 * z), v3(0, .45 * z + .05 * (1 - z), 0), 30);
 }, { ov: (lt, t) => { const r = R(); const L = onEarth(r.LON.lat, r.LON.lon, 1.003), Rr = onEarth(r.RUH.lat, r.RUH.lon, 1.003); return ovTag('مدى البلوتوث', L, 160, -180, sm(w(128), w(129), t), 'hot') + ovTag('جوالك', Rr, 140, 150, sm(w(119), w(120), t)) + `<div class="km" style="opacity:${sm(w(122), w(123), t)}"><span class="latin">${KM.toLocaleString('en-US')}</span> كم ✕</div>`; } });
 
 // ═════════ A STRANGER WALKS BY ═════════
