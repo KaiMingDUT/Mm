@@ -4,7 +4,7 @@ import numpy as np
 # Every pause after a listed word is set to that length (extended with silence if the natural pause is shorter);
 # other pauses > 0.34 s become 0.30 s. The whole voice is then slowed with rubberband (TEMPO) and the knots scaled.
 P = sys.argv[1]
-TEMPO = 0.93
+TEMPO = 1.0   # client: keep the original voice speed (v2 used 0.93)
 ps = [tuple(map(float, l.split())) for l in open(P + '/pauses_m.txt') if l.strip()]
 W = json.load(open(P + '/words3.json'))
 _w = wave.open(P + '/voice16.wav'); SR = _w.getframerate(); X = np.frombuffer(_w.readframes(_w.getnframes()), np.int16).astype(float)
@@ -28,7 +28,7 @@ for i, L in BEATS.items():
         plan.append((best, best + .06, L))
 for a, b in ps:
     if a == 0 or a in used or a > 102.8: continue
-    if b - a > .34: plan.append((a, b, .30))
+    if b - a > .32: plan.append((a, b, .26))
 plan.sort()
 plan = [(0.0, ps[0][1], .10)] + plan if ps[0][0] == 0 else plan
 knots = [[0.0, 0.0]]; ts = tv = 0.0

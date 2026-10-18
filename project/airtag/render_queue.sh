@@ -2,8 +2,8 @@
 # Resumable render: 16 segments, 4 workers; a segment counts only once its .done marker exists.
 cd "$(dirname "$0")"
 W=../work_airtag/seg; mkdir -p $W
-END=118.7; N=16
-seg() { python3 -c "print(f'{round(3561*$1/$N)/30:.6f}')"; }   # on the 30 fps frame grid (3561 frames)
+END=110.3; N=16
+seg() { python3 -c "print(f'{round(3309*$1/$N)/30:.6f}')"; }   # on the 30 fps frame grid (3309 frames)
 run() {
   i=$1; a=$(seg $i); b=$(seg $((i+1)))
   [ -f $W/s$i.done ] && return

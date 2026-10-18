@@ -2,7 +2,7 @@
 # usage: ./mix.sh → audio/final_music.wav, audio/final_nomusic.wav (two-pass loudnorm −14 LUFS / −1.5 dBTP)
 set -e
 cd "$(dirname "$0")"
-D=118.7
+D=110.3
 V=voice_timed.wav
 ffmpeg -nostdin -v error -y -i audio/music.wav -af "highpass=f=70,equalizer=f=2600:t=q:w=1.4:g=-8,equalizer=f=1200:t=q:w=1:g=-4,equalizer=f=4500:t=q:w=1:g=-4" audio/m_eq.wav
 ffmpeg -nostdin -v error -y -i $V -i audio/m_eq.wav -i audio/sfx.wav -filter_complex "
