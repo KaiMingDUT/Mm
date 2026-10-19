@@ -14,7 +14,6 @@ BEATS = {  # word index -> pause after it (s). v3: only the essential beats (cli
     46: .45,    # "اسمه AirTag…" (reveal)
     88: .6,     # "مكان أغراضك؟"
     141: .9,    # "ممكن جواله … يلتقط الإشارة!" (suspense)
-    147: .55,   # "الفكرة العبقرية…"
 }
 plan = []
 used = set()
