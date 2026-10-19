@@ -206,25 +206,23 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - **Colour rule:** green only for the LED light (the subject); blood is muted wine red; everything else is brand. Tell the client if they object.
 - **Warp lesson (extends face_id v3):** on a compressed voice almost every pause has a breath or drawn-out tail above −45 dBFS, so `safe_to_cut` would keep all pauses. `project/apple_watch/warp.py` instead shortens only the longest stretch under −50 dB RMS inside each pause (`quiet_run`), and keeps the tails and breaths whole.
 
-### F2. AirTag caption sync (OPEN, next step)
-- The client says captions run **late from "يلتقط إشارة الـAirTag مباشرة،" (story ≈64 s) to the end**.
-  - Audio is verified exact: every voice chunk is in the final mix at the warp position (±0.01 s), and there are no cuts.
-  - The problem is **word placement inside long chunks**. The nuclei-DP alignment drifts there.
-- **ASR/forced-alignment downloads are blocked** by the network policy: `download.pytorch.org`, `openaipublic.azureedge.net` and GitHub releases all return 403.
-  - The client was asked to add `download.pytorch.org` (+ `openaipublic.azureedge.net`) to Allowed domains.
-- **Once allowed:**
-  1. `pip install torch torchaudio uroman` (CPU).
-  2. Use `torchaudio.pipelines.MMS_FA` on `project/airtag/voice16.wav` with the romanized words from `words3.json`. Do it per chunk between pauses, or on the full file.
-  3. Write the word s/e back into `words3.json`.
-  4. Run `python3 subs.py`.
-  5. Restore `renderSubs(ts + .04)` in `engine/engine.js` (the +.18 lead was a workaround).
-  6. Re-render with `render_queue.sh`, then concat, encode and mux as in the session log.
-  - Do **not** change warp/pauses: the 5 beats are on real gaps and verified.
-- **Lesson:** never insert a pause where there is no natural gap (it cut the voice), and never hand-"spread" word times without evidence.
+### F2. AirTag caption sync (DONE, Oct 19)
+- **Root cause:** the recording has a closing line that was missing from `script.txt`: "وهنا سر الـAirTag: جهاز صغير ما عنده GPS، لكنه يستفيد من أجهزة Apple القريبة منه عشان يساعدك تلقى أغراضك." (story ≈94–103 s).
+  - The nuclei-DP alignment stretched the script over that extra speech. Captions drifted later from ≈60 s: ≈5 s late at 75 s and ≈9 s late at the end.
+  - The dramatic 2.1 s gap (75.1–77.3) actually sits after "الفكرة العبقرية…", not before "يلتقط الإشارة!".
+- **Fix:** `align_fa.py` does CTC forced alignment on `voice16.wav` (= `source/voice_airtag.mp3`, mono 16 kHz).
+  - `torchaudio.functional.forced_align` runs on emissions from **Meta Omnilingual-ASR CTC 1B** (MMS successor, Arabic letters natively). It uses the sherpa-onnx int8 export, run with onnxruntime in 20 s windows.
+  - MMS_FA weights (`dl.fbaipublicfiles.com`) and torch CPU wheels (`download-r2.pytorch.org`) are still blocked. The model comes from the GitHub release `k2-fsa/sherpa-onnx` → `asr-models/sherpa-onnx-omnilingual-asr-1600-languages-1B-ctc-int8-2025-11-12.tar.bz2`. Torch/torchaudio come from PyPI.
+  - The closing line was appended to `script.txt`, `syl.txt` and `words3.json` (words 182–200, line 31). Word indices 0–181 are unchanged, so timeline/SFX keys still hold.
+  - The old timing is kept in `words3_dp_v6.json`.
+- `renderSubs(ts + .04)` is restored. The A24 pin-drop and its SFX were hard-coded at 87.45–88.5 s; they are now keyed to `w(160)`. Warp/pauses are untouched.
+- Audio was rebuilt with the same chain: voice_clean → voicewarp → `sfx_tag.py audio/sfx.wav 99.1` → `tools/music.py audio/music.wav 99.1` (default REVEAL, matched against the delivered mix) → `mix.sh`. The voice is identical to v6.
+- Engine libs are gitignored. Copy `google_maps/engine/{lib,fonts}`, add three r169 `examples/jsm` (npm `three@0.169.0`) and `topojson-client@3.1.0/dist/topojson-client.min.js`.
+- **Lesson:** a script/recording mismatch makes any proportional alignment drift. Run ASR or forced alignment first and compare the transcript with the script before trusting word times.
 
 ## 7. Known issues / bugs / caveats
 
-1. **No ASR.** Word timing comes from the alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
+1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
 2. **Touchscreen v1** (archived) had a cropped conductive-glove framing. v3 replaces it.
 3. **Tesla 3D car** is a stylised wedge, not Tesla's design. It is labelled illustrative in the README.
 4. **Google Maps video** still uses the older, louder music mix (see 6A) and has no NoMusic version.
