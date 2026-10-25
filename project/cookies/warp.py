@@ -25,21 +25,38 @@ def quiet_run(a, b, th=-50):
     return (a + best[0] * .02, a + best[1] * .02) if best[1] > best[0] else None
 
 
-# Only the silent part of a pause is shortened: drawn-out word endings and breaths are never cut (face_id v3 lesson).
+# v2 (client: "pauses only where needed"): cut per word gap, breaths included.
+# Each gap keeps the word's tail (≥ 0.10 s after its aligned end, extended while the audio is voiced or loud)
+# and the next onset (≥ 0.06 s, extended the same way); only the unvoiced middle (silence + inhale) is removed,
+# so the gap ends up ≈ TARGET. A drawn-out ending is voiced, so it is never cut (face_id v3 lesson).
+W = json.load(open(P + '/words3.json'))
+KEEPW = {17: 0.55, 83: 0.45,   # the two question beats
+         35: 0.30, 42: 0.30, 76: 0.32, 88: 0.30}   # micro-beats at section ends (room for the hit), the reveal
+TARGET = 0.17
+_n = int(.02 * _sr)
+def voiced(t):
+    f = _x[int(t * _sr):int(t * _sr) + _n]
+    if len(f) < _n: return False
+    lvl = 20 * np.log10(np.sqrt((f ** 2).mean()) + 1e-9)
+    if lvl > -30: return True                      # loud = still a word
+    if lvl < -48: return False
+    f = f - f.mean(); ac = np.correlate(f, f, 'full')[len(f) - 1:]; ac /= ac[0] + 1e-12
+    lo, hi = int(_sr / 400), int(_sr / 80)
+    return ac[lo:hi].max() > .55                   # periodic = voiced tail/onset
 plan = []
-for a, b in ps:
-    L = b - a
-    if a > END: continue
-    k = [v for t, v in KEEP.items() if abs(t - a) < 0.08]
-    target = k[0] if k else (0.10 if a == 0 else 0.18)
-    if not k and L <= 0.28 and a > 0: continue
-    q = quiet_run(a, b)
-    if not q: print(f'  keep {a:.2f} intact (no silent stretch)'); continue
-    qa, qb = q; qL = qb - qa
-    newq = max(0.08, target - (L - qL))
-    if target > L: newq = qL + (target - L)          # an intentional beat longer than the pause: add silence
-    if abs(newq - qL) < .03 or (newq < qL and qL < .12) or (newq > qL and target <= L): continue
-    plan.append((qa, qb, newq))
+for i, (wa, wb) in enumerate(zip(W, W[1:])):
+    if wa['e'] > END: break
+    g = wb['s'] - wa['e']; target = KEEPW.get(i, TARGET)
+    if g <= target + .06: continue
+    a = wa['e'] + .10
+    while a < wb['s'] - .1 and voiced(a): a += .02
+    b = wb['s'] - .06
+    while b > a + .04 and voiced(b - .02): b -= .02
+    keep_outside = (a - wa['e']) + (wb['s'] - b)
+    new = max(.02, target - keep_outside)
+    if b - a - new < .05: continue
+    plan.append((a, b, new))
+    print(f"  {wa['w']:>14} → {wb['w']:<10} gap {g:.2f} → {keep_outside + new:.2f}")
 knots = [[0.0, 0.0]]; ts = tv = 0.0
 for a, b, new in plan:
     tva = tv + (a - ts)
