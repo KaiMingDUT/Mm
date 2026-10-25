@@ -260,6 +260,14 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Engine `cookie3d.js`: panels are `RoundedBox` glass slabs + `CanvasTexture` screens repainted only when their state key changes (`P.paint(key, fn)`), and `P.pt(px, py)` maps a canvas pixel to world space (cursor targets, packets).
 - **Fact flag** (README): login/cart cookies are "strictly necessary" and usually work even if you reject. The banner is mostly about tracking/ads cookies. The narration was kept; the client was told.
 
+### I. PlayStation disc (DONE, Oct 25)
+- `output/playstation_disc/KROZO_PlayStation_Disc_Reel.mp4` + `_NoMusic.mp4`, ≈61 s, `.srt`, README (scenes + fact-check). Sources: `project/playstation_disc/` (see `BUILD.md`).
+- The client's message had no title (the "[اكتب العنوان هنا]" placeholder was left in) and no script: the `.mov` was transcribed with Omnilingual CTC greedy decoding (overlapping windows), then aligned with `tools/align_fa.py` (`CD` → Latin tokens `cd`, added to `LATIN`). Title used: "كيف البلايستيشن يقرأ القرص؟".
+- Engine `ps3d.js`: one deterministic pit/land pattern (3T–11T) drives both the microscope shader (1 unit = 1 µm, hair ≈ 70 µm for scale) and the laser cross-section + scope (transition = 1). Disc shader: spiral `trk`, rainbow `rain`.
+- **Colour rule:** rainbow only where it is the subject (tilted disc, diffraction fan); the rest is brand. The laser is drawn blue (a real CD laser is 780 nm IR) — said in the README.
+- **Fact flag:** CD = PS1 only; PS2 = DVD, PS3+ = Blu-ray (405 nm). Narration kept; client told.
+- Lessons: the microscope / console whites blew out at first (lower base albedo + env intensity .8); a cross-section reads better from slightly below (the laser's side) with the pits coloured cyan. Cut whooshes that land on a word onset were dropped (SFX margin check script: voice vs SFX in 50 ms windows).
+
 ## 7. Known issues / bugs / caveats
 
 1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.

@@ -13,3 +13,6 @@ __pycache__/
 project/work_cookies/
 project/cookies/audio/
 project/cookies/*.wav
+project/work_ps/
+project/playstation_disc/audio/
+project/playstation_disc/*.wav

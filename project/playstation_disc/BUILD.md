@@ -1,0 +1,7 @@
+# PlayStation disc reel — build notes
+Engine: `engine/` = engine.js + timeline.js (shots in story time) + ps3d.js (generic console with slot loader; game disc with a data-side shader: spiral track drawn by `trk`, brand sheen / rainbow diffraction by `rain`; microscope surface where 1 unit = 1 µm, with pits/lands from one deterministic EFM-like pattern (3T–11T, T = 0.2777 µm, pitch 1.6 µm) baked into a 4096×2048 mask; laser cross-section of track 31 using the same pattern (pits as bumps toward the laser) + scope panel that turns transitions into 1s; instanced 0/1 billboards; data block → 3 cards; RAM/CPU/GPU board; TV with a live 2D game frame; low-poly game world; comments panel for the CTA).
+Not committed: `engine/lib/` (three@0.169.0 `build/three.module.js` + `examples/jsm`) and `engine/fonts/` (copy from another engine).
+Voice: `source/voice_playstation.mov` (video track is black, no script given: transcribed with Omnilingual CTC greedy decoding) → voice16.wav / voice48.wav → voice_chain.txt (clean voice: no gate, no afftdn) → voice_clean.wav.
+Words: `python3 ../tools/align_fa.py . MODEL_DIR` (CTC forced alignment; `CD` maps to the Latin tokens `cd`) → words3.json.
+Pipeline: align_fa → warp.py (3 kept beats) → `../tools/voicewarp.py .` (verified r = 1.000 on every chunk) → subs.py → `sfx_ps.py audio/sfx.wav 61.3` → `../tools/music.py audio/music.wav 61.1 46.2` → `./mix.sh`
+Render: `render_queue.sh` (16 resumable segments, 4 workers) → concat → encode (x264 crf 19, maxrate 4.2M) + mux.

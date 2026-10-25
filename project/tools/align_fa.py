@@ -32,7 +32,7 @@ last = int(np.nonzero(cnt)[0].max()) + 1
 E = acc[:last] / np.maximum(cnt[:last], 1)[:, None]
 
 # spoken form of Latin words (the model writes Arabic speech in Arabic letters)
-LATIN = {'AirTag': 'ايرتاق', 'GPS': 'جي بي اس', 'Apple': 'ابل', 'Cookies': 'كوكيز'}
+LATIN = {'AirTag': 'ايرتاق', 'GPS': 'جي بي اس', 'Apple': 'ابل', 'Cookies': 'كوكيز', 'CD': 'cd'}
 def norm(word):
     s = re.sub('[،.!؟…:«»"]', '', word).replace('ـ', '')
     for k, v in LATIN.items(): s = s.replace(k, v)
