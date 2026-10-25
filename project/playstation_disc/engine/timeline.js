@@ -224,7 +224,7 @@ const A8 = shot(w(50) - .05, w(62) - .05, (lt, t) => {
 });
 
 // A9: "والبلايستيشن يعالجها ويجمعها عشان تظهر لك اللعبة عالشاشة." — RAM → CPU → GPU → the screen
-const A9 = shot(w(62) - .05, w(70) - .05, (lt, t) => {
+const A9 = shot(w(62) - .05, w(71) - .05, (lt, t) => {
   const r = R(); r.world.visible = true; r.gridM.uniforms.a.value = .4;
   r.board.visible = true; r.board.position.set(0, -.6, 0);
   const C = r.BRD.chips, bp = n => C[n].top.clone().add(v3(0, -.6, 0));
@@ -248,7 +248,7 @@ const A9 = shot(w(62) - .05, w(70) - .05, (lt, t) => {
   if (sk > 0) {
     r.paintScreen(t, prog(t, w(66) - .1, w(69) + .2));
     r.SCREEN.at(v3(0, .9 + 1.6 * sk, -2.2), -.05, 0, 0, Math.max(.001, sk), clamp(sk * 1.4), .5 + .4 * bump(t, w(69), .6));
-    r.beam(gpu, v3(0, .9 + 1.6 * sk - .9, -2.2), .03, 0x59c7ff, .6 * sk * (1 - prog(t, w(69), w(70))), { t: t * 4 });
+    r.beam(gpu, v3(0, .9 + 1.6 * sk - .9, -2.2), .03, 0x59c7ff, .6 * sk * (1 - prog(t, w(69), w(71))), { t: t * 4 });
   }
   const pb = sm(w(65) - .2, w(66) + .4, t);
   aim(v3(0, lerp(-.5, .9, pb), lerp(.2, -1.0, pb)), lerp(4.6, 6.6, pb), 1100, 720, .06 * Math.sin(lt * .4), lerp(.8, .32, pb), 32);
@@ -256,25 +256,25 @@ const A9 = shot(w(62) - .05, w(70) - .05, (lt, t) => {
 
 // ═════════ RAINBOW ═════════
 // A10: "وإذا شفت ألوان قوس قزح على الـCD،" — tilt the disc under a light: the sheen turns into a rainbow
-const A10 = shot(w(70) - .05, w(77) - .05, (lt, t) => {
+const A10 = shot(w(71) - .05, w(78) - .05, (lt, t) => {
   const r = R(); r.world.visible = true; r.gridM.uniforms.a.value = .5;
   r.discAt(v3(0, .1, 0), .95 - .25 * sm(0, 3, lt), 0, -.15, 1, t * .25);
-  r.DISC.u.rain.value = sm(w(72) - .3, w(74) + .3, t);
+  r.DISC.u.rain.value = sm(w(73) - .3, w(75) + .3, t);
   const s = sm(0, 3, lt); r.DISC.u.L.value.set(lerp(-.9, .9, s), 1, lerp(.6, -.2, s));
   r.bloom.strength = .55;
   aim(v3(0, .1, 0), 2.3, 1000, 720, -.25 + .2 * s, .25, 32);
 });
 // A11: "فهي ناتجة عن تفاعل الضوء مع المسارات الدقيقة والمتقاربة على سطحه." — white light in, a fan of colours out
 const SPEC = [0x8a5cff, 0x3d6bff, 0x168bff, 0x59c7ff, 0x46d98a, 0xffd85a, 0xff9a4a, 0xff5a6a];
-const A11 = shot(w(77) - .05, w(88) - .05, (lt, t) => {
+const A11 = shot(w(78) - .05, w(89) - .05, (lt, t) => {
   const r = R(); r.world.visible = false; r.macro.visible = true; r.MAC.u.off.value = 100; r.MAC.u.fr.value = 16; r.MAC.u.focus.value.set(0, 0);
   const hit = v3(0, 0, 0), src = v3(-5.5, 7.5, 2.2);
-  const inK = prog(t, w(80) - .2, w(81) + .1);
+  const inK = prog(t, w(81) - .2, w(82) + .1);
   r.beam(src, lerpV(src, hit, Math.max(.001, inK)), .12, 0xf4f7fb, .9 * clamp(inK * 4));
   if (inK >= 1) {
     r.glow(hit, 2.2, 0xf4f7fb, .8);
     SPEC.forEach((c, i) => {
-      const k = ease.out(prog(t, w(81) + .05 + i * .07, w(83) + i * .07)); if (k <= 0) return;
+      const k = ease.out(prog(t, w(82) + .05 + i * .07, w(84) + i * .07)); if (k <= 0) return;
       const an = lerp(.45, 1.05, i / 7), end = v3(Math.cos(an) * 9, Math.sin(an) * 9, -1.8 + i * .12);
       r.beam(hit, lerpV(hit, end, k), .07, c, .85);
     });
@@ -284,7 +284,7 @@ const A11 = shot(w(77) - .05, w(88) - .05, (lt, t) => {
   aim(v3(1, 2.4, 0), 9.5 - lt * .15, 1150, 690, .55, .35, 32);
 }, {
   ov: (lt, t) => {
-    const k1 = sm(w(80) - .1, w(80) + .2, t) * (1 - prog(t, w(84) - .3, w(84))), k2 = sm(w(84), w(84) + .3, t);
+    const k1 = sm(w(81) - .1, w(81) + .2, t) * (1 - prog(t, w(85) - .3, w(85))), k2 = sm(w(85), w(85) + .3, t);
     let dim = '';
     if (k2 > 0) { const [x1, y1] = P2(v3(1.2, 0, 0)), [x2, y2] = P2(v3(1.2, 0, 1.6)); dim = `<svg class="ld" style="opacity:${k2}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:#59C7FF;stroke-width:5"/><circle cx="${x1}" cy="${y1}" r="7"/><circle cx="${x2}" cy="${y2}" r="7"/></svg><div class="tag hot" style="opacity:${k2};left:${(x1 + x2) / 2 - 60}px;top:${(y1 + y2) / 2 + 110}px">بين المسارات ${lat('1.6 µm')}</div>`; }
     return ovTag('ضوء أبيض', v3(-2.6, 3.55, 1.05), 170, -120, k1) + dim + ovNote('المسارات المتقاربة تفرّق الضوء لألوان · رسم توضيحي');
@@ -293,45 +293,45 @@ const A11 = shot(w(77) - .05, w(88) - .05, (lt, t) => {
 
 // ═════════ IN SHORT ═════════
 // A12: "يعني بالنهاية، قرص صغير يحمل بيانات هائلة، يقرأها الجهاز ويحوّلها إلى عالم كامل تلعب فيه."
-const A12 = shot(w(88) - .05, w(103) - .05, (lt, t) => {
+const A12 = shot(w(89) - .05, w(104) - .05, (lt, t) => {
   const r = R(); r.world.visible = true;
-  const ins = prog(t, w(95) - .15, w(96) + .5), gk = ease.out(prog(t, w(97) - .1, w(99) + .2));
+  const ins = prog(t, w(96) - .15, w(97) + .5), gk = ease.out(prog(t, w(98) - .1, w(100) + .2));
   r.con.visible = true; r.con.position.set(0, 0, 0);
   if (ins <= 0) {
     r.discAt(v3(0, 1.25, 2.65), .55, 0, 0, 1, t * 1.8); r.DISC.u.sheen.value = 1.4;
     // data spirals into the disc ("بيانات هائلة")
-    const dk = sm(w(92) - .2, w(93), t) * (1 - prog(t, w(94) + .3, w(95)));
+    const dk = sm(w(93) - .2, w(94), t) * (1 - prog(t, w(95) + .3, w(96)));
     for (let i = 0; i < 260 && dk > 0; i++) {
       const k = (t * .5 + hash(i)) % 1, an = hash(i + 3) * 6.283 + k * 3, rad = .2 + (1 - k) * 2.2;
       r.digit(v3(Math.cos(an) * rad, 1.25 + (1 - k) * 1.6 * (hash(i + 8) - .3), 2.65 + Math.sin(an) * rad * .6), hash(i + 2) > .55 ? 1 : 0, .13, dk * (1 - k) * 1.3);
     }
   } else { insertDisc(t, ins, t * 1.8); if (ins > .98) r.disc.visible = false; }
-  r.CON.slotGlow.material.opacity = .9 * bump(t, w(96) + .2, .6); r.CON.cl.intensity = 3 * bump(t, w(96) + .25, .9);
-  r.CON.strip.color.setHex(0x168bff).lerp(new r.THREE.Color(0x59c7ff), bump(t, w(96) + .25, .9));
+  r.CON.slotGlow.material.opacity = .9 * bump(t, w(97) + .2, .6); r.CON.cl.intensity = 3 * bump(t, w(97) + .25, .9);
+  r.CON.strip.color.setHex(0x168bff).lerp(new r.THREE.Color(0x59c7ff), bump(t, w(97) + .25, .9));
   if (gk > 0) {
     r.gwAt(v3(0, .9 + 1.6 * gk, -.4), 1.1 * gk, t * .3, clamp(gk * 1.3), t);
     for (let i = 0; i < 3; i++) r.ring(v3(0, .5, -.3), (.6 + ((t * .6 + i / 3) % 1) * 3) * gk, 0x59c7ff, (1 - ((t * .6 + i / 3) % 1)) * .45 * gk, { flat: true });
-    if (t < w(98) + .3) r.grade.flash.value = .25 * bump(t, w(97) - .05, .35);
+    if (t < w(99) + .3) r.grade.flash.value = .25 * bump(t, w(98) - .05, .35);
   }
-  const p1 = sm(w(94) + .2, w(96), t), p2 = sm(w(97) - .2, w(99) + .4, t);
+  const p1 = sm(w(95) + .2, w(97), t), p2 = sm(w(98) - .2, w(100) + .4, t);
   const c = lerpV(lerpV(v3(0, 1.25, 2.65), v3(0, .5, .8), p1), v3(0, 2.4, -.4), p2);
   aim(c, lerp(lerp(2.4, 3.2, p1), 7.4, p2) - lt * .03, 1000, 740, lerp(.2, .35, p1) + .25 * p2 * Math.sin(lt * .25), lerp(lerp(.45, .35, p1), .22, p2), 34);
 }, {
   ov: (lt, t) => {
-    const k = sm(w(93), w(93) + .3, t) * (1 - prog(t, w(95) - .3, w(95)));
+    const k = sm(w(94), w(94) + .3, t) * (1 - prog(t, w(96) - .3, w(96)));
     return ovTag(`حتى ${lat('700 MB')}`, v3(.7, 1.3, 2.65), 140, -260, k, 'hot');
   },
 });
 
 // ═════════ CTA ═════════
 // A13: "إذا كنت حاب تعرف كيف تسوي مثل هذي الفيديوهات، اكتب «تقنية» في التعليقات."
-const A13 = shot(w(103) - .05, VOICE_END + .12, (lt, t) => {
-  const r = R(), ts = w(115) + .12;
-  r.paintComments({ focus: t > w(112) ? 1 : 0, type: r2(prog(t, w(113) - .1, w(114) + .2)), send: r2(prog(t, ts, ts + .25)), post: r2(prog(t, ts + .15, ts + .8)) });
+const A13 = shot(w(104) - .05, VOICE_END + .12, (lt, t) => {
+  const r = R(), ts = w(116) + .12;
+  r.paintComments({ focus: t > w(113) ? 1 : 0, type: r2(prog(t, w(114) - .1, w(115) + .2)), send: r2(prog(t, ts, ts + .25)), post: r2(prog(t, ts + .15, ts + .8)) });
   const inK = sm(0, .5, lt);
   r.MAIN.at(v3(0, 0, -2 * (1 - inK)), 0, .1 - lt * .02, 0, 1, inK, .4 + .5 * bump(t, ts + .2, .6));
-  const send = r.MAIN.pt(100, 1355, .06), ck = sm(w(114), ts - .05, t);
-  if (t > w(112)) r.cursorAt(lerpV(v3(1.2, -2.2, .8), send, ck), .16, prog(t, ts, ts + .22));
+  const send = r.MAIN.pt(100, 1355, .06), ck = sm(w(115), ts - .05, t);
+  if (t > w(113)) r.cursorAt(lerpV(v3(1.2, -2.2, .8), send, ck), .16, prog(t, ts, ts + .22));
   r.click(send, t, ts, .5);
   aim(v3(0, 0, 0), 3.0, 1040 + lt * 10, 735, -.06, .04);
 });

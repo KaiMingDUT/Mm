@@ -402,7 +402,7 @@ def data_chatter(d=1.2, rate=28):
 
 # ── events ──
 VE = 65.8
-SH = [10, 16, 21, 27, 31, 44, 50, 62, 70, 77, 88, 103]
+SH = [10, 16, 21, 27, 31, 44, 50, 62, 71, 78, 89, 104]
 CUTS = [w(i) - .05 for i in SH]
 ev = [(whoosh(.4, 700, 5200), V(c) - .22, .045, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS) if i not in (1, 3, 4)]   # no whoosh on the cuts that land right on a word (they would mask its onset)
 hb = lambda x, g=.42, d=.33: [(heartbeat(), _V0(x), g, 0), (heartbeat(), _V0(x + d), g * .72, 0)]   # keep both beats inside the pause
@@ -436,16 +436,16 @@ ev += [
     # A10 the rainbow
     (shimmer(2.2), _V0(41.45), .04, 0),
     # A11 white light in, the colours fan out
-    (zap(.6), V(w(80)) - .1, .05, -.3), (shimmer(1.6), V(w(81)), .06, .3), (ping(2637, .8), G(w(85)), .04, 0),
-    (reverse_swell(1.0), _V0(gap(w(87) + .3)) - .55, .06, 0),
+    (zap(.6), V(w(81)) - .1, .05, -.3), (shimmer(1.6), V(w(82)), .06, .3), (ping(2637, .8), G(w(86)), .04, 0),
+    (reverse_swell(1.0), _V0(gap(w(88) + .3)) - .55, .06, 0),
     # A12 the disc, the data, into the console, the world
-    (impact(1.0, 44), G(w(87) + .35), .12, 0),
-    (data_chatter(1.6, 24), V(w(92)), .025, 0),
-    (slot_in(.6), V(w(95) + .2), .07, 0), (spin_up(1.2), V(w(96)), .035, 0),
-    (reverse_swell(.9), V(w(97)) - .6, .035, 0), (thud(.4), _V0(56.95), .06, 0), (shimmer(2.0), V(w(97)), .04, 0),
+    (impact(1.0, 44), G(w(88) + .35), .12, 0),
+    (data_chatter(1.6, 24), V(w(93)), .025, 0),
+    (slot_in(.6), V(w(96) + .2), .07, 0), (spin_up(1.2), V(w(97)), .035, 0),
+    (reverse_swell(.9), V(w(98)) - .6, .035, 0), (thud(.4), _V0(56.95), .06, 0), (shimmer(2.0), V(w(98)), .04, 0),
     # A13 type «تقنية», send, the comment lands
-    *[(key(), V(w(113) - .1) + k * (w(114) + .3 - w(113)) / 5, .05, 0) for k in range(5)],
-    (click(), V(w(115) + .12), .04, 0), (whoosh(.35, 1200, 4200), V(w(115) + .25), .035, 0),
+    *[(key(), V(w(114) - .1) + k * (w(115) + .3 - w(114)) / 5, .05, 0) for k in range(5)],
+    (click(), V(w(116) + .12), .04, 0), (whoosh(.35, 1200, 4200), V(w(116) + .25), .035, 0),
     # outro
     (whoosh(1.2, 300, 3000), V(VE) - .2, .18, 0), (impact(1.6, 44), V(VE + .35), .2, 0), (shimmer(2.0), V(VE + .4), .16, 0),
 ]

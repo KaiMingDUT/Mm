@@ -262,7 +262,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 
 ### I. PlayStation disc (DONE, Oct 25)
 - `output/playstation_disc/KROZO_PlayStation_Disc_Reel.mp4` + `_NoMusic.mp4`, ≈61 s, `.srt`, README (scenes + fact-check). Sources: `project/playstation_disc/` (see `BUILD.md`).
-- The client's message had no title (the "[اكتب العنوان هنا]" placeholder was left in) and no script: the `.mov` was transcribed with Omnilingual CTC greedy decoding (overlapping windows), then aligned with `tools/align_fa.py` (`CD` → Latin tokens `cd`, added to `LATIN`). Title used: "كيف البلايستيشن يقرأ القرص؟".
+- The client's first message had no title (the "[اكتب العنوان هنا]" placeholder was left in) and no script, so the `.mov` was first transcribed with Omnilingual CTC greedy decoding (overlapping windows), then aligned with `tools/align_fa.py` (`CD` → Latin tokens `cd`, added to `LATIN`). Title used: "كيف البلايستيشن يقرأ القرص؟". The client then sent the script: captions follow it (وواحدات, هالأصفار, "على الشاشة" = 2 words, so word indices ≥ 70 moved by +1 in timeline.js and sfx_ps.py).
 - Engine `ps3d.js`: one deterministic pit/land pattern (3T–11T) drives both the microscope shader (1 unit = 1 µm, hair ≈ 70 µm for scale) and the laser cross-section + scope (transition = 1). Disc shader: spiral `trk`, rainbow `rain`.
 - **Colour rule:** rainbow only where it is the subject (tilted disc, diffraction fan); the rest is brand. The laser is drawn blue (a real CD laser is 780 nm IR) — said in the README.
 - **Fact flag:** CD = PS1 only; PS2 = DVD, PS3+ = Blu-ray (405 nm). Narration kept; client told.
