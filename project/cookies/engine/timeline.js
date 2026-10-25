@@ -13,11 +13,19 @@ function popIn(node, t, at, dur = .3, rise = 30) {
 const R = () => window.R3;
 const v3 = (x, y, z) => R().V(x, y, z);
 const S = [];
-const shot = (s, e, update, o = {}) => { const x = Object.assign({ s, e, update }, o); S.push(x); return x; };
+let NOW = 0, NOWLT = 0, NOWSH = null;
+const shot = (s, e, update, o = {}) => { const x = Object.assign({ s, e }, o); x.update = (lt, t, sh) => { NOW = t; NOWLT = lt; NOWSH = x; update(lt, t, sh); }; S.push(x); return x; };
+// camera energy: a punch-in on key words, a whip-pan into some shots, a light handheld drift
+const KICKW = [7, 17, 23, 35, 39, 47, 50, 57, 59, 69, 73, 82, 87, 99];
+const kick = t => KICKW.reduce((m, i) => { const a = WT[i]; return t < a ? m : Math.max(m, ease.out(prog(t, a, a + .07)) * Math.exp(-(t - a) * 4)); }, 0);
+const hand = t => [Math.sin(t * 1.7) * .6 + Math.sin(t * 3.1 + 1) * .4, Math.sin(t * 1.3 + 2) * .6 + Math.sin(t * 2.7) * .4];
 const P2 = v => R().project(v);
 const r2 = x => Math.round(x * 100) / 100;
 // frame an object: world height hW fills hPx pixels, its centre sits at (xPx, yPx); az/el orbit the camera around it
 function aim(c, hW, hPx, yPx = 720, az = 0, el = 0, fov = 30, xPx = 540) {
+  hPx *= 1 + .09 * kick(NOW);
+  const wh = NOWSH && NOWSH.whip ? NOWSH.whip * (1 - ease.out(prog(NOWLT, 0, .38))) : 0;
+  const [hx, hy] = hand(NOW); az += wh * .55 + hx * .012; el += hy * .008;
   const visH = hW * 1920 / hPx, d = visH / (2 * Math.tan(fov * Math.PI / 360));
   const look = v3(c.x - (xPx - 540) / 1920 * visH * Math.cos(az), c.y - (960 - yPx) / 1920 * visH, c.z + (xPx - 540) / 1920 * visH * Math.sin(az));
   R().lookCam(v3(look.x + Math.sin(az) * Math.cos(el) * d, look.y + Math.sin(el) * d, look.z + Math.cos(az) * Math.cos(el) * d), look, fov);
@@ -54,20 +62,24 @@ const K1 = shot(0, w(9) - .05, (lt, t) => {
 }, { noPunch: true });
 function eo1(k) { return ease.out(k); }
 
-// K2: "لكن هل تعرف إيش اللي تسمح له يسويه فعلًا؟" — the banner alone; a dark cookie waits behind it
-const K2 = shot(w(9) - .05, w(18) - .05, (lt, t) => {
+// K2: "لكن هل تعرف إيش اللي تسمح له يسويه فعلًا؟" — the banner alone; a dark cookie waits behind it (2 angles)
+function k2(lt, t, close) {
   const r = R();
   r.paintBanner({ k: 1, ga: r2(.9 * bump(t, w(14) - .1, .7) + .25 * Math.max(0, Math.sin(t * 3))) });
-  r.BANNER.at(v3(0, 0, 0), .05, .16 - lt * .04, 0, 1, 1, .4);
-  r.cookie.visible = true; r.cookie.position.set(.75, .95, -3.0); r.cookie.scale.setScalar(.62); r.scene.environmentIntensity = .25; r.cookie.rotation.set(.35, -.5 + lt * .12, .15);
-  const q = t > w(17) ? Math.exp(-(t - w(17)) * 2.5) : 0;
+  r.BANNER.at(v3(0, 0, 0), .05, .16 - lt * .04 - .25 * close, 0, 1, 1, .4);
+  r.cookie.visible = true; r.cookie.position.set(.75 - .5 * close, .95 - .3 * close, -3.0 + .6 * close); r.cookie.scale.setScalar(.62 + .25 * close); r.cookie.rotation.set(.35, -.5 + t * .25, .15);
+  const q = t > w(17) ? Math.exp(-(t - w(17)) * 2.5) : 0; r.scene.environmentIntensity = .25;
   r.COOKIE.body.emissiveIntensity = .15; r.COOKIE.chipM.emissiveIntensity = .12 + 1.4 * q + .15 * bump(t, w(14), .8); r.COOKIE.kl.intensity = 2 * q;
-  aim(v3(0, .1, 0), 1.7, 860 + lt * 40, 700, .2 - lt * .03, .06);
-});
+  if (t > w(17)) { r.grade.ca.value = .0015 + .02 * Math.exp(-(t - w(17)) * 6); r.grade.flash.value = .12 * Math.exp(-(t - w(17)) * 8); }
+  if (!close) aim(v3(0, .1, 0), 1.7, 860 + lt * 60, 700, .2 - lt * .05, .06);
+  else aim(r.BANNER.pt(...B_OK, 0), .9, 700 + lt * 90, 760, -.35 + lt * .06, .1, 30, 600);
+}
+const K2a = shot(w(9) - .05, w(12) - .05, (lt, t) => k2(lt, t, 0));
+const K2b = shot(w(12) - .05, w(18) - .05, (lt, t) => k2(lt, t, 1), { whip: -1 });
 
 // ═════════ THE STORY: the shoe that stays in the cart ═════════
 // K3: shopping; add the shoe to the cart; leave the site
-const K3 = shot(w(18) - .05, w(28) - .05, (lt, t) => {
+function k3(lt, t, hero) {
   const r = R(), tp = w(22) + .05;
   r.paintShop({ add: r2(prog(t, tp, tp + .25)), added: t > tp + .2 ? 1 : 0, fly: r2(prog(t, tp + .25, w(24) + .15)), n: t > w(24) + .15 ? 1 : 0, nk: r2(prog(t, w(24) + .15, w(24) + .45)) });
   const lv = sm(w(25), w(27) + .35, t);
@@ -76,8 +88,11 @@ const K3 = shot(w(18) - .05, w(28) - .05, (lt, t) => {
   if (t < w(25)) { const ck = sm(w(20), tp - .05, t); r.cursorAt(lerpV(v3(1.4, -2.2, .8), btn, ck), .16, prog(t, tp, tp + .22)); }
   r.click(btn, t, tp, .5);
   if (t > tp + .25 && t < w(24) + .3) r.glow(r.MAIN.pt(130, 260, .05), .5 * bump(t, w(24) + .05, .4), 0x59c7ff, .9);
-  aim(v3(0, 0, 0), 3.0, 1060 - lt * 12, 735, .1, .04);
-});
+  if (hero) aim(r.MAIN.pt(450, 560, 0), 1.25, 620 + lt * 60, 560, .55 - lt * .12, -.12 + lt * .03);
+  else aim(v3(0, 0, 0), 3.0, 1060 - lt * 12, 735, .1, .04);
+}
+const K3a = shot(w(18) - .05, w(21) - .05, (lt, t) => k3(lt, t, 1), { whip: 1 });
+const K3b = shot(w(21) - .05, w(28) - .05, (lt, t) => k3(lt, t, 0));
 // K4: tomorrow (25 → 26) — you come back: the shoe is still in the cart
 const K4 = shot(w(28) - .05, w(36) - .05, (lt, t) => {
   const r = R(), f = ease.inOut(prog(t, w(29), w(30) + .2)), back = sm(w(31) - .25, w(31) + .25, t);
@@ -89,7 +104,8 @@ const K4 = shot(w(28) - .05, w(36) - .05, (lt, t) => {
     r.MAIN.at(v3(0, 0, -3 * (1 - inK)), 0, -.25 * (1 - inK) + .08, 0, 1, inK, .35 + .5 * bump(t, w(35), .6));
   }
   if (t > w(35)) r.glow(r.MAIN.pt(450, 1180, .05), 1.2 * bump(t, w(35) - .05, .6), 0x59c7ff, .6);
-  aim(v3(0, 0, 0), 3.0, 1060, 735, -.08 + lt * .02, .05);
+  const fl = ease.inOut(prog(t, w(29) - .1, w(30) + .3)); r.grade.zb.value = Math.max(r.grade.zb.value, .5 * Math.sin(Math.PI * fl));
+  aim(v3(0, 0, 0), 3.0, 1060, 735, -.08 + lt * .02 + .5 * Math.sin(Math.PI * fl), .05 + .12 * Math.sin(Math.PI * fl));
 });
 
 // ═════════ THE REVEAL: it was the cookie ═════════
@@ -105,11 +121,11 @@ const K5 = shot(w(36) - .05, w(43) - .05, (lt, t) => {
   for (let i = 0; i < 3; i++) r.ring(v3(0, -.75, .1), (.4 + ((t * .8 + i / 3) % 1) * 1.4) * up, 0x59c7ff, (1 - ((t * .8 + i / 3) % 1)) * .6 * up);
   r.glow(v3(0, -.8 + 1.85 * up, .1), 2.4 * up, 0x168bff, .45 * up);
   if (t > w(39)) r.grade.flash.value = .3 * (1 - prog(t, w(39), w(39) + .3));
-  aim(v3(0, .25, 0), 3.4, 1100, 720, .25 - lt * .05, .3 - lt * .02);
-}, { ov: (lt, t) => ovTag('<span class="latin">Cookie</span>', v3(.55, 1.4, .1), 200, -60, sm(w(39) + .1, w(39) + .4, t), 'hot') });
+  aim(v3(0, .45, 0), 3.4, 920 + lt * 50, 760, .45 - lt * .22, .32 - lt * .03);
+}, { ov: (lt, t) => ovTag('<span class="latin">Cookie</span>', v3(-.5, 1.2, .1), -170, -90, sm(w(39) + .1, w(39) + .4, t), 'hot') });
 
 // K6: "الـCookies عبارة عن ملفات نصية صغيرة، يحفظها المتصفح،" — the cookie unfolds into a small text file; the browser keeps it in its jar
-const K6 = shot(w(43) - .05, w(51) - .05, (lt, t) => {
+const K6 = shot(w(43) - .05, w(51) - .05, (lt, t) => {   // whip set below
   const r = R(), op = ease.out(prog(t, w(46) - .15, w(46) + .35)), jin = sm(w(49) - .2, w(49) + .45, t), drop = sm(w(49) + .1, w(50) + .35, t);
   // cookie → file
   if (op < 1) { r.cookie.visible = true; r.cookie.position.set(0, .1 + .5 * op, .3 * op); r.cookie.scale.setScalar(.85 * (1 - .8 * op)); r.cookie.rotation.set(.15, .35 * Math.sin(lt * .9) + op * 2, .05); r.COOKIE.kl.intensity = 2; }
@@ -127,7 +143,7 @@ const K6 = shot(w(43) - .05, w(51) - .05, (lt, t) => {
   }
   r.click(v3(0, -.35, -.2), t, w(50) + .3, .7);
   aim(v3(0, -.1, 0), 2.0, 900, 720, .06, .05);
-}, { ov: (lt, t) => { const r = R(); const k = sm(w(48), w(48) + .3, t) * (1 - prog(t, w(49) - .1, w(49) + .2)); return ovTag('أقل من <span class="latin">4 KB</span>', r.FILE.pt(760, 900, .05), -220, 170, k, 'hot'); } });
+}, { whip: -1, ov: (lt, t) => { const r = R(); const k = sm(w(48), w(48) + .3, t) * (1 - prog(t, w(49) - .1, w(49) + .2)); return ovTag('أقل من <span class="latin">4 KB</span>', r.FILE.pt(760, 900, .05), -220, 170, k, 'hot'); } });
 
 // K7: "تساعد المواقع تتذكّر أشياء مثل تسجيل دخولك وسلة مشترياتك." — the jar remembers: login + cart
 const JARP = { x: 0, y: -.35, z: 0 };
@@ -145,7 +161,7 @@ const K7 = shot(w(51) - .05, w(60) - .05, (lt, t) => {
   const top = v3(0, .55, 0);
   if (pl > 0) r.beam(top, v3(-.05, 1.85, .1), .012, 0x59c7ff, .7 * clamp(pl), { t: t * 3, grow: clamp(pl) });
   if (pc > 0) r.beam(top, v3(.05, .65, .2), .012, 0x59c7ff, .7 * clamp(pc), { t: t * 3, grow: clamp(pc) });
-  aim(v3(0, .95, 0), 3.95, 1060, 730, .1 * Math.sin(lt * .4), .05);
+  aim(v3(0, .95, 0), 3.95, 1060 + lt * 25, 730, .45 * Math.sin(lt * .7), .05 + .04 * Math.sin(lt * .5));
 });
 
 // ═════════ IN SHORT: allow = the site may save info about you ═════════
@@ -160,7 +176,7 @@ const K8a = shot(w(60) - .05, w(66) - .05, (lt, t) => {
 });
 // K8b: "أنت تسمح للموقع يحفظ معلومات عنك، عشان يتذكّرك لما ترجع له." — server → jar (save), jar → server (remember)
 const SRVP = { x: -1.3, y: -.75, z: 0 }, JAR2 = { x: 1.3, y: -.55, z: 0 };
-const K8b = shot(w(66) - .05, w(77) - .05, (lt, t) => {
+function k8b(lt, t, back) {
   const r = R(); r.server.visible = true; r.server.position.set(SRVP.x, SRVP.y, SRVP.z); r.server.scale.setScalar(.95); r.server.rotation.set(0, .35, 0);
   r.jar.visible = true; r.jar.position.set(JAR2.x, JAR2.y, JAR2.z); r.jar.scale.setScalar(.72); r.jar.rotation.set(.05, -.3, 0);
   const a = v3(SRVP.x, 1.05, 0), b = v3(JAR2.x, .35, 0);
@@ -174,8 +190,12 @@ const K8b = shot(w(66) - .05, w(77) - .05, (lt, t) => {
   r.JAR.jl.intensity = 2 * bump(t, w(71) + .2, .7);
   const wk = ease.back(prog(t, w(75) - .1, w(75) + .25));
   if (wk > 0) { r.paintWelcome(r2(prog(t, w(75) + .2, w(75) + .6))); r.WELCOME.at(v3(-.1, 2.05, .3), .04, .12, 0, 1.5 * Math.max(.001, wk), clamp(wk * 2), .5); }
-  aim(v3(0, .5, 0), 6.4, 1500, 720, .05 * Math.sin(lt * .4), .08);
-}, { ov: (lt, t) => { const k1 = sm(w(69) + .1, w(69) + .4, t) * (1 - prog(t, w(71) + .2, w(71) + .5)); return ovTag('معلومات عنك', v3(0, 1.55, 0), 0, -170, k1, 'hot'); } });
+  const f = back ? 1 - p2 : p1, fc = lerpV(v3(SRVP.x, .35, 0), v3(JAR2.x, .25, 0), ease.inOut(f));
+  if (!back) aim(fc, 3.6, 1150, 720, -.25 + .5 * f, .12);
+  else { const z = sm(w(74) + .1, w(75) + .4, t); aim(lerpV(fc, v3(0, .6, 0), z), 3.6 + 2.8 * z, 1150 + 350 * z, 720, .25 - .5 * f * (1 - z), .12 - .04 * z); }
+}
+const K8b1 = shot(w(66) - .05, w(72) - .05, (lt, t) => k8b(lt, t, 0), { ov: (lt, t) => { const k1 = sm(w(69) + .1, w(69) + .4, t) * (1 - prog(t, w(71) + .2, w(71) + .5)); return ovTag('معلومات عنك', v3(0, .95, 0), 0, 260, k1, 'hot'); } });
+const K8b2 = shot(w(72) - .05, w(77) - .05, (lt, t) => k8b(lt, t, 1), { whip: 1 });
 
 // ═════════ YOUR TURN ═════════
 // K9: "متى آخر مرة سويت «عدم السماح» للموقع؟" — the cursor hovers over «عدم السماح»…
@@ -184,7 +204,8 @@ const K9 = shot(w(77) - .05, w(84) - .05, (lt, t) => {
   r.paintBanner({ k: 1, gr: r2(hv * (.7 + .3 * Math.sin(t * 4))) });
   r.BANNER.at(v3(0, 0, 0), .04, .1 - lt * .02, 0, 1, 1, .4);
   const no = r.BANNER.pt(...B_NO, .06); r.cursorAt(lerpV(v3(-1.5, -1.5, .6), no, hv).add(v3(.015 * Math.sin(t * 7), .01 * Math.sin(t * 5), 0)), .14);
-  aim(v3(0, 0, 0), 1.6, 800 + lt * 25, 700, .1 - lt * .02, .05);
+  const z = sm(.2, w(83) + .4 - (w(77) - .05), lt), no2 = r.BANNER.pt(...B_NO, 0);
+  aim(lerpV(v3(0, 0, 0), no2, z), 1.6, 800 + 520 * z, 700, .1 - lt * .02, .05);
 });
 // K10: "بالنسبة لي، دايمًا أسمح له." — …and slides over to «سماح». Click. Cookies pop out.
 const K10 = shot(w(84) - .05, w(89) - .05, (lt, t) => {
@@ -194,7 +215,8 @@ const K10 = shot(w(84) - .05, w(89) - .05, (lt, t) => {
   const no = r.BANNER.pt(...B_NO, .06), ok = r.BANNER.pt(...B_OK, .06);
   r.cursorAt(lerpV(no, ok, mv), .14, prog(t, tc, tc + .22)); r.click(ok, t, tc, .5);
   for (let i = 0; i < 4; i++) { const k = ease.out(prog(t, tc + .1 + i * .06, tc + .9 + i * .06)); if (k > 0 && k < 1) { const v = ok.clone().add(v3((i - 1.5) * .35 * k, .2 + 1.1 * k - .4 * k * k, .2)); r.mini(v, .14 * (1 - .3 * k), t * 3 + i, -.4); r.glow(v, .5, 0x59c7ff, .6 * (1 - k)); } }
-  aim(v3(0, 0, 0), 1.6, 825, 700, .08, .05);
+  const z = 1 - ease.out(prog(t, w(85) - .15, w(86) + .35)), no2 = r.BANNER.pt(...B_NO, 0);
+  aim(lerpV(v3(0, 0, 0), no2, z), 1.6, 825 + 495 * z, 700, .08, .05);
 }, { noPunch: true });
 // K11: "إذا كنت حاب تعرف كيف تسوي مثل هذه الفيديوهات، اكتب «تقنية» في التعليقات."
 const K11 = shot(w(89) - .05, VOICE_END + .12, (lt, t) => {
@@ -205,7 +227,9 @@ const K11 = shot(w(89) - .05, VOICE_END + .12, (lt, t) => {
   const send = r.MAIN.pt(...SEND_BTN, .06), ck = sm(w(99) + .3, ts - .05, t);
   if (t > w(97)) r.cursorAt(lerpV(v3(1.2, -2.2, .8), send, ck), .16, prog(t, ts, ts + .22));
   r.click(send, t, ts, .5);
-  aim(v3(0, 0, 0), 3.0, 1040 + lt * 10, 735, -.06, .04);
+  const hp = prog(t, w(101) - .1, w(101) + 1.2);
+  if (hp > 0 && hp < 1) for (let i = 0; i < 10; i++) { const k = clamp(hp * 1.4 - i * .04), v = r.MAIN.pt(120, 260, .1).add(v3(Math.sin(i * 2.4) * .5 * k, .9 * k + (i % 3) * .08 * k, .1 + i * .02)); r.glow(v, .22, i % 2 ? 0x59c7ff : 0x168bff, (1 - k) * .9); }
+  aim(v3(0, 0, 0), 3.0, 1040 + lt * 30, 735, -.06 + .1 * Math.sin(lt * .8), .04);
 });
 window.SHOTS = S;
 

@@ -355,9 +355,13 @@ def gap(ts):
         if x > ts: return x + .02
     return ts
 G = lambda ts: _V0(gap(ts))   # voice time, no picture lead: the lead would pull the hit back into the word
-
-# ── events ──
-
+_PLAN = json.load(open(os.path.join(HERE, 'warp.json')))['plan']
+def Gt(i):
+    """story time of the splice in the gap after word i (where warp.py removed the silence/breath): the voiced tail is over"""
+    for a, b, new in _PLAN:
+        if W[i]['e'] - .05 <= a <= W[i + 1]['s']: return a + .01
+    return W[i]['e'] + .12
+Gw = lambda i: _V0(Gt(i))
 
 def key(d=.05):
     """keyboard key: short filtered click + body"""
@@ -371,49 +375,94 @@ def flip(d=.4):
     return hp(lp(n, 6000), 900) * np.sin(np.pi * np.clip(t / d, 0, 1)) ** 2 * (1 + .5 * np.sin(2 * np.pi * 34 * t))
 
 
-# ── events ──
+def drop(d=1.8, f0=120, f1=32):   # cinematic sub drop
+    t = tt(d); f = f1 + (f0 - f1) * np.exp(-t * 3.5)
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 1.6) * np.clip(t / .01, 0, 1)
+    return s / np.max(np.abs(s))
+
+
+def clock(d=2.0, bpm=150):
+    out = np.zeros(int(d * SR)); per = 60 / bpm
+    for k in range(int(d / per)):
+        t = tt(.05); f = 2400 if k % 2 else 1800; s = np.sin(2 * np.pi * f * t) * np.exp(-t * 120)
+        o = int(k * per * SR); out[o:o + len(s)] += s[:len(out) - o]
+    return out
+
+
+def braam(d=1.6, f=55):
+    """low brass-like hit: detuned saws through an opening low-pass, slow decay"""
+    t = tt(d); ph = 2 * np.pi * np.cumsum(np.full(len(t), f)) / SR
+    saw = sum(((ph * m / (2 * np.pi) + k * .37) % 1) * 2 - 1 for m, k in ((1, 0), (1.006, 1), (1.5, 2), (2.003, 3)))
+    env = np.clip(t / .03, 0, 1) * np.exp(-t * 2.2)
+    out = np.zeros(len(t)); acc = 0.0; cut = 200 + 1800 * np.exp(-t * 3)
+    a = np.exp(-2 * np.pi * cut / SR)
+    for i in range(len(t)): acc = (1 - a[i]) * saw[i] + a[i] * acc; out[i] = acc
+    s = out * env; return s / np.max(np.abs(s))
+
+
+def dg(f=1760, d=.5):
+    """short bright ding for the 0.17 s gaps: rings out before the next word"""
+    t = tt(d); return (np.sin(2 * np.pi * f * t) + .5 * np.sin(2 * np.pi * 1.5 * f * t)) * np.exp(-t * 11) * np.clip(t / .003, 0, 1)
+
+
+def swish(d=.28):
+    """fast whip-pan swish"""
+    return whoosh(d, 1800, 7000)
+
+
+# ── events (v2: more energy; hits/booms only in gaps, everything under a word stays ≥ 15 dB down) ──
 VE = 45.55
-SH = [9, 18, 28, 36, 43, 51, 60, 66, 77, 89]
+SH = [9, 12, 18, 21, 28, 36, 43, 51, 60, 66, 72, 77, 89]
+WHIP = {12, 18, 43, 72}
 CUTS = [w(i) - .05 for i in SH]
-ev = [(whoosh(.4, 700, 5200), V(c) - .22, .06, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS)]
+ev = [(whoosh(.4, 700, 5200), V(c) - .22, .07, (-.35 if k % 2 else .35)) for k, c in enumerate(CUTS)]
+ev += [(swish(), V(w(i) - .05) - .12, .06, (.5 if i % 2 else -.5)) for i in WHIP]
 hb = lambda x, g=.42, d=.33: [(heartbeat(), _V0(x), g, 0), (heartbeat(), _V0(x + d), g * .72, 0)]   # keep both beats inside the pause
-# K1 banners pop up on every site (same stagger as timeline.js), then one click and the rest follow
 for i in range(9):
     c, r = i % 3 - 1, i // 3 - 1; d = (c * c + r * r) ** .5
     st = w(1) - .1 + (0 if i == 4 else .25 + d * .22 + (i % 2) * .12)
     ev.append((pop(), V(st) + .05, .022 if i != 4 else .035, c * .5))
-    if i != 4: ev.append((click(), V(w(8) + d * .1), .035, c * .5))
+    if i != 4: ev.append((click(), V(w(8) + d * .1), .03, c * .5))
 ev += [
-    (impact(1.2, 46), V(0) + .02, .14, 0), (shimmer(1.0), V(.2), .06, 0),
-    (click(), V(w(7)), .08, 0),
-    # K2 the question, then the beat
-    (riser(1.1), V(w(15)) - .3, .03, 0), (blip(330, .25, 220), G(w(17) + .15), .13, 0), *hb(gap(w(17) + .15) + .05, d=.26),
-    # K3 add to cart, the shoe flies, the badge, you leave
-    (click(), V(w(22) + .05), .08, 0), (whoosh(.5, 900, 4200), V(w(22) + .3), .05, .2), (pop(), G(w(24) + .15), .1, -.3), (chime(1568), G(w(24) + .2) + .04, .06, -.3),
-    (whoosh(.9, 2600, 400), V(w(25)), .07, .4),
-    # K4 tomorrow: page flip, back on the site, the cart drawer, still there ✓
-    (flip(.45), V(w(29)), .09, 0), (flip(.35), V(w(30)), .06, 0), (whoosh(.6, 500, 3000), V(w(31)) - .2, .06, 0), (whoosh(.4, 1200, 3000), V(w(32)), .04, 0),
-    (chime(1760), G(w(35)) + .08, .13, 0), (ping(2093, .9), G(w(35)) + .18, .05, 0),
-    # K5 the reveal: the cookie rises
-    (reverse_swell(1.1), V(w(39)) - 1.1, .08, 0), (shimmer(1.8), V(w(39)), .07, 0), (impact(1.0, 44), G(w(42) + .2) + .1, .15, 0), (shimmer(1.4), G(w(42) + .2) + .12, .1, 0),   # the hit lands in the gap before «الـCookies»
-    # K6 cookie → text file (typed), into the jar
-    (whoosh(.6, 500, 3500), V(w(46)) - .2, .06, 0), *[(key(), V(w(46) + .1) + k * .16, .07, (k % 3 - 1) * .2) for k in range(int((w(48) + .35 - w(46) - .1) / .16))],
-    (whoosh(.7, 400, 2200), V(w(49)) - .2, .05, 0), (thud(.4), G(w(50) + .3) + .05, .1, 0), (ping(2637, .8), G(w(50) + .3) + .08, .05, 0),
-    # K7 the jar remembers: login ✓, cart ✓
-    (shimmer(1.0), V(w(53)), .03, 0), (whoosh(.4, 1200, 3600), V(w(56)) - .15, .06, -.2), (chime(1568), G(w(57) + .05), .08, -.2), (pop(), G(w(58) - .1), .1, .2), (chime(1760), G(w(59) + .05), .08, .2),
+    # K1 hook: a hit before the first word, a riser into the click, a sub-drop in the first gap
+    (impact(1.0, 46), V(0) + .02, .2, 0), (shimmer(1.0), V(.1), .08, 0),
+    (riser(1.2), V(w(7)) - 1.15, .035, 0), (click(), V(w(7)), .08, 0),
+    (drop(1.0, 110, 34), Gw(8), .3, 0), (pop(), Gw(8), .1, 0),
+    # K2 the question: tension under it, then glitch + boom + heartbeat in the beat
+    (braam(2.4, 41), V(w(10)), .035, 0), (ticks(1.4, 10, 900, 1300), V(w(13)), .03, 0),
+    (glitch(.3), Gw(17), .1, 0), (drop(1.4, 100, 30), Gw(17), .3, 0), *hb(Gt(17) + .08, d=.26),
+    # K3 shopping: add to cart, the shoe flies, ka-ching in the gap, you leave with a whoosh
+    (click(), V(w(22) + .05), .08, 0), (whoosh(.5, 900, 4200), V(w(22) + .3), .05, .2),
+    (kaching(), Gw(24), .1, -.3), (pop(), Gw(24), .1, -.3),
+    (whoosh(.9, 2600, 400), V(w(25)), .07, .4), (thud(.5), Gw(27), .2, 0),
+    # K4 tomorrow: the clock races, the page flips, still there ✓ (chime + boom in the gap)
+    (clock(1.1, 300), V(w(28)), .03, 0), (flip(.45), V(w(29)), .08, 0), (flip(.35), V(w(30)), .05, 0), (riser(.9), V(w(31)) - .7, .03, 0),
+    (whoosh(.6, 500, 3000), V(w(31)) - .2, .05, 0), (whoosh(.4, 1200, 3000), V(w(32)), .035, 0),
+    (dg(1760), Gw(35) + .03, .1, 0), (drop(.9, 120, 40), Gw(35) + .02, .2, 0), (dg(2093, .4), Gw(35) + .1, .05, 0),
+    # K5 the reveal: riser under "وهنا تجي وظيفة الكوكيز", braam + impact in the gap before «الـCookies»
+    (reverse_swell(1.3), V(w(39)) - 1.3, .05, 0), (shimmer(1.6), V(w(39)), .03, 0),
+    (braam(1.2, 49), Gw(42) + .02, .11, 0), (impact(1.0, 44), Gw(42) + .02, .1, 0), (shimmer(1.4), Gw(42) + .06, .04, 0),
+    # K6 cookie → text file (typed), into the jar (thud + glass ping in the gap)
+    (whoosh(.6, 500, 3500), V(w(46)) - .2, .05, 0), *[(key(), V(w(46) + .1) + k * .16, .06, (k % 3 - 1) * .2) for k in range(int((w(48) + .35 - w(46) - .1) / .16))],
+    (whoosh(.7, 400, 2200), V(w(49)) - .2, .05, 0), (thud(.4), Gw(50) + .02, .12, 0), (dg(2637, .25), Gw(50) + .02, .025, 0),
+    # K7 the jar remembers: login ✓, cart ✓ (each chime in its gap)
+    (shimmer(1.0), V(w(53)), .03, 0), (whoosh(.4, 1200, 3600), V(w(56)) - .15, .05, -.2),
+    (dg(1568, .25), Gw(57), .045, -.2), (dg(1760), Gw(59), .1, .2), (drop(.8, 120, 45), Gw(59), .16, 0),
     # K8 in short: one click; save (server → jar), remember (jar → server), welcome back
-    (click(), V(w(64) + .05), .08, 0),
-    (whoosh(1.0, 600, 3000), V(w(69)) - .05, .06, -.3), (ping(2093, .8), G(w(71) + .25), .07, .4),
-    (whoosh(1.0, 3000, 600), V(w(72)), .06, .3), (ping(1568, .8), G(w(74) + .15), .06, -.4), (chime(1976), G(w(75) + .2) + .12, .08, 0),
-    # K9 the hover over «عدم السماح» … the beat
-    (blip(330, .25, 220), G(w(83) + .2), .13, 0), (heartbeat(), _V0(gap(w(83) + .2) + .08), .42, 0),   # one beat: two do not fit in this 0.45 s pause
-    # K10 … always allow: slide, click, cookies pop
-    (whoosh(.35, 1500, 3500), V(w(85)), .04, 0), (click(), V(w(87)) - .05, .04, 0), *[(pop(), G(w(87) + .05) + k * .06, .08, (k - 1.5) * .3) for k in range(4)],
-    # K11 type «تقنية», send, the comment lands
+    (riser(1.0), V(w(64)) - 1.0, .02, 0), (click(), V(w(64) + .05), .08, 0), (drop(.9, 110, 36), Gw(65), .22, 0),
+    (whoosh(1.0, 600, 3000), V(w(69)) - .05, .06, -.3), (dg(2093, .4), Gw(71), .07, .4),
+    (whoosh(1.0, 3000, 600), V(w(72)), .06, .3), (dg(1568, .4), Gw(76), .07, -.4), (dg(1976), Gw(76) + .05, .08, 0), (impact(.9, 50), Gw(76), .12, 0),
+    # K9 the hover over «عدم السماح»: a ticking clock + riser under the question, then boom + heartbeat in the beat
+    (clock(1.6, 160), V(w(78)), .035, 0), (riser(1.4), V(w(83)) - 1.2, .035, 0),
+    (drop(1.2, 100, 30), Gw(83), .3, 0), (heartbeat(), _V0(Gt(83) + .08), .42, 0),   # one beat: two do not fit in this 0.45 s pause
+    # K10 … always allow: slide, click, cookies pop (in the gap)
+    (whoosh(.35, 1500, 3500), V(w(85)), .025, 0), (click(), V(w(87)) - .05, .05, 0),
+    *[(pop(), Gw(88) + k * .05, .045, (k - 1.5) * .3) for k in range(4)], (kaching(), Gw(88), .06, 0),
+    # K11 type «تقنية», send, the comment lands with likes
     *[(key(), V(w(98) + .05) + k * (w(99) + .3 - w(98) - .05) / 5, .05, 0) for k in range(5)],
-    (click(), V(w(100)) - .05, .04, 0), (whoosh(.35, 1200, 4200), V(w(100)) + .1, .035, 0), (pop(), G(w(101) + .1), .14, 0), (chime(2093), G(w(101) + .1) + .05, .08, 0),
+    (click(), V(w(100)) - .05, .04, 0), (whoosh(.35, 1200, 4200), V(w(100)) + .1, .035, 0), (pop(), Gw(101), .14, 0), (chime(2093), Gw(101) + .05, .12, 0),
     # outro
-    (whoosh(1.2, 300, 3000), V(VE) - .2, .18, 0), (impact(1.6, 44), V(VE + .35), .2, 0), (shimmer(2.0), V(VE + .4), .16, 0),
+    (whoosh(1.2, 300, 3000), V(VE) - .2, .18, 0), (braam(2.0, 49), V(VE + .35), .22, 0), (impact(1.6, 44), V(VE + .35), .22, 0), (shimmer(2.0), V(VE + .4), .16, 0),
 ]
 for sig, t, g, pan in ev:
     place(sig, t, g, pan)
@@ -425,3 +474,12 @@ with wave.open(OUT, 'wb') as wv:
     wv.setnchannels(2); wv.setsampwidth(2); wv.setframerate(SR)
     wv.writeframes((st * 32767).astype(np.int16).tobytes())
 print('wrote', OUT, 'events', len(ev), 'video end', round(V(VE + 2.6), 2))
+if os.environ.get('SFXWHY'):   # debug: which events sound inside the given video-time windows (speech band)
+    for tw in map(float, os.environ['SFXWHY'].split(',')):
+        rows = []
+        for k, (sig, t, g, pan) in enumerate(ev):
+            a = int((tw - t) * SR); b = a + int(.1 * SR)
+            if b <= 0 or a >= len(sig): continue
+            seg = sig[max(0, a):max(0, b)] * g; X = np.fft.rfft(seg); X[np.fft.rfftfreq(len(seg), 1 / SR) < 150] = 0
+            rows.append((20 * np.log10(np.sqrt((np.fft.irfft(X, len(seg)) ** 2).mean()) + 1e-9) - 5, k, round(t, 2)))
+        print(tw, sorted(rows, reverse=True)[:3])
