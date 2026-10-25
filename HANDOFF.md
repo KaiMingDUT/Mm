@@ -40,9 +40,9 @@
 ---
 
 ## 1b. CURRENT HOUSE STYLE (latest client feedback — follow this for every new video)
-- **Environment:** work in the **"Krozo"** cloud environment. It allows `download.pytorch.org` + `openaipublic.azureedge.net`.
+- **Environment:** work in the **"Krozo"** cloud environment (network allow-list set by the client).
   - **Transcribe** the client's audio yourself (Whisper or MMS) when no script is given.
-  - **Get word timestamps** with `torchaudio.pipelines.MMS_FA` (forced alignment). This replaces the old nuclei/DP alignment, which drifted inside long phrases.
+  - **Get word timestamps** by CTC forced alignment, exactly as done for AirTag v7 (see the AirTag section below). That run used Omnilingual-ASR CTC (sherpa-onnx export) + `torchaudio.functional.forced_align`, because MMS_FA weights are still blocked. This replaces the old nuclei/DP alignment, which drifted inside long phrases.
   - **Captions must be synced to the spoken word.** This was the client's biggest complaint.
   - The client often sends a **.mov/.mp4 that is just a black screen with voice**. The audio is the script, and the idea is spoken in it.
 - **Voice:**
