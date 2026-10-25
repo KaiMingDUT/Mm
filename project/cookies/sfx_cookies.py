@@ -346,6 +346,16 @@ def loud_voice(d=1.0):
 def beep(f=1000, d=.12):
     t = tt(d); return np.sin(2 * np.pi * f * t) * np.clip(t / .004, 0, 1) * np.clip((d - t) / .03, 0, 1) * .8
 
+# hits/chimes never sit on a spoken word: gap(ts) = ts if it falls in a pause, else the start of the next pause (story time)
+PZ = [tuple(map(float, l.split())) for l in open(os.path.join(HERE, 'pauses_m.txt')) if l.strip()]
+PZ = [(x, y) for x, y in PZ if y - x >= .12]
+def gap(ts):
+    for x, y in PZ:
+        if x - .02 <= ts <= y - .05: return ts
+        if x > ts: return x + .02
+    return ts
+G = lambda ts: _V0(gap(ts))   # voice time, no picture lead: the lead would pull the hit back into the word
+
 # ── events ──
 
 
@@ -365,43 +375,43 @@ def flip(d=.4):
 VE = 45.55
 SH = [9, 18, 28, 36, 43, 51, 60, 66, 77, 89]
 CUTS = [w(i) - .05 for i in SH]
-ev = [(whoosh(.4, 700, 5200), V(c) - .22, .12, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS)]
-hb = lambda x, g=.42: [(heartbeat(), V(x), g, 0), (heartbeat(), V(x + .33), g * .72, 0)]
+ev = [(whoosh(.4, 700, 5200), V(c) - .22, .06, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS)]
+hb = lambda x, g=.42, d=.33: [(heartbeat(), _V0(x), g, 0), (heartbeat(), _V0(x + d), g * .72, 0)]   # keep both beats inside the pause
 # K1 banners pop up on every site (same stagger as timeline.js), then one click and the rest follow
 for i in range(9):
     c, r = i % 3 - 1, i // 3 - 1; d = (c * c + r * r) ** .5
     st = w(1) - .1 + (0 if i == 4 else .25 + d * .22 + (i % 2) * .12)
-    ev.append((pop(), V(st) + .05, .07 if i != 4 else .12, c * .5))
-    if i != 4: ev.append((click(), V(w(8) + d * .1), .06, c * .5))
+    ev.append((pop(), V(st) + .05, .022 if i != 4 else .035, c * .5))
+    if i != 4: ev.append((click(), V(w(8) + d * .1), .035, c * .5))
 ev += [
     (impact(1.2, 46), V(0) + .02, .14, 0), (shimmer(1.0), V(.2), .06, 0),
-    (click(), V(w(7)), .3, 0), (blip(1800, .08), V(w(7)) + .02, .1, 0),
+    (click(), V(w(7)), .08, 0),
     # K2 the question, then the beat
-    (riser(1.6), V(w(15)) - .2, .05, 0), (blip(330, .25, 220), V(w(17)) + .15, .13, 0), *hb(w(17) + .4),
+    (riser(1.1), V(w(15)) - .3, .03, 0), (blip(330, .25, 220), G(w(17) + .15), .13, 0), *hb(gap(w(17) + .15) + .05, d=.26),
     # K3 add to cart, the shoe flies, the badge, you leave
-    (click(), V(w(22) + .05), .3, 0), (whoosh(.5, 900, 4200), V(w(22) + .3), .1, .2), (pop(), V(w(24) + .15), .2, -.3), (chime(1568), V(w(24) + .2), .09, -.3),
-    (whoosh(.9, 2600, 400), V(w(25)), .16, .4),
+    (click(), V(w(22) + .05), .08, 0), (whoosh(.5, 900, 4200), V(w(22) + .3), .05, .2), (pop(), G(w(24) + .15), .1, -.3), (chime(1568), G(w(24) + .2) + .04, .06, -.3),
+    (whoosh(.9, 2600, 400), V(w(25)), .07, .4),
     # K4 tomorrow: page flip, back on the site, the cart drawer, still there ✓
-    (flip(.45), V(w(29)), .2, 0), (flip(.35), V(w(30)), .12, 0), (whoosh(.6, 500, 3000), V(w(31)) - .2, .12, 0), (whoosh(.4, 1200, 3000), V(w(32)), .06, 0),
-    (chime(1760), V(w(35)), .16, 0), (ping(2093, .9), V(w(35)) + .1, .06, 0),
+    (flip(.45), V(w(29)), .09, 0), (flip(.35), V(w(30)), .06, 0), (whoosh(.6, 500, 3000), V(w(31)) - .2, .06, 0), (whoosh(.4, 1200, 3000), V(w(32)), .04, 0),
+    (chime(1760), G(w(35)) + .08, .13, 0), (ping(2093, .9), G(w(35)) + .18, .05, 0),
     # K5 the reveal: the cookie rises
-    (reverse_swell(1.1), V(w(39)) - 1.1, .14, 0), (impact(1.5, 44), V(w(39)), .26, 0), (shimmer(1.8), V(w(39)) + .02, .16, 0),
+    (reverse_swell(1.1), V(w(39)) - 1.1, .08, 0), (shimmer(1.8), V(w(39)), .07, 0), (impact(1.0, 44), G(w(42) + .2) + .1, .15, 0), (shimmer(1.4), G(w(42) + .2) + .12, .1, 0),   # the hit lands in the gap before «الـCookies»
     # K6 cookie → text file (typed), into the jar
-    (whoosh(.6, 500, 3500), V(w(46)) - .2, .12, 0), *[(key(), V(w(46) + .1) + k * .16, .12, (k % 3 - 1) * .2) for k in range(int((w(48) + .35 - w(46) - .1) / .16))],
-    (whoosh(.7, 400, 2200), V(w(49)) - .2, .1, 0), (thud(.4), V(w(50) + .3), .16, 0), (ping(2637, .8), V(w(50) + .32), .08, 0),
+    (whoosh(.6, 500, 3500), V(w(46)) - .2, .06, 0), *[(key(), V(w(46) + .1) + k * .16, .07, (k % 3 - 1) * .2) for k in range(int((w(48) + .35 - w(46) - .1) / .16))],
+    (whoosh(.7, 400, 2200), V(w(49)) - .2, .05, 0), (thud(.4), G(w(50) + .3) + .05, .1, 0), (ping(2637, .8), G(w(50) + .3) + .08, .05, 0),
     # K7 the jar remembers: login ✓, cart ✓
-    (shimmer(1.0), V(w(53)), .07, 0), (pop(), V(w(56)) - .1, .16, -.2), (chime(1568), V(w(57) + .05), .09, -.2), (pop(), V(w(58)) - .1, .16, .2), (chime(1760), V(w(59) + .05), .09, .2),
+    (shimmer(1.0), V(w(53)), .03, 0), (whoosh(.4, 1200, 3600), V(w(56)) - .15, .06, -.2), (chime(1568), G(w(57) + .05), .08, -.2), (pop(), G(w(58) - .1), .1, .2), (chime(1760), G(w(59) + .05), .08, .2),
     # K8 in short: one click; save (server → jar), remember (jar → server), welcome back
-    (click(), V(w(64) + .05), .28, 0),
-    (whoosh(1.0, 600, 3000), V(w(69)) - .05, .1, -.3), (ping(2093, .8), V(w(71) + .25), .08, .4),
-    (whoosh(1.0, 3000, 600), V(w(72)), .1, .3), (ping(1568, .8), V(w(74) + .15), .08, -.4), (chime(1976), V(w(75) + .2), .1, 0),
+    (click(), V(w(64) + .05), .08, 0),
+    (whoosh(1.0, 600, 3000), V(w(69)) - .05, .06, -.3), (ping(2093, .8), G(w(71) + .25), .07, .4),
+    (whoosh(1.0, 3000, 600), V(w(72)), .06, .3), (ping(1568, .8), G(w(74) + .15), .06, -.4), (chime(1976), G(w(75) + .2) + .12, .08, 0),
     # K9 the hover over «عدم السماح» … the beat
-    (blip(900, .06), V(w(81)), .06, 0), (blip(330, .25, 220), V(w(83)) + .2, .13, 0), *hb(w(83) + .5),
+    (blip(330, .25, 220), G(w(83) + .2), .13, 0), (heartbeat(), _V0(gap(w(83) + .2) + .08), .42, 0),   # one beat: two do not fit in this 0.45 s pause
     # K10 … always allow: slide, click, cookies pop
-    (whoosh(.35, 1500, 3500), V(w(85)), .07, 0), (click(), V(w(87)) - .05, .3, 0), *[(pop(), V(w(87)) + .05 + k * .06, .1, (k - 1.5) * .3) for k in range(4)],
+    (whoosh(.35, 1500, 3500), V(w(85)), .04, 0), (click(), V(w(87)) - .05, .04, 0), *[(pop(), G(w(87) + .05) + k * .06, .08, (k - 1.5) * .3) for k in range(4)],
     # K11 type «تقنية», send, the comment lands
-    *[(key(), V(w(98) + .05) + k * (w(99) + .3 - w(98) - .05) / 5, .14, 0) for k in range(5)],
-    (click(), V(w(100)) - .05, .26, 0), (whoosh(.35, 1200, 4200), V(w(100)) + .1, .08, 0), (pop(), V(w(100)) + .25, .18, 0), (chime(2093), V(w(101)) + .1, .08, 0),
+    *[(key(), V(w(98) + .05) + k * (w(99) + .3 - w(98) - .05) / 5, .05, 0) for k in range(5)],
+    (click(), V(w(100)) - .05, .04, 0), (whoosh(.35, 1200, 4200), V(w(100)) + .1, .035, 0), (pop(), G(w(101) + .1), .14, 0), (chime(2093), G(w(101) + .1) + .05, .08, 0),
     # outro
     (whoosh(1.2, 300, 3000), V(VE) - .2, .18, 0), (impact(1.6, 44), V(VE + .35), .2, 0), (shimmer(2.0), V(VE + .4), .16, 0),
 ]

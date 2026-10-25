@@ -4,8 +4,6 @@ P = sys.argv[1]
 ps = [tuple(map(float, l.split())) for l in open(P + '/pauses_m.txt') if l.strip()]
 KEEP = {  # pause start -> new total pause length: intentional beats
     7.18: 0.60,    # after "إيش اللي تسمح له يسويه فعلًا؟" (question beat + heartbeat)
-    14.93: 0.32,   # after "رح تلقى الحذاء لسه موجود!"
-    18.04: 0.30,   # before "الـCookies عبارة عن…" (the reveal)
     38.30: 0.45,   # after "متى آخر مرة سويت «عدم السماح» للموقع؟" (question to the viewer)
 }
 END = 45.62
