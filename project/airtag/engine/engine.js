@@ -98,7 +98,7 @@ window.seek = async function (tv) {
     sc.root.style.transform = k < 1 ? `scale(${1.06 - .06 * k})` : '';
   }
   if (flashEl) { let fl = 0; for (const x of (TL.flashes || [])) if (t >= x) fl = Math.max(fl, 1 - prog(t, x, x + .28)); flashEl.style.opacity = fl * .5; }
-  renderSubs(ts + .18);   // highlight ~0.14 s ahead: word onsets precede the vowel nuclei we align on
+  renderSubs(ts + .04);
   bugEl.style.opacity = TL.bug ? TL.bug(t) : 1;
   progEl.style.width = (clamp(t / TL.voiceEnd) * W) + 'px';
   progEl.style.opacity = t < TL.voiceEnd ? .9 : 0;

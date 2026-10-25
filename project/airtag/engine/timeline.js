@@ -273,11 +273,11 @@ const A23 = shot(w(148) - .05, w(152) - .05, (lt, t) => {
 const A24 = shot(w(152) - .05, w(162) - .05, (lt, t) => {
   const r = R(); r.stage('plan', t); planBag(t, { holo: true });
   const st = r.walkers[2]; r.walk(st, v3(1 + lt * .6, 0, 3.5), Math.PI / 2, t * 5.2, { scale: 1.8, lit: 1, phoneUp: true });
-  const drop = ease.out(prog(t, 87.45, 87.72));   // lands in the gap after "اللي اكتشف فيه" (with its SFX)
+  const drop = ease.out(prog(t, w(160) - .27, w(160)));   // lands right after "اللي اكتشف فيه" (with its SFX)
   const pin = v3(BAGP.x, 6 + 8 * (1 - drop), BAGP.z); r.glow(pin, 2.4, 0x59c7ff, drop); r.beam(v3(BAGP.x, .1, BAGP.z), pin, .06, 0x59c7ff, drop, { t: t * 3, n: 6 });
-  if (drop >= 1) r.ring(v3(BAGP.x, .06, BAGP.z), 2 + 3 * prog(t, 87.72, 88.5), 0x9fe1ff, 1 - prog(t, 87.72, 88.5), { face: 'up', w: .05 });
+  if (drop >= 1) r.ring(v3(BAGP.x, .06, BAGP.z), 2 + 3 * prog(t, w(160), w(160) + .78), 0x9fe1ff, 1 - prog(t, w(160), w(160) + .78), { face: 'up', w: .05 });
   const c = v3(BAGP.x + 2, 1, BAGP.z + 1); R().lookCam(orbit(c, 18 - lt * .4, -.2 + lt * .03, .9), c, 55);
-}, { ov: (lt, t) => { const k = sm(87.75, 88.05, t); return k ? `<div class="coord" style="opacity:${k}"><span class="latin">51.4700° N · 0.4543° W</span><small>موقع اكتشاف الإشارة</small></div>` : ''; } });
+}, { ov: (lt, t) => { const k = sm(w(160) + .03, w(160) + .33, t); return k ? `<div class="coord" style="opacity:${k}"><span class="latin">51.4700° N · 0.4543° W</span><small>موقع اكتشاف الإشارة</small></div>` : ''; } });
 // A25: the encrypted report (phone close-up + scrambling card)
 const A25 = shot(w(162) - .05, w(170) - .05, (lt, t) => {
   const r = R(); r.stage('studio', t);
