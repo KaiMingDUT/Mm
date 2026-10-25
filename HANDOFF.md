@@ -39,6 +39,39 @@
 
 ---
 
+## 1b. CURRENT HOUSE STYLE (latest client feedback — follow this for every new video)
+- **Environment:** work in the **"Krozo"** cloud environment. It allows `download.pytorch.org` + `openaipublic.azureedge.net`.
+  - **Transcribe** the client's audio yourself (Whisper or MMS) when no script is given.
+  - **Get word timestamps** with `torchaudio.pipelines.MMS_FA` (forced alignment). This replaces the old nuclei/DP alignment, which drifted inside long phrases.
+  - **Captions must be synced to the spoken word.** This was the client's biggest complaint.
+  - The client often sends a **.mov/.mp4 that is just a black screen with voice**. The audio is the script, and the idea is spoken in it.
+- **Voice:**
+  - Keep the client's **original speed**. Never time-stretch it (they rejected the 0.93 slow-down).
+  - Clean it with `tools/voice_chain.txt`.
+- **Pauses:**
+  - Only a **few essential dramatic pauses**, after the big questions or before a suspense reveal (about 5 per 100 s).
+  - Other pauses longer than 0.28 s become 0.18 s.
+  - **Never insert a pause where there is no real silence gap.** It sounds like the voice was cut.
+  - Verify every chunk with envelope cross-correlation after warping (r ≥ 0.95).
+- **Captions = classic KROZO style**, like the airplane/touchscreen videos:
+  - The **full phrase** sits at the bottom-middle (`#subs` top 1290 px, bottom gradient band).
+  - Spoken words are white, the **current word is cyan** `#59C7FF`, and upcoming words are dim.
+  - No top captions, no keyword boxes.
+  - Callouts and overlays go in the upper third so they never collide with the subtitles.
+- **SFX:**
+  - Rich, cinematic sound design: whooshes on cuts, heartbeat on question beats, risers and sub-drops on reveals, plus themed sounds (airport chime, footsteps, Bluetooth chirps, zipper, flyover, ticking clock, data chatter…).
+  - **Never put hits or chimes on top of a spoken word.** Place them in gaps and keep SFX ≥ 15 dB under the voice.
+- **Music:** calm bed, about 24 dB under the voice, with sidechain and EQ carve. **Always also deliver a NoMusic version.**
+- **Visuals:**
+  - 3D in brand colours only, with a technical-hologram look for explanations and realistic product shots.
+  - Watch the fov in 9:16 (use 50–60 for wide shots). Shiny products need a dark softbox env.
+- **Delivery:**
+  - Render with the resumable `render_queue.sh` (16 frame-aligned segments).
+  - Encode with x264 crf 19, maxrate 4.2M (about 55–65 MB).
+  - Send both MP4s.
+  - Commit and push to `claude/krozo-video-editor-30j869`.
+- **Language:** chat with the client in simple colloquial Arabic. They may switch to Turkish; answer in the language they use.
+
 ## 2. Environment constraints (cloud container)
 
 - **Blocked:** Hugging Face, YouTube, X/Twitter, tesla.com, alphacephei. **Allowed:** npm registry, PyPI, GitHub (git), Google Fonts gstatic.
