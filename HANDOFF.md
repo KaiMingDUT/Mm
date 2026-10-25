@@ -253,6 +253,13 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Engine libs are gitignored. Copy `google_maps/engine/{lib,fonts}`, add three r169 `examples/jsm` (npm `three@0.169.0`) and `topojson-client@3.1.0/dist/topojson-client.min.js`.
 - **Lesson:** a script/recording mismatch makes any proportional alignment drift. Run ASR or forced alignment first and compare the transcript with the script before trusting word times.
 
+### H. Cookies (DONE, Oct 25)
+- `output/cookies/KROZO_Cookies_Reel.mp4` + `_NoMusic.mp4`, ≈47 s, `.srt`, README (scenes + fact-check). Sources: `project/cookies/` (see `BUILD.md`).
+- The client's recording came as a `.mov` with a black video track; only the audio is used. Their pasted script stopped at "مثل هذه", so the last line was completed from the recording.
+- This is the first video aligned with `tools/align_fa.py` (CTC forced alignment, no nuclei DP). It uses dense 10 s windows and drops windows that decode to blanks: one 20 s window of this voice decoded to nothing.
+- Engine `cookie3d.js`: panels are `RoundedBox` glass slabs + `CanvasTexture` screens repainted only when their state key changes (`P.paint(key, fn)`), and `P.pt(px, py)` maps a canvas pixel to world space (cursor targets, packets).
+- **Fact flag** (README): login/cart cookies are "strictly necessary" and usually work even if you reject. The banner is mostly about tracking/ads cookies. The narration was kept; the client was told.
+
 ## 7. Known issues / bugs / caveats
 
 1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.

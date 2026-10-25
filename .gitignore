@@ -14,3 +14,6 @@ project/keyboard/audio/
 project/keyboard/*.wav
 project/work_models/
 project/work_keyboard/
+project/work_cookies/
+project/cookies/audio/
+project/cookies/*.wav
