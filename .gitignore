@@ -10,3 +10,7 @@ project/apple_watch/audio/
 project/apple_watch/*.wav
 project/work_watch/
 __pycache__/
+project/keyboard/audio/
+project/keyboard/*.wav
+project/work_models/
+project/work_keyboard/
