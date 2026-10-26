@@ -117,7 +117,7 @@ const A4 = shot(w(21) - .05, w(27) - .05, (lt, t) => {
 }, {
   ov: (lt, t) => {
     const k = sm(w(25), w(25) + .35, t) * (1 - prog(t, w(27) - .4, w(27) - .1));
-    return ovTag('مسار حلزوني واحد', v3(.55, .01, .55), 120, -560, k, 'hot') + `<div class="kick2" style="opacity:${sm(w(24), w(24) + .3, t)}">يبدأ من الداخل ← للخارج</div>`;
+    return ovTag('مسار حلزوني واحد', v3(.62, .01, .3), 60, -330, k, 'hot') + `<div class="kick2" style="top:205px;opacity:${sm(w(24), w(24) + .3, t)}">يبدأ من الداخل للخارج</div>`;
   },
 });
 // A5: "فيه حفر صغيرة ومناطق مستوية،" — the track under the microscope; pits glow, then the flat lands
@@ -319,7 +319,7 @@ const A12 = shot(w(89) - .05, w(104) - .05, (lt, t) => {
 }, {
   ov: (lt, t) => {
     const k = sm(w(94), w(94) + .3, t) * (1 - prog(t, w(96) - .3, w(96)));
-    return ovTag(`حتى ${lat('700 MB')}`, v3(.7, 1.3, 2.65), 140, -260, k, 'hot');
+    return ovTag(`حتى ${lat('700 MB')}`, v3(.3, 1.3, 2.65), -60, -330, k, 'hot');
   },
 });
 
