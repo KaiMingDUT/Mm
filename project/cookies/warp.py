@@ -30,8 +30,17 @@ def quiet_run(a, b, th=-50):
 # and the next onset (≥ 0.06 s, extended the same way); only the unvoiced middle (silence + inhale) is removed,
 # so the gap ends up ≈ TARGET. A drawn-out ending is voiced, so it is never cut (face_id v3 lesson).
 W = json.load(open(P + '/words3.json'))
-KEEPW = {17: 0.55, 83: 0.45,   # the two question beats
-         35: 0.30, 42: 0.30, 76: 0.32, 88: 0.30}   # micro-beats at section ends (room for the hit), the reveal
+# v3 (client: "keep pauses where pauses are needed"): sentence ends / section changes breathe, commas stay tight.
+# A pause is never longer than the real gap in the recording (no inserted silence).
+KEEPW = {8: 0.32,    # «السماح للكوكيز»… (the ellipsis: suspense)
+         17: 0.55,   # …يسويه فعلًا؟ (question beat + heartbeat)
+         27: 0.30,   # …وطلعت من الموقع. (end of the setup)
+         35: 0.40,   # …لسه موجود! (the punchline)
+         42: 0.40,   # …اللي سمحت فيها. → «الـCookies» (before the reveal)
+         59: 0.32,   # …وسلة مشترياتك. (end of the explanation)
+         76: 0.45,   # …لما ترجع له. → «متى آخر مرة» (new section)
+         83: 0.45,   # …عدم السماح للموقع؟ (question to the viewer + heartbeat)
+         88: 0.40}   # …دايمًا أسمح له. → the call to action
 TARGET = 0.17
 _n = int(.02 * _sr)
 def voiced(t):
@@ -46,7 +55,7 @@ def voiced(t):
 plan = []
 for i, (wa, wb) in enumerate(zip(W, W[1:])):
     if wa['e'] > END: break
-    g = wb['s'] - wa['e']; target = KEEPW.get(i, TARGET)
+    g = wb['s'] - wa['e']; target = min(KEEPW.get(i, TARGET), g)
     if g <= target + .06: continue
     a = wa['e'] + .10
     while a < wb['s'] - .1 and voiced(a): a += .02
