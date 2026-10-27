@@ -70,6 +70,7 @@
   - Encode with x264 crf 19, maxrate 4.2M (about 55–65 MB).
   - Send both MP4s.
   - Commit and push to `claude/krozo-video-editor-30j869`.
+- **Cover title placement (client rule, Oct 27 — ALWAYS):** every cover uses the Apple Watch cover's layout: white line 1, cyan line 2, then a framed box, all in the top third. Build it with `project/tools/cover/cover_title.mjs` (exact positions in `project/tools/cover/README.md`); never invent a new title position.
 - **Language:** chat with the client in simple colloquial Arabic. They may switch to Turkish; answer in the language they use.
 
 ## 2. Environment constraints (cloud container)
@@ -258,6 +259,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - The client's recording came as a `.mov` with a black video track; only the audio is used. Their pasted script stopped at "مثل هذه", so the last line was completed from the recording.
 - This is the first video aligned with `tools/align_fa.py` (CTC forced alignment, no nuclei DP). It uses dense 10 s windows and drops windows that decode to blanks: one 20 s window of this voice decoded to nothing.
 - Engine `cookie3d.js`: panels are `RoundedBox` glass slabs + `CanvasTexture` screens repainted only when their state key changes (`P.paint(key, fn)`), and `P.pt(px, py)` maps a canvas pixel to world space (cursor targets, packets).
+- Cover: `output/cookies/KROZO_Cookies_Cover.png/.jpg` (Oct 27). The client's AI cover with its title erased (`project/cookies/cover/`) and re-set in the fixed cover layout.
 - **Fact flag** (README): login/cart cookies are "strictly necessary" and usually work even if you reject. The banner is mostly about tracking/ads cookies. The narration was kept; the client was told.
 
 ## 7. Known issues / bugs / caveats
@@ -275,7 +277,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 ## 8. Next steps (suggested)
 
 - If the client wants consistency: remix the **Google Maps** video with the approved clean mix and produce its **NoMusic** version. Audio-only work, then remux with `-c:v copy`.
-- **Covers** for the Tesla and Touchscreen videos, using the same approach as `project/google_maps/engine/cover.html` + `cover.js`. Keep the key content inside the centre 1080×1350.
+- **Covers** for the Tesla and Touchscreen videos. **Title placement is fixed for every cover (client rule, Oct 27):** use `project/tools/cover/` (`cover_title.mjs`, layout in its README, reference = Apple Watch cover): white line 1 at 8.8–17.4 %, cyan line 2 at 18.3–25.9 %, framed box at 26.4–32.6 % of height. Keep the key content inside the centre 1080×1350.
 - When the client provides the **official KROZO logo** (PNG/SVG, transparent), add it to the bug/outro.
 - For new videos, follow §4 exactly:
   1. Ask for, or use, the provided script.
