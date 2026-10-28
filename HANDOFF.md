@@ -262,6 +262,9 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Cover: `output/cookies/KROZO_Cookies_Cover.png/.jpg` (Oct 27). The client's AI cover with its title erased (`project/cookies/cover/`) and re-set in the fixed cover layout.
 - **Fact flag** (README): login/cart cookies are "strictly necessary" and usually work even if you reject. The banner is mostly about tracking/ads cookies. The narration was kept; the client was told.
 
+### I. PlayStation cover (Oct 28)
+- `output/playstation/KROZO_PlayStation_Cover.png/.jpg`: "كيف البلايستيشن يحوّل الـCD إلى لعبة كاملة؟". No video yet. Art is our own three.js scene (`project/playstation/cover/`, see `BUILD.md`) rendered with `project/tools/cover/shoot.mjs`; title set with the fixed cover layout.
+
 ## 7. Known issues / bugs / caveats
 
 1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.

@@ -13,6 +13,7 @@ Lines are shrunk to fit; they never move. Split the title like the reference:
 question start (line 1), the hook (line 2), the rest in the box.
 
 ```
+# own 3D art: node shoot.mjs ../../<topic>/cover/index.html art.png
 # only if the background already has text baked in (AI-generated art):
 python3 erase_text.py IN.png clean.png 0.065 0.225
 node cover_title.mjs clean.png OUT.png "ايش هو الكوكيز" "الي يظهر لك" "في [كل موقع] تدخل له؟"
