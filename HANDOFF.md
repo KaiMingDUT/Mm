@@ -264,7 +264,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 
 ### I. PlayStation cover (Oct 28)
 - `output/playstation/KROZO_PlayStation_Cover.png/.jpg`: "كيف البلايستيشن يحوّل الـCD إلى لعبة كاملة؟". No video yet. Art is our own three.js scene (`project/playstation/cover/`, see `BUILD.md`) rendered with `project/tools/cover/shoot.mjs`; title set with the fixed cover layout.
-- Keyboard cover (Oct 30): `output/keyboard/KROZO_Keyboard_Cover.png/.jpg`. Title rewritten to be punchier: "إبهامك أكبر من الزر / ليش ما تغلط؟ / الكيبورد يغشّ عشانك!". Art: `project/keyboard/cover/` (see `BUILD.md`).
+- Keyboard cover (Oct 30): `output/keyboard/KROZO_Keyboard_Cover.png/.jpg`. Title (client wording): "كيف إبهامك أكبر من الزر / ومع ذلك تضغط / الزر الصح؟". Art: `project/keyboard/cover/` (see `BUILD.md`).
 
 ## 7. Known issues / bugs / caveats
 
