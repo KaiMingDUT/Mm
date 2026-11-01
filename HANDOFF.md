@@ -266,6 +266,13 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - `output/playstation/KROZO_PlayStation_Cover.png/.jpg`: "كيف البلايستيشن يحوّل الـCD إلى لعبة كاملة؟". No video yet. Art is our own three.js scene (`project/playstation/cover/`, see `BUILD.md`) rendered with `project/tools/cover/shoot.mjs`; title set with the fixed cover layout.
 - Keyboard cover (Oct 30): `output/keyboard/KROZO_Keyboard_Cover.png/.jpg`. Title (client wording): "كيف إبهامك أكبر من الزر / ومع ذلك تضغط / الزر الصح؟". Art: `project/keyboard/cover/` (see `BUILD.md`).
 
+### J. AirPods noise cancelling (Nov 1)
+- `output/airpods/KROZO_AirPods_Reel.mp4` + `_NoMusic.mp4`, ≈48 s, `.srt`, README (scenes + fact-check). Sources: `project/airpods/` (see `BUILD.md`).
+- **Client rule (new): write the full hook on screen at the start.** Use the cover layout (white line 1 / cyan line 2 / framed box, top third, Alexandria font). Light each word as it is spoken, and hide the bottom captions while it is up (`TL.noSubs`). See `hookScene` in `project/airpods/engine/timeline.js`.
+- **Client rule (Cookies v3): "pauses where they are needed".** Sentence ends, section changes, question beats and suspense ellipses get 0.3–0.55 s (never longer than the real gap). Commas stay at 0.17 s. Breaths in the middle of gaps may be cut, but voiced edges never are (`warp.py` per-word-gap logic).
+- **Engine gotcha:** `lookCam` must call `cam.updateMatrixWorld()`, otherwise `project()` (labels) uses the previous frame's camera.
+- **Fact flags:** "بدون ما تسد أذنك" is true for AirPods 4 ANC (open, no tips). "The engine is steady so it can predict it" is a simplification of "ANC works best on low, steady noise".
+
 ## 7. Known issues / bugs / caveats
 
 1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.
