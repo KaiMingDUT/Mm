@@ -51,6 +51,7 @@
 - **Pauses:**
   - Only a **few essential dramatic pauses**, after the big questions or before a suspense reveal (about 5 per 100 s).
   - Other pauses longer than 0.28 s become 0.18 s.
+  - **A pause = the gap between two words, breaths included** (client, Nov 4: "cut the long pauses"). Cut breaths too; measure the gaps in video time after the warp (none > 0.3 s except the kept beats). See `project/message_internet/warp.py` (v2).
   - **Never insert a pause where there is no real silence gap.** It sounds like the voice was cut.
   - Verify every chunk with envelope cross-correlation after warping (r ≥ 0.95).
 - **Captions = classic KROZO style**, like the airplane/touchscreen videos:
@@ -274,6 +275,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - Engine `net3d.js` reuses the AirTag globe (topojson land dots) and `assets3d.js` phone; new: tower, radio arcs, network, fibre, sea floor, cable cutaway, light tunnel.
 - `tools/align_fa.py` LATIN map: `'200': 'ميتين'` (numbers must be mapped to their spoken form).
 - Gotchas: call `aim()` before anything that reads the camera (panels facing the camera, screen-space angles); top-level `v3(...)` in timeline.js crashes (R3 does not exist yet) — wrap in functions; `pgrep -f` in a wait loop matches its own command line (it never ends) — check `.done` files instead.
+- **v2 (client feedback): "cut the long pauses, keep the important ones".** `warp.py` v2 cuts every word gap > 0.3 s to 0.2 s, breaths included (keep 0.08 s after the word end, 0.06 s before the next onset; no clicks at any cut), except the KEEP beats (by word index). The old silence-only rule (keep breaths) left many 0.3–0.8 s gaps and the client noticed. SFX inside kept beats are placed with `E(i, d)` = video time after word i, because positions inside a shortened gap get squeezed. v1 timing is in `warp_v1.json`.
 - Fact flags: «في ثوانٍ» is really ~0.1 s; deep-sea cables are ~2 cm thick (huge in length, not width); cable map is approximate.
 
 ## 7. Known issues / bugs / caveats

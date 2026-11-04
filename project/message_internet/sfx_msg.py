@@ -429,13 +429,14 @@ VE = 63.12
 SH = [7, 12, 17, 22, 26, 34, 42, 53, 61, 66, 75, 81, 85, 101, 109, 116]
 CUTS = [w(i) - .05 for i in SH]
 ev = [(whoosh(.4, 700, 5200), V(c) - .22, .045, (-.35 if i % 2 else .35)) for i, c in enumerate(CUTS) if SH[i] in (12, 26, 53, 81, 101, 116)]
+E = lambda i, d: _V0(W[i]['e']) + d   # video time just after word i (inside a kept beat)
 hb = lambda x, g=.42, d=.33: [(heartbeat(), _V0(x), g, 0), (heartbeat(), _V0(x + d), g * .72, 0)]
 ev += [
     # HOOK: tap send, the bubble rockets out, cut to space, the streak across the planet, arrival
     (click(), V(w(0) + .02), .1, 0), (pop(), V(w(0) + .14), .06, 0),
     (whoosh(.55, 600, 6500), V(w(0) + .25), .045, 0), (impact(1.2, 46), V(w(1) + .12), .05, 0), (shimmer(1.6), V(w(1) + .2), .03, 0),
-    (riser(1.2), V(w(1) + .3), .02, 0), (ping(2637, 1.0), G(w(6) + .05) + .14, .05, 0),
-    (blip(330, .25, 220), G(w(6) + .3) + .06, .1, 0), *hb(gap(w(6) + .3) + .08),
+    (riser(1.2), V(w(1) + .3), .02, 0), (ping(2637, 1.0), E(6, .04), .035, 0),
+    (blip(330, .25, 220), E(6, .08), .1, 0), (heartbeat(), E(6, .12), .38, 0),   # the kept 0.55 s beat after «ثواني؟» (video time from the word end)
     # the satellite ✕, the tilt to the ocean
     (glitch(.3), G(w(8) - .05), .05, .3), (whoosh(.9, 3000, 500), V(w(9)), .04, 0),
     # send → digits → packets
@@ -445,16 +446,16 @@ ev += [
     # waves to the tower
     (whoosh(.6, 900, 3500), V(w(26)), .04, 0), (scan(2.4), V(w(27)), .035, -.2), (chirp_signal(.9), V(w(30)), .04, .2), (ping(1976, .9), G(w(33) + .05), .06, .3),
     # down the mast, the network lights up
-    (whoosh(1.0, 3500, 400), V(w(34)), .04, 0), (data_chatter(2.2, 20), V(w(36)), .025, 0), (dive(1.4), V(w(41) - .2), .03, 0),
+    (whoosh(1.0, 3500, 400), V(w(34)), .04, 0), (data_chatter(2.2, 20), V(w(36)), .018, 0), (dive(1.4), V(w(41) - .2), .02, 0),
     # light pulses in glass
     (shimmer(1.4), V(w(42)), .035, 0), *[(blip(2400, .05), V(w(45)) + k * .23, .03, 0) for k in range(10)],
     # satellites?  — no!
-    (laser_hum(3.5), V(w(54)), .015, 0), (blip(330, .25, 220), G(w(60) + .3), .11, 0), (heartbeat(), _V0(gap(w(60) + .3) + .1), .38, 0),   # one beat: two do not fit before «لا!»
+    (laser_hum(3.5), V(w(54)), .015, 0), (blip(330, .25, 220), E(60, .05), .09, 0), (heartbeat(), E(60, .08), .34, 0),   # one beat in the kept 0.5 s before «لا!»
     (glitch(.4), V(w(61) - .1), .035, 0), (reverse_swell(1.0), V(w(62)), .04, 0),
-    (sub_drop(1.0), G(w(65) + .25) + .05, .12, 0), (splash(1.2), V(w(66) - .1), .05, 0),
+    (sub_drop(.8), E(65, .1), .09, 0), (splash(1.2), E(65, .3), .045, 0),
     # under the sea
-    (underwater(7.0), V(w(66)), .028, 0), (bubbles(2.2), V(w(67)), .03, -.3), (shimmer(1.4), V(w(72) - .1), .025, 0),
-    (thud(.6), G(w(75)), .04, 0), (ping(1568, .9), G(w(76) + .1), .04, 0),
+    (underwater(7.0), V(w(66)), .02, 0), (bubbles(2.2), V(w(67)), .03, -.3), (shimmer(1.4), V(w(72) - .1), .025, 0),
+    (thud(.6), G(w(75)), .028, 0), (ping(1568, .9), G(w(76) + .1), .025, 0),
     (chirp_signal(.9), V(w(81)), .03, 0), (data_chatter(2.0, 18), V(w(82)), .02, 0),
     # light speed
     (reverse_swell(1.0), V(w(89) + .2) - .8, .05, 0), (impact(1.0, 50), G(w(89) + .1), .07, 0), (hyper(4.0), V(w(90)), .05, 0), (zap(.5), V(w(93) - .05), .04, 0),

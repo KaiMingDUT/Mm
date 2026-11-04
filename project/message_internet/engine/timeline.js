@@ -209,7 +209,7 @@ const S8 = shot(w(42) - .05, w(53) - .05, (lt, t) => {
 }, {
   ov: (lt, t) => ovTag('نبضات ضوء', v3(0, .3, 0), -150, -230, sm(w(45), w(45) + .3, t) * (1 - prog(t, w(48), w(48) + .3)), 'hot')
     + ovTag('ألياف زجاجية', v3(1.2, 1.0, 0), 60, -170, sm(w(49) + .1, w(49) + .4, t))
-    + ovTag(`≈ ${lat('0.125 mm')} — قريب من سماكة الشعرة`, v3(-.5, -1.0, 0), 40, 200, sm(w(51), w(51) + .3, t)) + ovNote('رسم توضيحي'),
+    + ovTag(`≈ ${lat('0.125 mm')} — قريب من سماكة الشعرة`, v3(-.5, -1.0, 0), 540 - P2(v3(-.5, -1.0, 0))[0], 200, sm(w(51), w(51) + .3, t)) + ovNote('رسم توضيحي'),
 });
 
 // ═════════ THE TWIST: satellites? no — under the sea ═════════
@@ -237,7 +237,7 @@ const S10 = shot(w(61) - .05, w(66) - .05, (lt, t) => {
   r.grade.zb.value = Math.max(r.grade.zb.value, .7 * bump(t, w(61) - .05, .3));
   r.grade.zb.value = Math.max(r.grade.zb.value, .8 * prog(t, w(65), w(66) - .05));
 }, {
-  ov: (lt, t) => { const r = R(), k = sm(w(61) - .1, w(61) + .2, t) * (1 - prog(t, w(62) + .3, w(62) + .6)); if (k <= 0) return ''; const [x, y] = P2(r.SATS[1].position); return xmark(x, y, k); },
+  ov: (lt, t) => { const r = R(), k = sm(w(61) - .1, w(61) + .2, t) * (1 - prog(t, w(62) + .3, w(62) + .6)); if (k <= 0) return ''; const [x, y] = P2(r.SATS[1].position); return xmark(clamp(x, 170, 910), clamp(y, 300, 1150), k); },
 });
 // S11: "جزء كبير من الإنترنت ينتقل تحت البحر!" — down through the water to a glowing cable on the sea floor
 const S11 = shot(w(66) - .05, w(75) - .05, (lt, t) => {
