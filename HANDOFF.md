@@ -264,6 +264,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 
 ### I. PlayStation cover (Oct 28)
 - `output/playstation/KROZO_PlayStation_Cover.png/.jpg`: "كيف البلايستيشن يحوّل الـCD إلى لعبة كاملة؟". No video yet. Art is our own three.js scene (`project/playstation/cover/`, see `BUILD.md`) rendered with `project/tools/cover/shoot.mjs`; title set with the fixed cover layout.
+- Messaging cover (Nov 4): `output/messaging/KROZO_Messaging_Cover.png/.jpg`, "كيف توصل رسالتك / لآخر العالم / في ثواني؟". No video yet. Art: `project/messaging/cover/` (see `BUILD.md`).
 - Keyboard cover (Oct 30): `output/keyboard/KROZO_Keyboard_Cover.png/.jpg`. Title (client wording): "كيف إبهامك أكبر من الزر / ومع ذلك تضغط / الزر الصح؟". Art: `project/keyboard/cover/` (see `BUILD.md`).
 
 ### J. AirPods noise cancelling (Nov 1)
