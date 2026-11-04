@@ -1,0 +1,8 @@
+# Message-around-the-world reel — build notes
+Engine: `engine/` = engine.js + timeline.js (shots in story time) + net3d.js (phone from `assets3d.js` with a live chat screen and `phonePt` for screen pixels → world; message bubble panel; 0/1 instanced digits; numbered packet cubes; lattice cell tower + radio-wave arcs (ring pool with `arc` + per-ring quaternion); operator network on the floor (BFS pulses); glass fibre with zig-zag pulses; dotted globe (world-atlas land-50m via topojson-client, as AirTag) with the Riyadh→New York arc, satellites and ~25 approximate subsea-cable routes; sea floor (caustics via onBeforeCompile, god rays, surface from below, marine snow) with a cable carrying pulses; telescoped cable cutaway; light tunnel shader; comments panel).
+Hook (0–3 s): close-up tap on send → bubble launches at the lens → flash → Earth zoom-out from Riyadh (camera slerps to the mid point, log-distance 1.06 → 7.4) → arc to New York with an arrival-time chip.
+Not committed: `engine/lib/` (three@0.169.0 + examples/jsm + topojson-client@3.1.0) and `engine/fonts/`.
+Voice: `source/voice_message.mov` → voice16.wav / voice48.wav → voice_chain.txt (clean voice) → voice_clean.wav.
+Words: `python3 ../tools/align_fa.py . MODEL_DIR` (`200` → spoken «ميتين») → words3.json. The client's script stopped at «منشنه»; «في التعليقات» added from the recording.
+Pipeline: align_fa → warp.py (3 beats, r = 1.000) → `../tools/voicewarp.py .` → subs.py → `sfx_msg.py audio/sfx.wav 61.4` → `../tools/music.py audio/music.wav 61.2 35.99` → `./mix.sh`
+Render: `render_queue.sh` (16 resumable segments) → `assemble.sh` (concat, x264 crf 19 maxrate 4.2M, both mixes, SRT, contact sheet).

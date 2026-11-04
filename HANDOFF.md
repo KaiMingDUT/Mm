@@ -268,6 +268,14 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 - **Fact flag:** CD = PS1 only; PS2 = DVD, PS3+ = Blu-ray (405 nm). Narration kept; client told.
 - Lessons: the microscope / console whites blew out at first (lower base albedo + env intensity .8); a cross-section reads better from slightly below (the laser's side) with the pits coloured cyan. Cut whooshes that land on a word onset were dropped (SFX margin check script: voice vs SFX in 50 ms windows).
 
+### J. Message around the world (DONE, Nov 4)
+- `output/message_internet/KROZO_Message_Around_The_World_Reel.mp4` + `_NoMusic.mp4`, ≈61 s, `.srt`, README (hook + scenes + fact-check). Sources: `project/message_internet/` (see `BUILD.md`).
+- The client asked for a **trending visual hook** at the start: built as "tap send → bubble at the lens → Earth zoom-out → arc across the planet + arrival-time chip". Expect them to ask for this again.
+- Engine `net3d.js` reuses the AirTag globe (topojson land dots) and `assets3d.js` phone; new: tower, radio arcs, network, fibre, sea floor, cable cutaway, light tunnel.
+- `tools/align_fa.py` LATIN map: `'200': 'ميتين'` (numbers must be mapped to their spoken form).
+- Gotchas: call `aim()` before anything that reads the camera (panels facing the camera, screen-space angles); top-level `v3(...)` in timeline.js crashes (R3 does not exist yet) — wrap in functions; `pgrep -f` in a wait loop matches its own command line (it never ends) — check `.done` files instead.
+- Fact flags: «في ثوانٍ» is really ~0.1 s; deep-sea cables are ~2 cm thick (huge in length, not width); cable map is approximate.
+
 ## 7. Known issues / bugs / caveats
 
 1. **ASR is now possible** (Omnilingual CTC via GitHub releases + onnxruntime, see F2). Older videos still use nuclei alignment. It is accurate at phrase level, but a word inside a phrase can be off by up to ~0.2 s. If the client's spoken words differ from the pasted script, alignment can drift, so ask for the exact script.

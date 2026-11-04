@@ -16,3 +16,6 @@ project/cookies/*.wav
 project/work_ps/
 project/playstation_disc/audio/
 project/playstation_disc/*.wav
+project/work_msg/
+project/message_internet/audio/
+project/message_internet/*.wav
