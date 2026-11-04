@@ -23,7 +23,7 @@
 
 - Font: **IBM Plex Sans Arabic** (SIL OFL), loaded from npm `@fontsource/ibm-plex-sans-arabic`.
 - Logo: **not provided yet**. Never invent a logo.
-- **No branding on screen (client, Nov 4 — permanent rule):** no "KROZO • BEYOND TECH" wordmark at the top (`TL.bug = () => 0`) and **no KROZO logo outro** at the end (do not add `outroScene`). The video ends on the last shot about 0.7 s after the last word. Covers have no wordmark either.
+- **No branding on screen (client, Nov 4 — permanent rule):** no "KROZO • BEYOND TECH" wordmark at the top (`TL.bug = () => 0`) and **no KROZO logo outro** at the end (do not add `outroScene`). The video ends on the last shot about 0.7 s after the last word. Covers have no wordmark either. Applies to videos made **after** the message reel; the message reel (J) was delivered with the wordmark and outro and stays that way (client: "not even this one, only the coming videos").
 - No red for "traffic/jam". Brand blue is used for emphasis instead.
 
 ### Client preferences learned (IMPORTANT)

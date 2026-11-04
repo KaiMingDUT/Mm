@@ -319,7 +319,7 @@ const S15 = shot(w(109) - .05, w(116) - .05, (lt, t) => {
   r.grade.zb.value = .5 * bump(t, w(115), .3);
 });
 // S16: "منشنه في التعليقات."
-const S16 = shot(w(116) - .05, VOICE_END + 1.2, (lt, t) => {   // last shot holds to the end: no logo outro (client rule)
+const S16 = shot(w(116) - .05, VOICE_END + .12, (lt, t) => {
   const r = R(), ts = w(118) + .25;
   r.paintComments({ focus: 1, type: r2(prog(t, w(116), w(117) + .2)), send: r2(prog(t, ts, ts + .25)), post: r2(prog(t, ts + .15, ts + .8)) });
   const inK = sm(0, .4, lt);
@@ -336,6 +336,8 @@ const low = (html, top = 330) => big(html, `top:${top}px`);
 const qmark = `<div class="a" style="font-size:170px;font-weight:700;color:#59C7FF;text-shadow:0 0 40px rgba(89,199,255,.6)">؟</div>`;
 L.push(T(w(6) + .45, w(7) - .05, r => { r.appendChild(low(qmark, 470)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(6) + .5, .3)));
 L.push(T(w(60) + .35, w(61) - .1, r => { r.appendChild(low(qmark, 470)); }, (r, lt, t) => popIn(r.querySelector('.a'), t, w(60) + .4, .3)));
+const outro = outroScene(VOICE_END + .05, VOICE_END + 2.55);
+L.push(outro);
 
 window.TL = {
   voiceEnd: VOICE_END,
@@ -347,7 +349,7 @@ window.TL = {
     if (tv >= v1) return s1 + (tv - v1);
     return s0 + (tv - v0) * (s1 - s0) / ((v1 - v0) || 1);
   },
-  bug: () => 0,   // no top wordmark (client rule, Nov 4)
+  bug: t => (t < 1 ? 0 : 1) * (1 - prog(t, VOICE_END - .2, VOICE_END + .1)),
   subs: SUBS,
   scenes: L,
 };

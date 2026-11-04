@@ -467,8 +467,8 @@ ev += [
     # mention, send
     *[(key(), V(w(116)) + k * (w(117) + .2 - w(116)) / 5, .05, 0) for k in range(5)],
     (click(), V(w(118) + .25), .04, 0), (whoosh(.35, 1200, 4200), V(w(118) + .35), .035, 0),
-    # the comment lands (no logo outro any more: client rule)
-    (pop(), V(w(118) + .45), .06, 0), (chime(2093), V(w(118) + .5), .045, 0),
+    # outro
+    (whoosh(1.2, 300, 3000), V(VE) - .2, .18, 0), (impact(1.6, 44), V(VE + .35), .2, 0), (shimmer(2.0), V(VE + .4), .16, 0),
 ]
 import os
 if os.environ.get("DUMP"): [print(round(t, 2), round(t + len(sig) / SR, 2), g, i) for i, (sig, t, g, pan) in enumerate(ev)]
@@ -481,4 +481,4 @@ if peak > 0.98:
 with wave.open(OUT, 'wb') as wv:
     wv.setnchannels(2); wv.setsampwidth(2); wv.setframerate(SR)
     wv.writeframes((st * 32767).astype(np.int16).tobytes())
-print('wrote', OUT, 'events', len(ev), 'video end', round(_V0(VE) + .75, 2))
+print('wrote', OUT, 'events', len(ev), 'video end', round(V(VE + 2.6), 2))
