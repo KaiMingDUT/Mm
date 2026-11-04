@@ -22,7 +22,8 @@
 | Secondary text (metallic gray) | `#A7B1C2` |
 
 - Font: **IBM Plex Sans Arabic** (SIL OFL), loaded from npm `@fontsource/ibm-plex-sans-arabic`.
-- Logo: **not provided yet**. Only the text wordmark "KROZO • BEYOND TECH" is used. Never invent a logo.
+- Logo: **not provided yet**. Never invent a logo.
+- **No branding on screen (client, Nov 4 — permanent rule):** no "KROZO • BEYOND TECH" wordmark at the top (`TL.bug = () => 0`) and **no KROZO logo outro** at the end (do not add `outroScene`). The video ends on the last shot about 0.7 s after the last word. Covers have no wordmark either.
 - No red for "traffic/jam". Brand blue is used for emphasis instead.
 
 ### Client preferences learned (IMPORTANT)
@@ -63,6 +64,7 @@
   - Rich, cinematic sound design: whooshes on cuts, heartbeat on question beats, risers and sub-drops on reveals, plus themed sounds (airport chime, footsteps, Bluetooth chirps, zipper, flyover, ticking clock, data chatter…).
   - **Never put hits or chimes on top of a spoken word.** Place them in gaps and keep SFX ≥ 15 dB under the voice.
 - **Music:** calm bed, about 24 dB under the voice, with sidechain and EQ carve. **Always also deliver a NoMusic version.**
+- **No branding on screen:** no "KROZO • BEYOND TECH" at the top, no KROZO logo outro at the end, none on covers (client, Nov 4).
 - **Visuals:**
   - 3D in brand colours only, with a technical-hologram look for explanations and realistic product shots.
   - Watch the fov in 9:16 (use 50–60 for wide shots). Shiny products need a dark softbox env.
@@ -142,7 +144,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
   - It applies `TL.remap` and `TL.lead`, then updates every active scene.
   - **Blended transitions:** consecutive scenes overlap 0.26 s. There is special handling for 3D↔clip/DOM pairs, a 6 % punch-in zoom on each cut, flashes at `TL.flashes`, and `window.CUR_FADE` scales the 3D opacity.
   - `setClip(img, name, t)` handles frame-accurate real footage from JPEG sequences (`CLIPS` dict holds frame counts).
-- `brand.js`: `outroScene(s, e)` shows the KROZO wordmark reveal.
+- `brand.js`: `outroScene(s, e)` shows the KROZO wordmark reveal. **Not used any more** (client rule, Nov 4).
 - `subs.js`: generated (`SUBS`, `WT`). `warp.js`: generated (`WARP`).
 - `timeline.js`: the per-video edit. It contains scenes `{s, e, fi, fo, is3d, build(root), update(root, lt, t)}` and `window.TL = {voiceEnd, lead, flashes, remap, bug, subs, scenes}`.
 - 3D modules (three.js r169 + UnrealBloom). Each one exposes `window.G3 = {set(state), render(t), project(v), …}`, and the last `G3.set` in a frame wins.
@@ -294,7 +296,7 @@ All steps are scripts. Paths below assume a working dir `P` per video.
 
 - If the client wants consistency: remix the **Google Maps** video with the approved clean mix and produce its **NoMusic** version. Audio-only work, then remux with `-c:v copy`.
 - **Covers** for the Tesla and Touchscreen videos, using the same approach as `project/google_maps/engine/cover.html` + `cover.js`. Keep the key content inside the centre 1080×1350.
-- When the client provides the **official KROZO logo** (PNG/SVG, transparent), add it to the bug/outro.
+- Branding on screen is off by client request (Nov 4): no top wordmark, no logo outro. Only add them back if the client asks.
 - For new videos, follow §4 exactly:
   1. Ask for, or use, the provided script.
   2. Verify the facts with WebSearch.

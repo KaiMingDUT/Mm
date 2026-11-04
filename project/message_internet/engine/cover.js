@@ -17,7 +17,7 @@ window.SHOTS = [{ s: -1, e: 99, noPunch: true, update(lt, t) {
   r.phone.visible = true; r.phone.position.copy(pp); r.phone.quaternion.copy(q); r.phone.rotateY(.3); r.phone.rotateZ(.08); r.phone.scale.setScalar(.3); r.phone.updateMatrixWorld(true);
 } }];
 window.TL = Object.assign(window.TL, {
-  remap: t => t, lead: 0, flashes: [], subs: [], bug: () => 1,
+  remap: t => t, lead: 0, flashes: [], subs: [], bug: () => 0,
   scenes: [{ s: -1, e: 99, build(root) {
     document.getElementById('subband').style.display = 'none';
     root.appendChild(el(`<div style="position:absolute;left:40px;right:40px;top:310px;text-align:center;text-shadow:0 4px 24px rgba(0,0,0,.9)">
