@@ -6,3 +6,4 @@ Voice: `source/voice_message.mov` → voice16.wav / voice48.wav → voice_chain.
 Words: `python3 ../tools/align_fa.py . MODEL_DIR` (`200` → spoken «ميتين») → words3.json. The client's script stopped at «منشنه»; «في التعليقات» added from the recording.
 Pipeline: align_fa → warp.py (3 beats, r = 1.000) → `../tools/voicewarp.py .` → subs.py → `sfx_msg.py audio/sfx.wav 61.4` → `../tools/music.py audio/music.wav 61.2 35.99` → `./mix.sh`
 Render: `render_queue.sh` (16 resumable segments) → `assemble.sh` (concat, x264 crf 19 maxrate 4.2M, both mixes, SRT, contact sheet).
+Cover: `PAGE=cover.html node ../tools/render.mjs engine OUT 30 0 0 --stills 1` (cover.js overrides SHOTS/TL; hides #subband).

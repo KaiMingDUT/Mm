@@ -4,6 +4,7 @@
 |---|---|
 | `KROZO_Message_Around_The_World_Reel.mp4` | الفيديو النهائي مع موسيقى هادئة |
 | `KROZO_Message_Around_The_World_Reel_NoMusic.mp4` | نفس الفيديو بدون موسيقى (صوتك + المؤثرات)، عشان تضيف صوت من مكتبة إنستغرام |
+| `KROZO_Message_Around_The_World_Cover.png/.jpg` | الغلاف (1080×1920). العنوان والكرة الأرضية والجوال كلها داخل مربع 4:5 عشان ما تنقص في شبكة الحساب |
 | `message.ar.srt` | ملف الترجمة العربية على توقيت الفيديو |
 | `contact_sheet.png` | لقطة كل ثانيتين للمراجعة |
 
